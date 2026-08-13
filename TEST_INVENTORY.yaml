@@ -1,20 +1,859 @@
-# TEST_INVENTORY.yaml — P1 Naming Authority
-# Maps every FR to expected test function names. These are the AUTHORITATIVE names
-# that derive_test_cases.md preserves in TEST_SPEC.md (P2 single source of truth).
-# Specified per FR and per test category (unit/integration/cross_cutting).
-# If no name is specified for a category, derive_test_cases.md fills the gap with
-# names derived via the 7-Question Protocol.
-format_version: "1.1"
+# TEST_INVENTORY.yaml — P1 Naming Authority (FR/NFR acceptance-criterion test inventory)
+# Derived from 01-requirements/SRS.md §3/§4 acceptance criteria (AC-NN.M / AC-NNN.M)
+# and 01-requirements/TRACEABILITY_MATRIX.md Code<->Test mapping.
+# These test function names are AUTHORITATIVE: derive_test_cases.md preserves them
+# verbatim in TEST_SPEC.md (P2 single source of truth). One tc_id per acceptance criterion.
+test_inventory:
+  format_version: "2.0"
+  project: taskq-api
+  source_of_truth: "01-requirements/SRS.md"
+  naming_convention: "test_<fr_slug><nn>_<behaviour_snake_case>"
 
-fr_tests:
-  FR-01:
-    unit:
-      - test_fr01_example_unit
-    integration:
-      - test_fr01_example_integration
+  tests:
+    - tc_id: TC-FR01-01
+      fr: FR-01
+      ac_id: AC-1.1
+      test_name: test_fr01_create_task_returns_201_with_id_and_status_pending
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.1"
+    - tc_id: TC-FR01-02
+      fr: FR-01
+      ac_id: AC-1.2
+      test_name: test_fr01_create_task_without_api_key_returns_401
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.2"
+    - tc_id: TC-FR01-03
+      fr: FR-01
+      ac_id: AC-1.3
+      test_name: test_fr01_create_task_invalid_body_returns_422
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.3"
+    - tc_id: TC-FR01-04
+      fr: FR-01
+      ac_id: AC-1.4
+      test_name: test_fr01_get_task_with_read_key_returns_200
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.4"
+    - tc_id: TC-FR01-05
+      fr: FR-01
+      ac_id: AC-1.5
+      test_name: test_fr01_get_unknown_task_returns_404
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.5"
+    - tc_id: TC-FR01-06
+      fr: FR-01
+      ac_id: AC-1.6
+      test_name: test_fr01_delete_task_with_write_scope_returns_403
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.6"
+    - tc_id: TC-FR01-07
+      fr: FR-01
+      ac_id: AC-1.7
+      test_name: test_fr01_create_task_duplicate_name_returns_409
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.7"
+    - tc_id: TC-FR01-08
+      fr: FR-01
+      ac_id: AC-1.8
+      test_name: test_fr01_list_tasks_limit_bounds_and_default
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.8"
+    - tc_id: TC-FR01-09
+      fr: FR-01
+      ac_id: AC-1.9
+      test_name: test_fr01_list_tasks_uses_cursor_pagination_not_offset
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.9"
+    - tc_id: TC-FR01-10
+      fr: FR-01
+      ac_id: AC-1.10
+      test_name: test_fr01_delete_task_with_admin_key_returns_204
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_crud.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-01 AC-1.10"
+    - tc_id: TC-FR02-01
+      fr: FR-02
+      ac_id: AC-2.1
+      test_name: test_fr02_run_task_returns_202_with_run_id
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_run.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-02 AC-2.1"
+    - tc_id: TC-FR02-02
+      fr: FR-02
+      ac_id: AC-2.2
+      test_name: test_fr02_run_task_uses_shlex_split_no_shell
+      layer: unit
+      test_file: 03-development/tests/unit/test_tasks_run.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-02 AC-2.2"
+    - tc_id: TC-FR02-03
+      fr: FR-02
+      ac_id: AC-2.3
+      test_name: test_fr02_run_task_lifecycle_pending_running_done
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_run.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-02 AC-2.3"
+    - tc_id: TC-FR02-04
+      fr: FR-02
+      ac_id: AC-2.4
+      test_name: test_fr02_run_task_nonzero_exit_transitions_failed
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_run.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-02 AC-2.4"
+    - tc_id: TC-FR02-05
+      fr: FR-02
+      ac_id: AC-2.5
+      test_name: test_fr02_run_task_timeout_transitions_timeout
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_run.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-02 AC-2.5"
+    - tc_id: TC-FR02-06
+      fr: FR-02
+      ac_id: AC-2.6
+      test_name: test_fr02_list_runs_returns_history_ordered
+      layer: integration
+      test_file: 03-development/tests/integration/test_tasks_run.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-02 AC-2.6"
+    - tc_id: TC-FR03-01
+      fr: FR-03
+      ac_id: AC-3.1
+      test_name: test_fr03_missing_or_invalid_api_key_returns_401
+      layer: integration
+      test_file: 03-development/tests/integration/test_auth.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-03 AC-3.1"
+    - tc_id: TC-FR03-02
+      fr: FR-03
+      ac_id: AC-3.2
+      test_name: test_fr03_cli_key_create_prints_plaintext_exactly_once
+      layer: integration
+      test_file: 03-development/tests/integration/test_auth.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-03 AC-3.2"
+    - tc_id: TC-FR03-03
+      fr: FR-03
+      ac_id: AC-3.3
+      test_name: test_fr03_api_key_hash_is_64_hex_sha256
+      layer: unit
+      test_file: 03-development/tests/unit/test_auth.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-03 AC-3.3"
+    - tc_id: TC-FR03-04
+      fr: FR-03
+      ac_id: AC-3.4
+      test_name: test_fr03_key_compare_uses_hmac_compare_digest
+      layer: unit
+      test_file: 03-development/tests/unit/test_auth.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-03 AC-3.4"
+    - tc_id: TC-FR03-05
+      fr: FR-03
+      ac_id: AC-3.5
+      test_name: test_fr03_revoked_key_is_rejected_401
+      layer: integration
+      test_file: 03-development/tests/integration/test_auth.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-03 AC-3.5"
+    - tc_id: TC-FR03-06
+      fr: FR-03
+      ac_id: AC-3.6
+      test_name: test_fr03_healthz_and_readyz_exempt_from_api_key
+      layer: integration
+      test_file: 03-development/tests/integration/test_auth.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-03 AC-3.6"
+    - tc_id: TC-FR04-01
+      fr: FR-04
+      ac_id: AC-4.1
+      test_name: test_fr04_read_key_post_tasks_returns_403
+      layer: integration
+      test_file: 03-development/tests/integration/test_scope_authz.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-04 AC-4.1"
+    - tc_id: TC-FR04-02
+      fr: FR-04
+      ac_id: AC-4.2
+      test_name: test_fr04_write_key_delete_task_returns_403
+      layer: integration
+      test_file: 03-development/tests/integration/test_scope_authz.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-04 AC-4.2"
+    - tc_id: TC-FR04-03
+      fr: FR-04
+      ac_id: AC-4.3
+      test_name: test_fr04_write_key_run_task_succeeds
+      layer: integration
+      test_file: 03-development/tests/integration/test_scope_authz.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-04 AC-4.3"
+    - tc_id: TC-FR04-04
+      fr: FR-04
+      ac_id: AC-4.4
+      test_name: test_fr04_admin_key_succeeds_on_all_endpoints
+      layer: integration
+      test_file: 03-development/tests/integration/test_scope_authz.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-04 AC-4.4"
+    - tc_id: TC-FR04-05
+      fr: FR-04
+      ac_id: AC-4.5
+      test_name: test_fr04_every_v1_route_declares_require_scope_dependency
+      layer: unit
+      test_file: 03-development/tests/unit/test_scope_authz.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-04 AC-4.5"
+    - tc_id: TC-FR05-01
+      fr: FR-05
+      ac_id: AC-5.1
+      test_name: test_fr05_burst_requests_then_429_with_retry_after
+      layer: integration
+      test_file: 03-development/tests/integration/test_rate_limit.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-05 AC-5.1"
+    - tc_id: TC-FR05-02
+      fr: FR-05
+      ac_id: AC-5.2
+      test_name: test_fr05_retry_after_is_positive_integer_seconds
+      layer: integration
+      test_file: 03-development/tests/integration/test_rate_limit.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-05 AC-5.2"
+    - tc_id: TC-FR05-03
+      fr: FR-05
+      ac_id: AC-5.3
+      test_name: test_fr05_healthz_and_readyz_exempt_from_rate_limit
+      layer: integration
+      test_file: 03-development/tests/integration/test_rate_limit.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-05 AC-5.3"
+    - tc_id: TC-FR05-04
+      fr: FR-05
+      ac_id: AC-5.4
+      test_name: test_fr05_parallel_double_burst_no_over_admission
+      layer: integration
+      test_file: 03-development/tests/integration/test_rate_limit.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-05 AC-5.4"
+    - tc_id: TC-FR05-05
+      fr: FR-05
+      ac_id: AC-5.5
+      test_name: test_fr05_rate_bucket_update_acquires_row_level_lock
+      layer: unit
+      test_file: 03-development/tests/unit/test_rate_limit.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-05 AC-5.5"
+    - tc_id: TC-FR06-01
+      fr: FR-06
+      ac_id: AC-6.1
+      test_name: test_fr06_no_shell_true_eval_or_exec_in_source
+      layer: static
+      test_file: 03-development/tests/unit/test_persistence.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-06 AC-6.1"
+    - tc_id: TC-FR06-02
+      fr: FR-06
+      ac_id: AC-6.2
+      test_name: test_fr06_no_fstring_or_concat_sql_composition
+      layer: static
+      test_file: 03-development/tests/unit/test_persistence.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-06 AC-6.2"
+    - tc_id: TC-FR06-03
+      fr: FR-06
+      ac_id: AC-6.3
+      test_name: test_fr06_one_session_per_request_lifecycle
+      layer: unit
+      test_file: 03-development/tests/unit/test_persistence.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-06 AC-6.3"
+    - tc_id: TC-FR06-04
+      fr: FR-06
+      ac_id: AC-6.4
+      test_name: test_fr06_lint_imports_forbidden_contract_blocks_sqlalchemy
+      layer: static
+      test_file: 03-development/tests/unit/test_persistence.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-06 AC-6.4"
+    - tc_id: TC-FR06-05
+      fr: FR-06
+      ac_id: AC-6.5
+      test_name: test_fr06_engine_uses_pool_size_and_pool_pre_ping
+      layer: unit
+      test_file: 03-development/tests/unit/test_persistence.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-06 AC-6.5"
+    - tc_id: TC-FR07-01
+      fr: FR-07
+      ac_id: AC-7.1
+      test_name: test_fr07_upgrade_head_and_downgrade_base_exit_zero
+      layer: integration
+      test_file: 03-development/tests/integration/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.1"
+    - tc_id: TC-FR07-02
+      fr: FR-07
+      ac_id: AC-7.2
+      test_name: test_fr07_downgrade_base_leaves_no_residual_tables
+      layer: integration
+      test_file: 03-development/tests/integration/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.2"
+    - tc_id: TC-FR07-03
+      fr: FR-07
+      ac_id: AC-7.3
+      test_name: test_fr07_migrations_run_against_real_sqlite_file
+      layer: integration
+      test_file: 03-development/tests/integration/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.3"
+    - tc_id: TC-FR07-04
+      fr: FR-07
+      ac_id: AC-7.4
+      test_name: test_fr07_roundtrip_preserves_sample_rows_byte_identical
+      layer: integration
+      test_file: 03-development/tests/integration/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.4"
+    - tc_id: TC-FR07-05
+      fr: FR-07
+      ac_id: AC-7.5
+      test_name: test_fr07_v3_downgrade_reverses_data_move
+      layer: integration
+      test_file: 03-development/tests/integration/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.5"
+    - tc_id: TC-FR07-06
+      fr: FR-07
+      ac_id: AC-7.6
+      test_name: test_fr07_migration_files_contain_no_destructive_shortcut
+      layer: static
+      test_file: 03-development/tests/unit/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.6"
+    - tc_id: TC-FR07-07
+      fr: FR-07
+      ac_id: AC-7.7
+      test_name: test_fr07_migrations_render_under_alembic_offline_sql_mode
+      layer: integration
+      test_file: 03-development/tests/integration/test_migrations_roundtrip.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-07 AC-7.7"
+    - tc_id: TC-FR08-01
+      fr: FR-08
+      ac_id: AC-8.1
+      test_name: test_fr08_graceful_drain_marks_over_budget_task_interrupted
+      layer: integration
+      test_file: 03-development/tests/integration/test_async_executor.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-08 AC-8.1"
+    - tc_id: TC-FR08-02
+      fr: FR-08
+      ac_id: AC-8.2
+      test_name: test_fr08_timeout_kill_leaves_no_orphan_process
+      layer: integration
+      test_file: 03-development/tests/integration/test_async_executor.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-08 AC-8.2"
+    - tc_id: TC-FR08-03
+      fr: FR-08
+      ac_id: AC-8.3
+      test_name: test_fr08_concurrency_cap_queues_excess_tasks
+      layer: integration
+      test_file: 03-development/tests/integration/test_async_executor.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-08 AC-8.3"
+    - tc_id: TC-FR08-04
+      fr: FR-08
+      ac_id: AC-8.4
+      test_name: test_fr08_timeout_path_kills_and_awaits_process
+      layer: unit
+      test_file: 03-development/tests/unit/test_async_executor.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-08 AC-8.4"
+    - tc_id: TC-FR08-05
+      fr: FR-08
+      ac_id: AC-8.5
+      test_name: test_fr08_cancelled_error_propagates_not_swallowed
+      layer: unit
+      test_file: 03-development/tests/unit/test_async_executor.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-08 AC-8.5"
+    - tc_id: TC-FR09-01
+      fr: FR-09
+      ac_id: AC-9.1
+      test_name: test_fr09_healthz_returns_200_without_auth
+      layer: integration
+      test_file: 03-development/tests/integration/test_health_observability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-09 AC-9.1"
+    - tc_id: TC-FR09-02
+      fr: FR-09
+      ac_id: AC-9.2
+      test_name: test_fr09_readyz_returns_503_when_db_unreachable
+      layer: integration
+      test_file: 03-development/tests/integration/test_health_observability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-09 AC-9.2"
+    - tc_id: TC-FR09-03
+      fr: FR-09
+      ac_id: AC-9.3
+      test_name: test_fr09_readyz_returns_503_when_migration_behind_head
+      layer: integration
+      test_file: 03-development/tests/integration/test_health_observability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-09 AC-9.3"
+    - tc_id: TC-FR09-04
+      fr: FR-09
+      ac_id: AC-9.4
+      test_name: test_fr09_readyz_returns_200_only_when_db_and_head_ok
+      layer: integration
+      test_file: 03-development/tests/integration/test_health_observability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-09 AC-9.4"
+    - tc_id: TC-FR09-05
+      fr: FR-09
+      ac_id: AC-9.5
+      test_name: test_fr09_metrics_requires_admin_and_reports_counts
+      layer: integration
+      test_file: 03-development/tests/integration/test_health_observability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-09 AC-9.5"
+    - tc_id: TC-FR09-06
+      fr: FR-09
+      ac_id: AC-9.6
+      test_name: test_fr09_migration_not_at_head_fails_closed_on_deploy
+      layer: integration
+      test_file: 03-development/tests/integration/test_health_observability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-09 AC-9.6"
+    - tc_id: TC-FR10-01
+      fr: FR-10
+      ac_id: AC-10.1
+      test_name: test_fr10_non_2xx_sets_application_problem_json
+      layer: integration
+      test_file: 03-development/tests/integration/test_problem_json.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-10 AC-10.1"
+    - tc_id: TC-FR10-02
+      fr: FR-10
+      ac_id: AC-10.2
+      test_name: test_fr10_problem_body_field_allowlist_exact
+      layer: integration
+      test_file: 03-development/tests/integration/test_problem_json.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-10 AC-10.2"
+    - tc_id: TC-FR10-03
+      fr: FR-10
+      ac_id: AC-10.3
+      test_name: test_fr10_forced_500_detail_leaks_no_internals
+      layer: integration
+      test_file: 03-development/tests/integration/test_problem_json.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-10 AC-10.3"
+    - tc_id: TC-FR10-04
+      fr: FR-10
+      ac_id: AC-10.4
+      test_name: test_fr10_correlation_id_header_matches_body
+      layer: integration
+      test_file: 03-development/tests/integration/test_problem_json.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-10 AC-10.4"
+    - tc_id: TC-FR10-05
+      fr: FR-10
+      ac_id: AC-10.5
+      test_name: test_fr10_correlation_id_appears_in_server_log
+      layer: integration
+      test_file: 03-development/tests/integration/test_problem_json.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-10 AC-10.5"
+    - tc_id: TC-FR10-06
+      fr: FR-10
+      ac_id: AC-10.6
+      test_name: test_fr10_every_spec_error_code_exercised_once
+      layer: integration
+      test_file: 03-development/tests/integration/test_problem_json.py
+      srs_ref: "01-requirements/SRS.md §3/§4 FR-10 AC-10.6"
+    - tc_id: TC-NFR01-01
+      fr: NFR-01
+      ac_id: AC-N1.1
+      test_name: test_nfr01_get_task_p95_under_30ms_at_10k_rows
+      layer: performance
+      test_file: 03-development/tests/performance/test_performance.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-01 AC-N1.1"
+    - tc_id: TC-NFR01-02
+      fr: NFR-01
+      ac_id: AC-N1.2
+      test_name: test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows
+      layer: performance
+      test_file: 03-development/tests/performance/test_performance.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-01 AC-N1.2"
+    - tc_id: TC-NFR01-03
+      fr: NFR-01
+      ac_id: AC-N1.3
+      test_name: test_nfr01_sql_statement_count_constant_no_n_plus_one
+      layer: integration
+      test_file: 03-development/tests/integration/test_performance.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-01 AC-N1.3"
+    - tc_id: TC-NFR01-04
+      fr: NFR-01
+      ac_id: AC-N1.4
+      test_name: test_nfr01_relationship_load_uses_selectinload_or_joinedload
+      layer: unit
+      test_file: 03-development/tests/unit/test_performance.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-01 AC-N1.4"
+    - tc_id: TC-NFR02-01
+      fr: NFR-02
+      ac_id: AC-N2.1
+      test_name: test_nfr02_no_shell_true_eval_or_exec_scan
+      layer: static
+      test_file: 03-development/tests/unit/test_security.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-02 AC-N2.1"
+    - tc_id: TC-NFR02-02
+      fr: NFR-02
+      ac_id: AC-N2.2
+      test_name: test_nfr02_no_composed_sql_string_scan
+      layer: static
+      test_file: 03-development/tests/unit/test_security.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-02 AC-N2.2"
+    - tc_id: TC-NFR02-03
+      fr: NFR-02
+      ac_id: AC-N2.3
+      test_name: test_nfr02_forbidden_403_body_identical_for_hidden_resource
+      layer: integration
+      test_file: 03-development/tests/integration/test_security.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-02 AC-N2.3"
+    - tc_id: TC-NFR02-04
+      fr: NFR-02
+      ac_id: AC-N2.4
+      test_name: test_nfr02_bandit_reports_zero_high_and_medium
+      layer: static
+      test_file: 03-development/tests/unit/test_security.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-02 AC-N2.4"
+    - tc_id: TC-NFR02-05
+      fr: NFR-02
+      ac_id: AC-N2.5
+      test_name: test_nfr02_cors_denies_all_origins_by_default
+      layer: integration
+      test_file: 03-development/tests/integration/test_security.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-02 AC-N2.5"
+    - tc_id: TC-NFR02-06
+      fr: NFR-02
+      ac_id: AC-N2.6
+      test_name: test_nfr02_cors_allows_only_configured_origins
+      layer: integration
+      test_file: 03-development/tests/integration/test_security.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-02 AC-N2.6"
+    - tc_id: TC-NFR03-01
+      fr: NFR-03
+      ac_id: AC-N3.1
+      test_name: test_nfr03_no_bare_except_or_except_exception_pass
+      layer: static
+      test_file: 03-development/tests/unit/test_async_correctness.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-03 AC-N3.1"
+    - tc_id: TC-NFR03-02
+      fr: NFR-03
+      ac_id: AC-N3.2
+      test_name: test_nfr03_cancelled_error_propagates_through_handler
+      layer: unit
+      test_file: 03-development/tests/unit/test_async_correctness.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-03 AC-N3.2"
+    - tc_id: TC-NFR03-03
+      fr: NFR-03
+      ac_id: AC-N3.3
+      test_name: test_nfr03_db_down_readyz_503_with_explicit_detail
+      layer: integration
+      test_file: 03-development/tests/integration/test_async_correctness.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-03 AC-N3.3"
+    - tc_id: TC-NFR03-04
+      fr: NFR-03
+      ac_id: AC-N3.4
+      test_name: test_nfr03_transaction_boundary_exception_rolls_back
+      layer: integration
+      test_file: 03-development/tests/integration/test_async_correctness.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-03 AC-N3.4"
+    - tc_id: TC-NFR03-05
+      fr: NFR-03
+      ac_id: AC-N3.5
+      test_name: test_nfr03_failing_migration_leaves_previous_revision
+      layer: integration
+      test_file: 03-development/tests/integration/test_async_correctness.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-03 AC-N3.5"
+    - tc_id: TC-NFR04-01
+      fr: NFR-04
+      ac_id: AC-N4.1
+      test_name: test_nfr04_api_key_pattern_redacted_in_logs
+      layer: unit
+      test_file: 03-development/tests/unit/test_redaction.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-04 AC-N4.1"
+    - tc_id: TC-NFR04-02
+      fr: NFR-04
+      ac_id: AC-N4.2
+      test_name: test_nfr04_database_url_redacted_in_logs
+      layer: unit
+      test_file: 03-development/tests/unit/test_redaction.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-04 AC-N4.2"
+    - tc_id: TC-NFR04-03
+      fr: NFR-04
+      ac_id: AC-N4.3
+      test_name: test_nfr04_taskq_db_url_absent_from_logs_and_metrics
+      layer: integration
+      test_file: 03-development/tests/integration/test_redaction.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-04 AC-N4.3"
+    - tc_id: TC-NFR04-04
+      fr: NFR-04
+      ac_id: AC-N4.4
+      test_name: test_nfr04_forced_500_body_and_log_are_redacted
+      layer: integration
+      test_file: 03-development/tests/integration/test_redaction.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-04 AC-N4.4"
+    - tc_id: TC-NFR05-01
+      fr: NFR-05
+      ac_id: AC-N5.1
+      test_name: test_nfr05_public_api_docstring_coverage_is_100_percent
+      layer: static
+      test_file: 03-development/tests/unit/test_docstring_refs.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-05 AC-N5.1"
+    - tc_id: TC-NFR05-02
+      fr: NFR-05
+      ac_id: AC-N5.2
+      test_name: test_nfr05_every_public_symbol_docstring_cites_fr_or_nfr
+      layer: static
+      test_file: 03-development/tests/unit/test_docstring_refs.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-05 AC-N5.2"
+    - tc_id: TC-NFR05-03
+      fr: NFR-05
+      ac_id: AC-N5.3
+      test_name: test_nfr05_openapi_endpoints_have_summary_and_description
+      layer: integration
+      test_file: 03-development/tests/integration/test_docstring_refs.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-05 AC-N5.3"
+    - tc_id: TC-NFR06-01
+      fr: NFR-06
+      ac_id: AC-N6.1
+      test_name: test_nfr06_importlinter_config_exists_at_project_root
+      layer: static
+      test_file: 03-development/tests/unit/test_layering.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-06 AC-N6.1"
+    - tc_id: TC-NFR06-02
+      fr: NFR-06
+      ac_id: AC-N6.2
+      test_name: test_nfr06_lint_imports_exits_zero
+      layer: static
+      test_file: 03-development/tests/unit/test_layering.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-06 AC-N6.2"
+    - tc_id: TC-NFR06-03
+      fr: NFR-06
+      ac_id: AC-N6.3
+      test_name: test_nfr06_forbidden_contract_blocks_auth_from_repository
+      layer: static
+      test_file: 03-development/tests/unit/test_layering.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-06 AC-N6.3"
+    - tc_id: TC-NFR06-04
+      fr: NFR-06
+      ac_id: AC-N6.4
+      test_name: test_nfr06_layers_contract_enforces_api_service_repository_models
+      layer: static
+      test_file: 03-development/tests/unit/test_layering.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-06 AC-N6.4"
+    - tc_id: TC-NFR06-05
+      fr: NFR-06
+      ac_id: AC-N6.5
+      test_name: test_nfr06_config_and_errors_are_independence_modules
+      layer: static
+      test_file: 03-development/tests/unit/test_layering.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-06 AC-N6.5"
+    - tc_id: TC-NFR07-01
+      fr: NFR-07
+      ac_id: AC-N7.1
+      test_name: test_nfr07_pip_licenses_whole_tree_within_allowlist
+      layer: static
+      test_file: 03-development/tests/unit/test_sbom.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-07 AC-N7.1"
+    - tc_id: TC-NFR07-02
+      fr: NFR-07
+      ac_id: AC-N7.2
+      test_name: test_nfr07_sbom_json_entries_carry_required_fields
+      layer: static
+      test_file: 03-development/tests/unit/test_sbom.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-07 AC-N7.2"
+    - tc_id: TC-NFR07-03
+      fr: NFR-07
+      ac_id: AC-N7.3
+      test_name: test_nfr07_transitive_dep_with_bad_license_fails_build
+      layer: static
+      test_file: 03-development/tests/unit/test_sbom.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-07 AC-N7.3"
+    - tc_id: TC-NFR07-04
+      fr: NFR-07
+      ac_id: AC-N7.4
+      test_name: test_nfr07_requirements_lock_pins_every_transitive_dep
+      layer: static
+      test_file: 03-development/tests/unit/test_sbom.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-07 AC-N7.4"
+    - tc_id: TC-NFR08-01
+      fr: NFR-08
+      ac_id: AC-N8.1
+      test_name: test_nfr08_harness_config_enables_mutation_testing
+      layer: static
+      test_file: 03-development/tests/unit/test_mutation.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-08 AC-N8.1"
+    - tc_id: TC-NFR08-02
+      fr: NFR-08
+      ac_id: AC-N8.2
+      test_name: test_nfr08_mutation_score_at_least_70
+      layer: static
+      test_file: 03-development/tests/unit/test_mutation.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-08 AC-N8.2"
+    - tc_id: TC-NFR08-03
+      fr: NFR-08
+      ac_id: AC-N8.3
+      test_name: test_nfr08_mutation_scope_limited_to_service_and_repository
+      layer: static
+      test_file: 03-development/tests/unit/test_mutation.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-08 AC-N8.3"
+    - tc_id: TC-NFR09-01
+      fr: NFR-09
+      ac_id: AC-N9.1
+      test_name: test_nfr09_pytest_reports_zero_skipped
+      layer: static
+      test_file: 03-development/tests/unit/test_verification_honesty.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-09 AC-N9.1"
+    - tc_id: TC-NFR09-02
+      fr: NFR-09
+      ac_id: AC-N9.2
+      test_name: test_nfr09_zero_assert_test_count_is_zero
+      layer: static
+      test_file: 03-development/tests/unit/test_verification_honesty.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-09 AC-N9.2"
+    - tc_id: TC-NFR09-03
+      fr: NFR-09
+      ac_id: AC-N9.3
+      test_name: test_nfr09_pytest_config_has_no_exclusion_flags
+      layer: static
+      test_file: 03-development/tests/unit/test_verification_honesty.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-09 AC-N9.3"
+    - tc_id: TC-NFR09-04
+      fr: NFR-09
+      ac_id: AC-N9.4
+      test_name: test_nfr09_fr07_migration_suite_uses_real_sqlite_file
+      layer: static
+      test_file: 03-development/tests/unit/test_verification_honesty.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-09 AC-N9.4"
+    - tc_id: TC-NFR09-05
+      fr: NFR-09
+      ac_id: AC-N9.5
+      test_name: test_nfr09_matrix_verified_only_on_actual_pass
+      layer: static
+      test_file: 03-development/tests/unit/test_verification_honesty.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-09 AC-N9.5"
+    - tc_id: TC-NFR10-01
+      fr: NFR-10
+      ac_id: AC-N10.1
+      test_name: test_nfr10_integration_line_coverage_at_least_80_percent
+      layer: static
+      test_file: 03-development/tests/unit/test_integration_coverage.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-10 AC-N10.1"
+    - tc_id: TC-NFR10-02
+      fr: NFR-10
+      ac_id: AC-N10.2
+      test_name: test_nfr10_integration_tests_use_asgi_transport_only
+      layer: static
+      test_file: 03-development/tests/unit/test_integration_coverage.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-10 AC-N10.2"
+    - tc_id: TC-NFR10-03
+      fr: NFR-10
+      ac_id: AC-N10.3
+      test_name: test_nfr10_integration_suite_exercises_every_error_code
+      layer: integration
+      test_file: 03-development/tests/integration/test_integration_coverage.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-10 AC-N10.3"
+    - tc_id: TC-NFR10-04
+      fr: NFR-10
+      ac_id: AC-N10.4
+      test_name: test_nfr10_integration_suite_covers_migration_roundtrip
+      layer: integration
+      test_file: 03-development/tests/integration/test_integration_coverage.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-10 AC-N10.4"
+    - tc_id: TC-NFR11-01
+      fr: NFR-11
+      ac_id: AC-N11.1
+      test_name: test_nfr11_project_mi_at_least_80
+      layer: static
+      test_file: 03-development/tests/unit/test_readability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-11 AC-N11.1"
+    - tc_id: TC-NFR11-02
+      fr: NFR-11
+      ac_id: AC-N11.2
+      test_name: test_nfr11_per_function_cc_at_most_10
+      layer: static
+      test_file: 03-development/tests/unit/test_readability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-11 AC-N11.2"
+    - tc_id: TC-NFR11-03
+      fr: NFR-11
+      ac_id: AC-N11.3
+      test_name: test_nfr11_file_and_directory_size_limits_enforced
+      layer: static
+      test_file: 03-development/tests/unit/test_readability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-11 AC-N11.3"
+    - tc_id: TC-NFR11-04
+      fr: NFR-11
+      ac_id: AC-N11.4
+      test_name: test_nfr11_api_handler_at_most_40_lines
+      layer: static
+      test_file: 03-development/tests/unit/test_readability.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-11 AC-N11.4"
+    - tc_id: TC-NFR12-01
+      fr: NFR-12
+      ac_id: AC-N12.1
+      test_name: test_nfr12_make_verify_system_exits_zero
+      layer: static
+      test_file: 03-development/tests/unit/test_verify_system.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-12 AC-N12.1"
+    - tc_id: TC-NFR12-02
+      fr: NFR-12
+      ac_id: AC-N12.2
+      test_name: test_nfr12_make_verify_system_prints_pass_marker
+      layer: static
+      test_file: 03-development/tests/unit/test_verify_system.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-12 AC-N12.2"
+    - tc_id: TC-NFR12-03
+      fr: NFR-12
+      ac_id: AC-N12.3
+      test_name: test_nfr12_verify_system_chains_four_steps_in_order
+      layer: static
+      test_file: 03-development/tests/unit/test_verify_system.py
+      srs_ref: "01-requirements/SRS.md §3/§4 NFR-12 AC-N12.3"
 
-cross_cutting:
-  security:
-    - test_security_example
-  deployment:
-    - test_deployment_example
+  coverage_summary:
+    total_test_cases: 111
+    by_fr:
+      FR-01:
+        tc_count: 10
+      FR-02:
+        tc_count: 6
+      FR-03:
+        tc_count: 6
+      FR-04:
+        tc_count: 5
+      FR-05:
+        tc_count: 5
+      FR-06:
+        tc_count: 5
+      FR-07:
+        tc_count: 7
+      FR-08:
+        tc_count: 5
+      FR-09:
+        tc_count: 6
+      FR-10:
+        tc_count: 6
+      NFR-01:
+        tc_count: 4
+      NFR-02:
+        tc_count: 6
+      NFR-03:
+        tc_count: 5
+      NFR-04:
+        tc_count: 4
+      NFR-05:
+        tc_count: 3
+      NFR-06:
+        tc_count: 5
+      NFR-07:
+        tc_count: 4
+      NFR-08:
+        tc_count: 3
+      NFR-09:
+        tc_count: 5
+      NFR-10:
+        tc_count: 4
+      NFR-11:
+        tc_count: 4
+      NFR-12:
+        tc_count: 3
+    by_fr_total: 111
+    by_layer:
+      unit:
+        count: 13
+      integration:
+        count: 60
+      static:
+        count: 36
+      performance:
+        count: 2
+    by_layer_total: 111
+
+  cross_cutting:
+    security:
+      cross_ref_nfrs: [NFR-02, NFR-04]
+      cross_ref_frs: [FR-03, FR-04, FR-06]
+    deployment:
+      cross_ref_nfrs: [NFR-12]
+      cross_ref_frs: [FR-07, FR-09]
+    async_correctness:
+      cross_ref_nfrs: [NFR-03]
+      cross_ref_frs: [FR-02, FR-08]
