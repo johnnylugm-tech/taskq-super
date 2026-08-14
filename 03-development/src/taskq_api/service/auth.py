@@ -8,8 +8,8 @@ HMAC vectors.
 [FR-03] — AC-3.2 (`create_key` mints plaintext, printed once by the CLI),
 AC-3.3 (`hash_key` is 64-char hex SHA-256), AC-3.4 (verify uses
 `hmac.compare_digest`), AC-3.5 (revoked_at non-null → rejected).
-[FR-04] — AC-4.1 / AC-4.2 / AC-4.3: `verify_key` returns the
-`_insufficient_scope` marker dict when the presented key is known but
+[FR-04] — AC-4.1 / AC-4.2 / AC-4.3: `verify_key` returns a record whose
+`INSUFFICIENT_SCOPE` flag is True when the presented key is known but
 lacks the required scope; `require_scope` translates that to HTTP 403.
 The three-scope hierarchy `read < write < admin` is enforced inside
 `verify_key` via the `required_scope not in scopes` check, so admin
@@ -31,20 +31,16 @@ from typing import Optional
 
 from taskq_api.repository import key_repo
 
-# Marker embedded in the dict returned by `verify_key` when the key is
-# known but lacks the required scope. `require_scope` translates this
-# into HTTP 403; missing/revoked/unknown keys map to HTTP 401.
-_INSUFFICIENT_SCOPE: str = "_insufficient_scope"
+# Sentinel flag embedded in the record returned by `verify_key` when the
+# key is known but lacks the required scope. `require_scope` translates
+# this into HTTP 403; missing/revoked/unknown keys map to HTTP 401.
+INSUFFICIENT_SCOPE: str = "_insufficient_scope"
 
 
 def hash_key(plaintext: str) -> str:
     """SHA-256 hex digest of the API key plaintext (64 lowercase hex chars).
 
     Per NFR-04 the plaintext is never logged; only this digest is persisted.
-
-    Citations:
-    - taskq_api.service.auth:hash_key  per NFR-04 (no plaintext logged),
-    AC-3.3 (64-char hex SHA-256)
     """
     return hashlib.sha256(plaintext.encode("utf-8")).hexdigest()
 
@@ -54,9 +50,6 @@ def find_by_hash(stored_hash: str) -> Optional[dict]:
 
     Thin pass-through to the repository layer; kept as a module attribute
     so tests can monkey-patch this symbol to inject records.
-
-    Citations:
-    - taskq_api.service.auth:find_by_hash  per FR-01 AC-1.2
     """
     return key_repo.lookup_by_hash(stored_hash)
 
@@ -67,10 +60,10 @@ def verify_key(presented_key: str, required_scope: str) -> Optional[dict]:
     Returns:
       - None if the key is unknown, revoked, or the HMAC compare failed
         (these map to HTTP 401 in `require_scope`).
-      - {"_insufficient_scope": True} if the key is known but lacks the
+      - ``{INSUFFICIENT_SCOPE: True}`` if the key is known but lacks the
         required scope (maps to HTTP 403 in `require_scope`).
-      - {"scopes": [...], "key_id": ...} if the key is known and has the
-        required scope.
+      - ``{"scopes": [...], "key_id": ...}`` if the key is known and has
+        the required scope.
 
     [FR-04] — AC-4.1 / AC-4.2 / AC-4.3: the `required_scope not in scopes`
     branch is the canonical three-tier hierarchy `read < write < admin`
@@ -79,10 +72,6 @@ def verify_key(presented_key: str, required_scope: str) -> Optional[dict]:
     `sk-test-write-key` -> `["read", "write"]`, `sk-test-admin-key` ->
     `["read", "write", "admin"]`) backs the integration tests so the
     401 / 403 / 202 status-code lines are reached without DB mocks.
-
-    Citations:
-    - taskq_api.service.auth:verify_key  AC-1.2 / AC-1.6 / AC-1.10
-    / AC-3.4 / AC-3.5 / AC-4.1 / AC-4.2 / AC-4.3 / AC-4.4
     """
     if not presented_key:
         return None
@@ -100,7 +89,7 @@ def verify_key(presented_key: str, required_scope: str) -> Optional[dict]:
         return None
     scopes = record.get("scopes", [])
     if required_scope not in scopes:
-        return {_INSUFFICIENT_SCOPE: True}
+        return {INSUFFICIENT_SCOPE: True}
     return {"scopes": scopes, "key_id": record.get("key_id")}
 
 
@@ -111,13 +100,16 @@ def create_key(scope: str) -> str:
     print it exactly once); only the SHA-256 hash is persisted in
     production. The `scope` argument is part of the public contract so
     callers do not need to know which scopes exist.
-
-    Citations:
-    - taskq_api.service.auth:create_key  AC-3.2 / AC-3.3
     """
     # [FR-03] AC-3.2 / AC-3.3 — secrets.token_urlsafe gives ~43 url-safe
     # chars of entropy; the CLI prints this once and stores only its hash.
     return secrets.token_urlsafe(32)
 
 
-__all__: list[str] = ["hash_key", "find_by_hash", "verify_key", "create_key"]
+__all__: list[str] = [
+    "INSUFFICIENT_SCOPE",
+    "hash_key",
+    "find_by_hash",
+    "verify_key",
+    "create_key",
+]

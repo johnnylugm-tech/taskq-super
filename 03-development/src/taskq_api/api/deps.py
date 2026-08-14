@@ -15,17 +15,10 @@ AC-4.1 / AC-4.2 / AC-4.5
 
 from __future__ import annotations
 
-from typing import Callable
-
 from fastapi import Header
 
 from taskq_api.errors import problem
-from taskq_api.service.auth import verify_key
-
-# Marker the service layer embeds in a verify result when the key is
-# known but lacks the required scope; `require_scope` translates it
-# into HTTP 403 (insufficient scope) rather than 401 (unknown key).
-_INSUFFICIENT_SCOPE_MARKER: str = "_insufficient_scope"
+from taskq_api.service.auth import INSUFFICIENT_SCOPE, verify_key
 
 
 def _enforce_scope(x_api_key: str | None, scope: str) -> dict:
@@ -47,13 +40,13 @@ def _enforce_scope(x_api_key: str | None, scope: str) -> dict:
         # [FR-03] AC-3.1 / AC-3.5 — missing key, unknown key, or revoked
         # key all return 401. Insufficient scope returns 403 below.
         raise problem(401, "Unauthorized", "invalid or revoked API key")
-    if record.get(_INSUFFICIENT_SCOPE_MARKER):
+    if record.get(INSUFFICIENT_SCOPE):
         # [FR-01] AC-1.6 / AC-1.10 — known key without the required scope.
         raise problem(403, "Forbidden", "insufficient scope")
     return record
 
 
-def require_scope(scope: str) -> Callable[..., dict]:
+def require_scope(scope: str):
     """Build a FastAPI dependency that enforces `scope`.
 
     [FR-04] — AC-4.5: this is the single authz dependency. Every `/v1`
@@ -62,17 +55,14 @@ def require_scope(scope: str) -> Callable[..., dict]:
     `test_fr04_every_v1_route_declares_require_scope_dependency` walks
     `app.routes` and asserts every `/v1` route passes through this
     factory (`scoped_routes_count == routes_count`).
-
-    Citations:
-    - taskq_api.api.deps:require_scope  AC-1.2 / AC-1.6 / AC-1.10 / AC-1.4
-    / AC-3.1 / AC-3.5 / AC-4.1 / AC-4.2 / AC-4.5
     """
 
-    def _dep(x_api_key: str | None = Header(default=None, alias="X-API-Key")) -> dict:
-        # [FR-01] [FR-03]
+    def _scope_dep(
+        x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    ) -> dict:
         return _enforce_scope(x_api_key, scope)
 
-    return _dep
+    return _scope_dep
 
 
 __all__: list[str] = ["require_scope"]
