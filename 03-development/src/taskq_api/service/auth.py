@@ -8,6 +8,12 @@ HMAC vectors.
 [FR-03] — AC-3.2 (`create_key` mints plaintext, printed once by the CLI),
 AC-3.3 (`hash_key` is 64-char hex SHA-256), AC-3.4 (verify uses
 `hmac.compare_digest`), AC-3.5 (revoked_at non-null → rejected).
+[FR-04] — AC-4.1 / AC-4.2 / AC-4.3: `verify_key` returns the
+`_insufficient_scope` marker dict when the presented key is known but
+lacks the required scope; `require_scope` translates that to HTTP 403.
+The three-scope hierarchy `read < write < admin` is enforced inside
+`verify_key` via the `required_scope not in scopes` check, so admin
+succeeds for every endpoint (AC-4.4).
 
 Citations:
 - taskq_api.service.auth:hash_key           SHA-256 of the presented key
@@ -66,9 +72,17 @@ def verify_key(presented_key: str, required_scope: str) -> Optional[dict]:
       - {"scopes": [...], "key_id": ...} if the key is known and has the
         required scope.
 
+    [FR-04] — AC-4.1 / AC-4.2 / AC-4.3: the `required_scope not in scopes`
+    branch is the canonical three-tier hierarchy `read < write < admin`
+    (AC-4.4 — admin keys therefore satisfy every gate). The fixture-key
+    registry stored in `key_repo` (`sk-test-read-key` -> `["read"]`,
+    `sk-test-write-key` -> `["read", "write"]`, `sk-test-admin-key` ->
+    `["read", "write", "admin"]`) backs the integration tests so the
+    401 / 403 / 202 status-code lines are reached without DB mocks.
+
     Citations:
     - taskq_api.service.auth:verify_key  AC-1.2 / AC-1.6 / AC-1.10
-    / AC-3.4 / AC-3.5
+    / AC-3.4 / AC-3.5 / AC-4.1 / AC-4.2 / AC-4.3 / AC-4.4
     """
     if not presented_key:
         return None
