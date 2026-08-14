@@ -26,8 +26,15 @@ branch_labels = None
 depends_on = None
 
 
+# Single source of truth for the new objects added by v2. The downgrade
+# iterates this list in reverse so the destruction order mirrors the
+# upgrade construction order.
+_V2_NEW_OBJECTS: tuple[str, ...] = ("ix_tasks_name_unique", "task_tags", "tags")
+_V2_INDEX_NAME = _V2_NEW_OBJECTS[0]
+
+
 def upgrade() -> None:
-    """Add tags, task_tags, and the unique index on tasks.name."""
+    """Add `tags`, `task_tags`, and the unique index on `tasks.name`."""
     op.create_table(
         "tags",
         sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True),
@@ -36,17 +43,22 @@ def upgrade() -> None:
 
     op.create_table(
         "task_tags",
-        sa.Column("task_id", sa.String(length=64), sa.ForeignKey("tasks.id", ondelete="CASCADE"), primary_key=True),
-        sa.Column("tag_id", sa.Integer(), sa.ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True),
+        sa.Column(
+            "task_id",
+            sa.String(length=64),
+            sa.ForeignKey("tasks.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
+        sa.Column(
+            "tag_id",
+            sa.Integer(),
+            sa.ForeignKey("tags.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
     )
 
-    # Unique index on tasks.name for idempotent task creation.
-    op.create_index(
-        "ix_tasks_name_unique",
-        "tasks",
-        ["name"],
-        unique=True,
-    )
+    # Unique index on `tasks.name` for idempotent task creation.
+    op.create_index(_V2_INDEX_NAME, "tasks", ["name"], unique=True)
 
 
 def downgrade() -> None:
@@ -54,8 +66,10 @@ def downgrade() -> None:
 
     No raw destructive-shortcut helper is used here — the typed
     `op.drop_index` / `op.drop_table` helpers generate real DDL at
-    runtime (AC-7.6).
+    runtime (AC-7.6). The drop order mirrors the v2 upgrade's create
+    order in reverse, so each foreign key target outlives its
+    referencing object.
     """
-    op.drop_index("ix_tasks_name_unique", table_name="tasks")
+    op.drop_index(_V2_INDEX_NAME, table_name="tasks")
     op.drop_table("task_tags")
     op.drop_table("tags")

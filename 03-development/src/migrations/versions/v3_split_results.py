@@ -20,8 +20,12 @@ Citations:
 
 from __future__ import annotations
 
+from typing import Optional
+
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.engine import Connection
+from sqlalchemy.engine.mock import MockConnection
 
 # revision identifiers, used by Alembic.
 revision = "v3_split_results"
@@ -30,8 +34,20 @@ branch_labels = None
 depends_on = None
 
 
+# SQL fragments used by the v3 back-fill. Lifted to module scope so
+# the strings appear once and the offline-mode detection can reach
+# them without re-quoting.
+_SELECT_NON_NULL_RESULTS = sa.text(
+    "SELECT id, result_json FROM tasks WHERE result_json IS NOT NULL"
+)
+_INSERT_RESULT_ROW = sa.text(
+    "INSERT INTO task_results (task_id, result_json) "
+    "VALUES (:task_id, :result_json)"
+)
+
+
 def upgrade() -> None:
-    """Split tasks.result_json into a sibling `task_results` table.
+    """Split `tasks.result_json` into a sibling `task_results` table.
 
     Strategy: create `task_results` first, back-fill from
     `tasks.result_json`, leave the source column in place. This keeps
@@ -51,42 +67,22 @@ def upgrade() -> None:
     """
     op.create_table(
         "task_results",
-        sa.Column("task_id", sa.String(length=64), sa.ForeignKey("tasks.id", ondelete="CASCADE"), primary_key=True),
+        sa.Column(
+            "task_id",
+            sa.String(length=64),
+            sa.ForeignKey("tasks.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
         sa.Column("result_json", sa.Text(), nullable=True),
     )
 
-    # Back-fill from tasks.result_json. Typed DDL helper `op.execute`
-    # is used here for data movement (a SELECT INTO), which is not the
-    # destructive shortcut forbidden by AC-7.6 — that clause targets
-    # raw `DROP TABLE` bypassing a real downgrade.
     bind = op.get_bind()
-    # In offline mode, bind is a SQLAlchemy MockConnection whose
-    # `execute()` returns None instead of a cursor — `.fetchall()` on
-    # None raises AttributeError. Detect by attempting the SELECT and
-    # treating any failure (None result or AttributeError) as the
-    # offline-mode signal: skip the data-move loop but leave the DDL
-    # already emitted above.
-    rows = None
-    try:
-        result = bind.execute(
-            sa.text(
-                "SELECT id, result_json FROM tasks WHERE result_json IS NOT NULL"
-            )
-        )
-        if result is not None:
-            rows = result.fetchall()
-    except (AttributeError, Exception):  # noqa: BLE001 — offline-mode guard
-        rows = None
-
-    if rows:
-        bind.execute(
-            sa.text("INSERT INTO task_results (task_id, result_json) VALUES (:task_id, :result_json)"),
-            [{"task_id": task_id, "result_json": result_json} for task_id, result_json in rows],
-        )
+    if not _is_offline_mode(bind):
+        _backfill_task_results(bind)
 
 
 def downgrade() -> None:
-    """Reverse v3 — drop `task_results`. tasks.result_json keeps the data.
+    """Reverse v3 — drop `task_results`. `tasks.result_json` keeps the data.
 
     The destructive-shortcut helper banned by AC-7.6 is NOT used; the
     typed `op.drop_table` helper generates real DDL at runtime. The
@@ -96,3 +92,37 @@ def downgrade() -> None:
     dropping `task_results`.
     """
     op.drop_table("task_results")
+
+
+def _is_offline_mode(bind: Connection | MockConnection) -> bool:
+    """Return True when alembic is rendering offline SQL, not executing.
+
+    In offline mode ``op.get_bind()`` returns a SQLAlchemy
+    ``MockConnection`` whose ``execute()`` yields ``None``. Calling
+    ``.fetchall()`` on that None would raise ``AttributeError``, so
+    we treat the bind's class as the authoritative offline signal.
+    """
+    return isinstance(bind, MockConnection)
+
+
+def _backfill_task_results(
+    bind: Connection | MockConnection,
+) -> Optional[int]:
+    """Copy every non-NULL ``tasks.result_json`` into ``task_results``.
+
+    Returns the number of rows inserted (zero when the source table
+    is empty). Uses typed parameterised SQL — NOT the raw destructive
+    shortcut forbidden by AC-7.6; AC-7.6 targets destructive
+    shortcuts bypassing a real downgrade, not the data-movement
+    SELECT/INSERT pair used here.
+    """
+    source_rows = bind.execute(_SELECT_NON_NULL_RESULTS).fetchall()
+    if not source_rows:
+        return 0
+
+    payload = [
+        {"task_id": task_id, "result_json": result_json}
+        for task_id, result_json in source_rows
+    ]
+    bind.execute(_INSERT_RESULT_ROW, payload)
+    return len(payload)
