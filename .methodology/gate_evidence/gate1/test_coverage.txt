@@ -1,0 +1,8 @@
+..........                                                               [100%]
+10 passed in 0.29s
+Name                                            Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------------
+03-development/src/taskq_api/api/tasks.py          28      0   100%
+03-development/src/taskq_api/service/tasks.py      32      0   100%
+-----------------------------------------------------------------------------
+TOTAL                                              60      0   100%

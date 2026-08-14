@@ -1,0 +1,87 @@
+{
+  "gate": 1,
+  "phase": 3,
+  "fr_id": "FR-01",
+  "overall_score": 100.0,
+  "quality_complete": true,
+  "rounds_used": 1,
+  "breakdown": {
+    "linting": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "All checks passed!\n"
+    },
+    "type_safety": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "{\"version\": \"1.1.409\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 19, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 0.599}}"
+    },
+    "test_coverage": {
+      "score": 100.0,
+      "threshold": 100,
+      "tests_passed": 12,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "tool_evidence": "============================== 12 passed in 0.30s ==============================\n{\"meta\": {\"format\": 3, \"version\": \"7.15.4\", \"timestamp\": \"2026-08-14T22:06:42.134748\", \"branch_coverage\": false, \"show_contexts\": false}, \"files\": {\"03-development/src/taskq_api/api/tasks.py\": {\"executed_lines\": [13, 15, 17, 19, 20, 21, 22, 23, 24, 26, 29, 30, 40, 43, 44, 56, 57, 59, 60, 67, 68, 74, 82, 83, 93, 96, 97, 111, 112, 115], \"summary\": {\"covered_lines\": 30, \"num_statements\": 30, \"percent_covered\": 100.0, \"percent_covered_display\": \"100\", \"missing_lines\": 0}, \"03-development/src/taskq_api/service/tasks.py\": {\"executed_lines\": [13, 15, 16, 17, 19, 20, 23, 27, 38, 45, 46, 47, 48, 49, 50, 51, 52, 55, 62, 63, 64, 65, 66, 69, 82, 83, 84, 85, 88, 91, 103, 104, 105, 106, 109], \"summary\": {\"covered_lines\": 35, \"num_statements\": 35, \"percent_covered\": 100.0, \"missing_lines\": 0}, \"totals\": {\"covered_lines\": 65, \"num_statements\": 65, \"percent_covered\": 100.0, \"percent_covered_display\": \"100\", \"missing_lines\": 0}}"
+    },
+    "architecture_constraints": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "Analyzed 19 files, 13 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+    }
+  },
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "linting": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
+      "head": "All checks passed!"
+    },
+    "type_safety": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "4226a4e2ecc7aa1e56db5b7850e1f6cadc361668a4d6311102991d9f6a085aed",
+      "bytes": 161,
+      "head": "{\"version\": \"1.1.409\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 19, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 0.599}}"
+    },
+    "test_coverage": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "5145bea2d66f8c72c93fe595032e134512147eea3e980826d3856cdc6d1e0763",
+      "bytes": 1005,
+      "head": "============================== 12 passed in 0.30s ==============================\n{\"meta\": {\"format\": 3, \"version\": \"7.15.4\", \"timestamp\": \"2026-08-14T22:06:42.134748\", \"branch_coverage\": false, \"show_contexts\": false}, \"files\": {\"03-development/src/taskq_api/api/tasks.py\": {\"executed_lines\": [13, 15, 17, 19, 20, 21, 22, 23, 24, 26, 29, 30, 40, 43, 44, 56, 57, 59, 60, 67, 68, 74, 82, 83, 93, 96, 97, 111, 112, 115], \"summary\": {\"covered_lines\": 30, \"num_statements\": 30, \"percent_covered\": 100.0, \"percent_covered_display\": \"100\", \"missing_lines\": 0}, \"03-development/src/taskq_api/service/tasks.py\": {\"executed_lines\": [13, 15, 16, 17, 19, 20, 23, 27, 38, 45, 46, 47, 48, 49, 50, 51, 52, 55, 62, 63, 64, 65, 66, 69, 82, 83, 84, 85, 88, 91, 103, 104, 105, 106, 109], \"summary\": {\"covered_lines\": 35, \"num_statements\": 35, \"percent_covered\": 100.0, \"missing_lines\": 0}, \"totals\": {\"covered_lines\": 65, \"num_statements\": 65, \"percent_covered\": 100.0, \"percent_covered_display\": \"100\", \"missing_lines\": 0}}"
+    },
+    "architecture_constraints": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "c9b58997faed2d51e2205a54ed2181a688a3657e2d563afe50497bb8d31efb38",
+      "bytes": 100,
+      "head": "Analyzed 19 files, 13 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+    }
+  },
+  "composite_score": 100.0,
+  "verdict": "PASS",
+  "passed": true,
+  "spec_undelivered": [],
+  "spec_declared": 0,
+  "measurement_scope": {
+    "weight_covered": 0.75,
+    "weight_total": 1.0,
+    "dimensions_scored": [
+      "architecture_constraints",
+      "linting",
+      "type_safety"
+    ],
+    "dimensions_unscored": [
+      "test_coverage"
+    ],
+    "dimensions_disabled": []
+  }
+}

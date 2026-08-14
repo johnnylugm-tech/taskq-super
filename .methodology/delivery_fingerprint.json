@@ -1,0 +1,34 @@
+{
+  "acceptance_criteria": {
+    "parse_gap": 1,
+    "uncited_by_test_spec": 0,
+    "unnumbered": 0
+  },
+  "architecture": {
+    "declared_only": [
+      "no_circular_dependencies",
+      "sqlalchemy_only_in_repository",
+      "no_string_sql_concatenation",
+      "no_shell_true_no_eval_no_exec"
+    ],
+    "modules_outside_every_contract": []
+  },
+  "coverage": {
+    "omit": [],
+    "statements_measured": 0,
+    "statements_omitted": 0
+  },
+  "stubbed_boundaries": {
+    "count": 1,
+    "modules": [
+      "taskq_api.repository.session"
+    ]
+  },
+  "verify_system": {
+    "obligations_unmet": [],
+    "reach_status": "unmeasured",
+    "status": "missing",
+    "swallowed": null,
+    "tautological": null
+  }
+}
