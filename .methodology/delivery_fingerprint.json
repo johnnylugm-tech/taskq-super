@@ -15,7 +15,7 @@
   },
   "coverage": {
     "omit": [],
-    "statements_measured": 0,
+    "statements_measured": 604,
     "statements_omitted": 0
   },
   "stubbed_boundaries": {
