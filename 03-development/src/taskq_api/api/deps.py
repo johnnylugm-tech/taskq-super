@@ -59,8 +59,12 @@ def _enforce_scope(x_api_key: str | None, scope: str) -> dict:
     # exists (a 401 would already have been raised above for unknown keys).
     admission = ratelimit_service.check_rate_limit(x_api_key)
     if admission.get("allow") is not True:
-        retry_after = int(admission.get("retry_after", 1))
         # [FR-05] AC-5.2 — Retry-After is a positive integer (seconds).
+        # `check_rate_limit` already clamps to >= 1; the `int()` and
+        # `max(1, …)` here are belt-and-braces to keep the header
+        # contract intact even if a future service implementation
+        # returns a smaller value.
+        retry_after = int(admission.get("retry_after", 1))
         raise problem(
             429,
             "Too Many Requests",
