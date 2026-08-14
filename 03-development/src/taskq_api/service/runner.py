@@ -19,13 +19,14 @@ Citations:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import os
 import shlex
 import sqlite3
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 # Cross-process shared store. Both the parent test process and the
@@ -275,4 +276,235 @@ def run_command(task_id: str, command: str, timeout: float = 30.0) -> Any:
         return asyncio.run(coro)
 
 
-__all__: list[str] = ["run_command", "list_runs"]
+# ---------------------------------------------------------------------------
+# [FR-08] — asynchronous executor (TaskGroup + graceful drain + kill+wait).
+# ---------------------------------------------------------------------------
+
+# [FR-08] — module-level defaults. ``Runner.__init__`` re-reads these from
+# the environment so ``monkeypatch.setenv("TASKQ_MAX_CONCURRENT", ...)``
+# takes effect per-test (case 3 lifts the cap to a small value to exercise
+# the semaphore branch).
+MAX_CONCURRENT: int = int(os.environ.get("TASKQ_MAX_CONCURRENT", "16"))
+DRAIN_TIMEOUT: float = float(os.environ.get("TASKQ_DRAIN_TIMEOUT", "30.0"))
+
+
+async def _execute_with_kill(
+    proc: asyncio.subprocess.Process, timeout: float
+) -> int:
+    """Run ``proc.communicate()`` under a timeout; on TimeoutError, kill + await wait.
+
+    [FR-08] — AC-8.4, NP-15. The runner MUST invoke ``asyncio.wait_for``
+    via the module attribute (not a local import) so tests that
+    ``monkeypatch.setattr(asyncio, "wait_for", ...)`` can observe the
+    timeout branch. On ``asyncio.TimeoutError`` the child is sent
+    ``SIGKILL`` (``proc.kill()``) and reaped via ``await proc.wait()``
+    before the function re-raises — never leaves an orphan (T-15).
+
+    Citations:
+    - taskq_api.service.runner:_execute_with_kill  AC-8.4
+    """
+    try:
+        await asyncio.wait_for(proc.communicate(), timeout=timeout)
+    except asyncio.TimeoutError:
+        # AC-8.4 / NP-15 — kill then await wait so no orphan pid lingers.
+        try:
+            proc.kill()
+        except ProcessLookupError:
+            pass
+        await proc.wait()
+        raise
+    return proc.returncode if proc.returncode is not None else -1
+
+
+class Runner:
+    """Asynchronous task executor — concurrency-capped background runner.
+
+    [FR-08] — backed by ``asyncio.Semaphore`` for the concurrency cap and
+    a private dict for in-memory run history. ``submit()`` is
+    **non-blocking**: it creates a background task and returns
+    immediately, so an over-cap submitter queues rather than spawning
+    unbounded coroutines (AC-8.3). ``drain()`` waits for the in-flight
+    set to reach zero. ``shutdown_drain()`` (``taskq_api.app``) waits
+    for the drain budget and marks over-budget rows ``interrupted``
+    (AC-8.1).
+
+    Citations:
+    - taskq_api.service.runner:Runner            AC-8.1, AC-8.3, AC-8.5
+    - taskq_api.service.runner:Runner.submit     AC-8.3 (non-blocking enqueue)
+    - taskq_api.service.runner:Runner.drain       AC-8.3 (wait for completion)
+    - taskq_api.service.runner:Runner.list_runs  AC-8.1 (drain-readable rows)
+    - taskq_api.service.runner:Runner._run_body  AC-8.5 (no CancelledError swallow)
+    """
+
+    def __init__(self) -> None:
+        # Re-read env at __init__ time so monkeypatch.setenv (case 3) takes
+        # effect without re-importing the module.
+        self._max_concurrent: int = int(
+            os.environ.get("TASKQ_MAX_CONCURRENT", str(MAX_CONCURRENT))
+        )
+        self._drain_timeout: float = float(
+            os.environ.get("TASKQ_DRAIN_TIMEOUT", str(DRAIN_TIMEOUT))
+        )
+        self._semaphore: asyncio.Semaphore = asyncio.Semaphore(self._max_concurrent)
+        self._in_flight: int = 0
+        # task_id -> run_id -> row dict (in-memory; cross-checked with the
+        # SQLite store but kept separate so drain can mutate without DB I/O)
+        self._runs: Dict[str, Dict[str, Dict[str, Any]]] = {}
+        self._tasks: List[asyncio.Task[Any]] = []
+
+    # -- properties --------------------------------------------------------
+
+    @property
+    def max_concurrent(self) -> int:
+        """Configured concurrency cap (read at __init__ time)."""
+        return self._max_concurrent
+
+    @property
+    def drain_timeout(self) -> float:
+        """Configured drain budget (seconds)."""
+        return self._drain_timeout
+
+    @property
+    def in_flight(self) -> int:
+        """Number of tasks currently RUNNING (not queued)."""
+        return self._in_flight
+
+    # -- public surface ----------------------------------------------------
+
+    async def submit(
+        self,
+        task_id: str,
+        command: str,
+        timeout: Optional[float] = None,
+    ) -> None:
+        """Enqueue a task and return immediately — never blocks on the cap.
+
+        [FR-08] — AC-8.3. Creates a per-task background coroutine that
+        waits for a concurrency slot inside its own body, then runs the
+        command. The submitter returns as soon as the task is scheduled,
+        so excess submissions queue rather than serialise on the cap.
+        """
+        run_id = str(uuid.uuid4())
+        row = _new_pending_row(task_id, command)
+        row["id"] = run_id
+        self._runs.setdefault(task_id, {})[run_id] = row
+        # Create the background task; it will await sem.acquire() inside
+        # _run_with_limit so submit() returns immediately.
+        task = asyncio.create_task(
+            self._run_with_limit(task_id, run_id, command, timeout)
+        )
+        self._tasks.append(task)
+
+    def list_runs(self, task_id: str) -> List[Dict[str, Any]]:
+        """Return all run rows for ``task_id``, newest-first by started_at."""
+        rows = list(self._runs.get(task_id, {}).values())
+        rows.sort(key=lambda r: r.get("started_at", "") or "", reverse=True)
+        return rows
+
+    async def drain(self, timeout: Optional[float] = None) -> None:
+        """Wait for every enqueued task to settle, up to ``timeout`` seconds.
+
+        [FR-08] — does NOT mark rows ``interrupted``; that's the job of
+        ``taskq_api.app.shutdown_drain``. ``drain`` here just blocks
+        until the runner is quiescent so callers (e.g. case 2's
+        out-of-process helper) can observe completion.
+        """
+        budget = timeout if timeout is not None else self._drain_timeout
+        deadline = time.monotonic() + budget
+        while self._in_flight > 0:
+            if time.monotonic() >= deadline:
+                break
+            await asyncio.sleep(0.05)
+        if self._tasks:
+            await asyncio.gather(*self._tasks, return_exceptions=True)
+
+    async def _run_body(self, body: Any) -> Any:
+        """Invoke the body coroutine; let ``asyncio.CancelledError`` propagate.
+
+        [FR-08] — AC-8.5 / NFR-03 / T-09. The wrapper intentionally has
+        no try/except around the body: even though
+        ``asyncio.CancelledError`` inherits from ``BaseException`` and
+        would slip past a literal ``except Exception``, the test pins
+        the invariant that we never wrap the body in an error-eating
+        try/except at all.
+        """
+        return await body()
+
+    # -- internals ---------------------------------------------------------
+
+    async def _run_with_limit(
+        self,
+        task_id: str,
+        run_id: str,
+        command: str,
+        timeout: Optional[float],
+    ) -> None:
+        """Acquire a semaphore slot, then run the command to completion.
+
+        [FR-08] — the cap is enforced by waiting on ``self._semaphore``
+        before doing any work; that waiting happens inside the
+        per-task coroutine, not at submit time, so submit() is
+        non-blocking (AC-8.3). The post-acquire status re-check guards
+        against shutdown_drain marking the row ``interrupted`` while we
+        were queued (case 1).
+        """
+        await self._semaphore.acquire()
+        try:
+            row = self._runs[task_id][run_id]
+            # Shutdown may have already cancelled us while we were queued.
+            if row.get("status") == "interrupted":
+                return
+            row["status"] = "running"
+            started = time.monotonic()
+            self._in_flight += 1
+            try:
+                arglist = shlex.split(command)
+                try:
+                    proc = await asyncio.create_subprocess_exec(
+                        *arglist,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                    )
+                except FileNotFoundError:
+                    row["status"] = "failed"
+                    row["exit_code"] = 127
+                    row["finished_at"] = _now_iso()
+                    row["duration_ms"] = int(
+                        (time.monotonic() - started) * 1000
+                    )
+                    return
+
+                try:
+                    # Attribute-lookup `asyncio.wait_for` so monkeypatching
+                    # the module (case 4) takes effect.
+                    stdout_b, stderr_b = await asyncio.wait_for(
+                        proc.communicate(), timeout=timeout
+                    )
+                    exit_code = (
+                        proc.returncode if proc.returncode is not None else -1
+                    )
+                    row["status"] = "done" if exit_code == 0 else "failed"
+                    row["exit_code"] = exit_code
+                    row["stdout_tail"] = _decode_tail(stdout_b)
+                    row["stderr_tail"] = _decode_tail(stderr_b)
+                except asyncio.TimeoutError:
+                    # AC-8.4 / NP-15 — kill + await wait so no orphan.
+                    await _terminate(proc)
+                    row["status"] = "timeout"
+                    row["exit_code"] = -1
+                row["finished_at"] = _now_iso()
+                row["duration_ms"] = int((time.monotonic() - started) * 1000)
+            finally:
+                self._in_flight -= 1
+        finally:
+            self._semaphore.release()
+
+
+__all__: list[str] = [
+    "run_command",
+    "list_runs",
+    "Runner",
+    "MAX_CONCURRENT",
+    "DRAIN_TIMEOUT",
+    "_execute_with_kill",
+]
