@@ -1,8 +1,8 @@
 # Harness Methodology — Session Handover
 
-**Checkpoint**: `P1-exit-20260813`  
+**Checkpoint**: `P1-exit-20260814`  
 **Phase**: P1 — Spec & Discovery  
-**Generated**: 2026-08-13T19:17:52Z
+**Generated**: 2026-08-14T05:25:50Z
 
 > ⚠️  **開始下一個工作階段前，請先執行 `/compact` 壓縮上下文**，再從「接下來的工作」繼續。
 
@@ -40,7 +40,7 @@ cat .methodology/phase2_plan.md
 | 欄位 | 值 |
 |------|----|
 | Remote | `https://github.com/johnnylugm-tech/taskq-super.git` |
-| Branch | `main` |
+| Branch | `chore/harness-bump-22a373a3` |
 | State | `phase=1 state=RUNNING` |
 | Plan | `.methodology/phase2_plan.md` |
 
@@ -55,7 +55,7 @@ P1 phase completed — pushed for record.
 
 - `01-requirements/SRS.md` ✅ (1332L)
 - `01-requirements/SPEC_TRACKING.md` ✅ (93L)
-- `01-requirements/TRACEABILITY_MATRIX.md` ✅ (149L)
+- `01-requirements/TRACEABILITY_MATRIX.md` ✅ (152L)
 
 ## 目前執行狀況
 
@@ -75,8 +75,28 @@ P1 phase completed — pushed for record.
   - ? / persist-TEST_INVENTORY.yaml-try1: **complete**
   - ? / loadpy-01-requirements-TRACEABILITY_MATRIX-md-a1: **complete**
   - ? / forward-ref-check: **complete**
+  - ? / push-1: **complete**
+  - ? / persist-SRS.md-try1: **complete**
+  - ? / sbr-1-r1: **complete**
+  - ? / b-srs-r1: **complete**
+  - ? / loadpy-01-requirements-SPEC_TRACKING-md-a1: **complete**
+  - ? / a-spec-tracking-r2: **complete**
+  - ? / loadpy-01-requirements-SRS-md-a1: **complete**
 
 **Recently Committed Files:**
+  - `harness`
+  - `.methodology/.state.lock`
+  - `.methodology/agent_b_approvals/SPEC_TRACKING.md.json`
+  - `.methodology/agent_b_approvals/SRS.md.json`
+  - `.methodology/agent_b_approvals/TEST_INVENTORY.yaml.json`
+  - `.methodology/agent_b_approvals/TRACEABILITY_MATRIX.md.json`
+  - `.methodology/state.json`
+  - `01-requirements/SPEC_TRACKING.md`
+  - `01-requirements/SRS.md`
+  - `01-requirements/TRACEABILITY_MATRIX.md`
+  - `HANDOVER.md`
+  - `TEST_INVENTORY.yaml`
+  - `srs_vs_spec_diff.json`
   - `.github/workflows/harness_quality_gate.yml`
   - `.gitignore`
   - `.gitmodules`
@@ -84,19 +104,6 @@ P1 phase completed — pushed for record.
   - `.methodology/phase2_plan.md`
   - `.methodology/phase3_plan.md`
   - `.methodology/phase4_plan.md`
-  - `.methodology/phase5_plan.md`
-  - `.methodology/phase6_plan.md`
-  - `.methodology/phase7_plan.md`
-  - `.methodology/phase8_plan.md`
-  - `.methodology/phase9_plan.md`
-  - `.methodology/plan_status.md`
-  - `.methodology/state.json`
-  - `.methodology/trace/attestation.json`
-  - `01-requirements/SPEC_TRACKING.md`
-  - `01-requirements/SRS.md`
-  - `01-requirements/TRACEABILITY_MATRIX.md`
-  - `02-architecture/SAD.md`
-  - `02-architecture/TEST_SPEC.md`
 
 ## 接下來的工作
 

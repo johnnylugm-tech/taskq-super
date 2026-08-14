@@ -52,7 +52,9 @@ authoritative score is `quality_manifest.json`.
 
 ## Spec <-> Code Mapping
 
-> Per-module ownership recorded in SRS.md §1.2, §2.10, and §9.
+> Per-module ownership recorded in SRS.md §2.10 (high-risk modules) and
+> §2.13 (Module layout — canonical SPEC.md §6). §1.2 is Scope, §9 is Glossary;
+> neither carries per-module ownership.
 
 | SRS Section | Code File | Function/Class | Lines | Status |
 |-------------|-----------|----------------|-------|--------|
@@ -104,6 +106,7 @@ authoritative score is `quality_manifest.json`.
 | `taskq_api/service/runner.py` (executor, shutdown, run_with_timeout) | `03-development/tests/integration/test_graceful_drain.py` + `test_async_correctness.py` | FR-08 AC-8.1..AC-8.5 (drain, no orphan, concurrency cap, kill+wait, CancelledError propagation) | DRAFT |
 | `taskq_api/api/health.py` | `03-development/tests/integration/test_healthz_readyz.py` + `test_metrics.py` | FR-09 AC-9.1..AC-9.6 (healthz 200, readyz 503 on DB-down or migration-behind-head, metrics admin-only, fail-closed) | DRAFT |
 | `taskq_api/errors.py` (problem_json, handlers) | `03-development/tests/integration/test_problem_json.py` | FR-10 AC-10.1..AC-10.6 (content-type, field allowlist, no-detail-leak, correlation_id echo, every error code 401/403/404/409/422/429/503/500) | DRAFT |
+| `taskq_api/repository/session.py` (rollback) + `taskq_api/service/runner.py` (CancelledError) + `taskq_api/api/health.py` (readyz 503 on DB-down) + `migrations/versions/*` (rollback-on-failure) | `03-development/tests/unit/test_async_correctness.py` + `03-development/tests/integration/test_healthz_readyz.py` (DB-down case) + `03-development/tests/integration/test_migrations_roundtrip.py` (downgrade-on-failure) + `ast-error-handling` scan over `03-development/src/` | NFR-03 AC-N3.1..AC-N3.5 (zero `bare_except`/`broad_swallow`/`except_base_exception`; CancelledError propagates past `except Exception`; /readyz 503 + RFC 7807 detail with no busy-loop; rollback leaves no row on follow-up read; failing migration leaves DB at previous revision) | DRAFT |
 | `taskq_api/api/*.py` (handlers) | `03-development/tests/integration/*.py` (driven via `httpx.AsyncClient(transport=ASGITransport(app))`) | NFR-10 AC-N10.1..AC-N10.4 (≥80% coverage, no direct handler calls, every error code, migration in integration) | DRAFT |
 | `03-development/src/taskq_api/**` (security scan) | `bandit -r 03-development/src/` + grep `shell=True`/`eval(`/`exec(` + grep SQL concat | NFR-02 AC-N2.1, AC-N2.2, AC-N2.4 (0 hits, 0 bandit HIGH/MED) | DRAFT |
 | `03-development/src/taskq_api/**` (redaction filter) | `03-development/tests/unit/test_redaction.py` | NFR-04 AC-N4.1..AC-N4.4 (regex redaction, no TASKQ_DB_URL leak, one-print API key) | DRAFT |
@@ -125,10 +128,10 @@ authoritative score is `quality_manifest.json`.
 | NFR coverage in matrix | 100% (12/12) | 12/12 | PASS |
 | FR <-> Spec citation (bare `SPEC.md` root) | 100% (10/10) | 10/10 | PASS |
 | NFR <-> Spec citation (bare `SPEC.md` root) | 100% (12/12) | 12/12 | PASS |
-| Spec <-> Code mapping (SRS §1.2 / §2.10 owner modules) | 100% (23/23) | 23/23 | PASS |
-| Code <-> Test mapping (per-module test surface) | 100% (22/22) | 22/22 | PASS |
+| Spec <-> Code mapping (SRS §2.10 / §2.13 owner modules) | 100% (23/23 rows) | 23/23 | PASS |
+| Code <-> Test mapping (per-module test surface, distinct req IDs) | 100% (22/22 req IDs) | 22/22 | PASS |
 | Acceptance-criterion hooks (AC-NN.M identifiers) | 22/22 FRs covered | 22/22 | PASS |
-| Test coverage (Phase 3+) | >=80% line coverage (P3: >=70%) | TBD (Phase 3 measurement) | PENDING |
+| Test coverage (Phase 3+) | TOTAL 100% per SPEC.md §8 #2; integration ≥80% per SPEC.md §8 #3 (NFR-10); P3 harness phase-gate ≥70% | TBD (Phase 3 measurement) | PENDING |
 
 ---
 
