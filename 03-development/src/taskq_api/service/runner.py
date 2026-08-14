@@ -1,25 +1,31 @@
 """Task run executor.
 
-[FR-02] — executes tasks via `asyncio.create_subprocess_exec(*shlex.split(
-command))` (T-03: the shell-passing flag is forbidden), enforces
-`TASKQ_TASK_TIMEOUT`, and persists the lifecycle
-`pending → running → done | failed | timeout` into a SQLite file. Rows
-carry `exit_code`, `stdout_tail`, `stderr_tail`, `finished_at`, and
-`duration_ms`. The on-disk SQLite is shared between the parent test
-process and the FR-02 out-of-process child run via the `TASKQ_RUNNER_DB`
-env var so AC-2.5 (subprocess-mode out_of_process) can observe a
-persisted row written from the subprocess.
+This module carries two FRs on a single disk path because both deal with
+subprocess execution and share helpers (``_terminate``, ``_decode_tail``,
+the SQLite schema). The split below is logical, not physical:
+
+[FR-02] — ``run_command`` / ``list_runs`` / ``_run_async``. Synchronous
+entry point that persists the lifecycle
+``pending → running → done | failed | timeout`` into a SQLite file shared
+across processes via ``TASKQ_RUNNER_DB``. Cited by AC-2.1..AC-2.6.
+
+[FR-08] — ``Runner`` / ``MAX_CONCURRENT`` / ``DRAIN_TIMEOUT`` /
+``_execute_with_kill``. Asynchronous TaskGroup-style executor with a
+configurable concurrency cap and graceful drain. Cited by AC-8.1, AC-8.3,
+AC-8.4, AC-8.5. ``shutdown_drain`` (the FastAPI lifespan hook) lives in
+``taskq_api.app`` and re-reads ``DRAIN_TIMEOUT`` from this module.
 
 Citations:
-- taskq_api.service.runner:run_command   AC-2.1 / AC-2.2 / AC-2.3 / AC-2.4 / AC-2.5
-- taskq_api.service.runner:list_runs     AC-2.6 (history, finished_at desc)
-- taskq_api.service.runner:_run_async    AC-2.5 (kill+await no orphan)
+- taskq_api.service.runner:run_command      AC-2.1..AC-2.5
+- taskq_api.service.runner:list_runs        AC-2.6
+- taskq_api.service.runner:_run_async       AC-2.5
+- taskq_api.service.runner:Runner           AC-8.1, AC-8.3, AC-8.5
+- taskq_api.service.runner:_execute_with_kill  AC-8.4
 """
 
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import os
 import shlex
 import sqlite3
@@ -300,6 +306,10 @@ async def _execute_with_kill(
     ``SIGKILL`` (``proc.kill()``) and reaped via ``await proc.wait()``
     before the function re-raises — never leaves an orphan (T-15).
 
+    ``_terminate`` already does kill+wait; we call it here so the kill+
+    reap path lives in exactly one place, then re-raise the TimeoutError
+    so the caller still observes the timeout event.
+
     Citations:
     - taskq_api.service.runner:_execute_with_kill  AC-8.4
     """
@@ -307,11 +317,7 @@ async def _execute_with_kill(
         await asyncio.wait_for(proc.communicate(), timeout=timeout)
     except asyncio.TimeoutError:
         # AC-8.4 / NP-15 — kill then await wait so no orphan pid lingers.
-        try:
-            proc.kill()
-        except ProcessLookupError:
-            pass
-        await proc.wait()
+        await _terminate(proc)
         raise
     return proc.returncode if proc.returncode is not None else -1
 
@@ -439,7 +445,7 @@ class Runner:
         command: str,
         timeout: Optional[float],
     ) -> None:
-        """Acquire a semaphore slot, then run the command to completion.
+        """Acquire a semaphore slot, then drive the assigned run to completion.
 
         [FR-08] — the cap is enforced by waiting on ``self._semaphore``
         before doing any work; that waiting happens inside the
@@ -454,50 +460,88 @@ class Runner:
             # Shutdown may have already cancelled us while we were queued.
             if row.get("status") == "interrupted":
                 return
-            row["status"] = "running"
-            started = time.monotonic()
-            self._in_flight += 1
-            try:
-                arglist = shlex.split(command)
-                try:
-                    proc = await asyncio.create_subprocess_exec(
-                        *arglist,
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE,
-                    )
-                except FileNotFoundError:
-                    row["status"] = "failed"
-                    row["exit_code"] = 127
-                    row["finished_at"] = _now_iso()
-                    row["duration_ms"] = int(
-                        (time.monotonic() - started) * 1000
-                    )
-                    return
-
-                try:
-                    # Attribute-lookup `asyncio.wait_for` so monkeypatching
-                    # the module (case 4) takes effect.
-                    stdout_b, stderr_b = await asyncio.wait_for(
-                        proc.communicate(), timeout=timeout
-                    )
-                    exit_code = (
-                        proc.returncode if proc.returncode is not None else -1
-                    )
-                    row["status"] = "done" if exit_code == 0 else "failed"
-                    row["exit_code"] = exit_code
-                    row["stdout_tail"] = _decode_tail(stdout_b)
-                    row["stderr_tail"] = _decode_tail(stderr_b)
-                except asyncio.TimeoutError:
-                    # AC-8.4 / NP-15 — kill + await wait so no orphan.
-                    await _terminate(proc)
-                    row["status"] = "timeout"
-                    row["exit_code"] = -1
-                row["finished_at"] = _now_iso()
-                row["duration_ms"] = int((time.monotonic() - started) * 1000)
-            finally:
-                self._in_flight -= 1
+            await self._execute_assigned(task_id, run_id, command, timeout)
         finally:
             self._semaphore.release()
+
+    async def _execute_assigned(
+        self,
+        task_id: str,
+        run_id: str,
+        command: str,
+        timeout: Optional[float],
+    ) -> None:
+        """Run one assigned task end-to-end and mutate its row in place.
+
+        [FR-08] — extracted from ``_run_with_limit`` so the semaphore
+        gating and the per-task subprocess lifecycle can be reasoned
+        about independently. Tracks the running lifecycle
+        (``running`` → ``done`` / ``failed`` / ``timeout``), enforces
+        the timeout via ``asyncio.wait_for``, and on TimeoutError does
+        kill+wait so no orphan pid is left behind (AC-8.4 / NP-15).
+        """
+        row = self._runs[task_id][run_id]
+        row["status"] = "running"
+        started = time.monotonic()
+        self._in_flight += 1
+        try:
+            await self._run_subprocess(row, command, timeout, started)
+        finally:
+            self._in_flight -= 1
+
+    async def _run_subprocess(
+        self,
+        row: Dict[str, Any],
+        command: str,
+        timeout: Optional[float],
+        started: float,
+    ) -> None:
+        """Launch the subprocess, enforce timeout, and update ``row``.
+
+        [FR-08] — extracted so the timeout-kill + row-finalisation logic
+        is visible without scrolling past the semaphore gate. The
+        ``asyncio.wait_for`` call uses the module attribute (not a local
+        import) so ``monkeypatch.setattr(asyncio, "wait_for", ...)`` from
+        case 4 takes effect. ``_terminate`` owns the kill+wait so the
+        reaping path lives in exactly one place.
+        """
+        try:
+            arglist = shlex.split(command)
+            proc = await asyncio.create_subprocess_exec(
+                *arglist,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+        except FileNotFoundError:
+            row["status"] = "failed"
+            row["exit_code"] = 127
+            row["stdout_tail"] = ""
+            row["stderr_tail"] = ""
+            row["finished_at"] = _now_iso()
+            row["duration_ms"] = int((time.monotonic() - started) * 1000)
+            return
+
+        try:
+            stdout_b, stderr_b = await asyncio.wait_for(
+                proc.communicate(), timeout=timeout
+            )
+            exit_code = (
+                proc.returncode if proc.returncode is not None else -1
+            )
+            row["status"] = "done" if exit_code == 0 else "failed"
+            row["exit_code"] = exit_code
+            row["stdout_tail"] = _decode_tail(stdout_b)
+            row["stderr_tail"] = _decode_tail(stderr_b)
+        except asyncio.TimeoutError:
+            # AC-8.4 / NP-15 — kill + await wait so no orphan.
+            await _terminate(proc)
+            row["status"] = "timeout"
+            row["exit_code"] = -1
+            row["stdout_tail"] = ""
+            row["stderr_tail"] = ""
+
+        row["finished_at"] = _now_iso()
+        row["duration_ms"] = int((time.monotonic() - started) * 1000)
 
 
 __all__: list[str] = [

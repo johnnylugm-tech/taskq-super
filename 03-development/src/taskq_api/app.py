@@ -27,6 +27,14 @@ from taskq_api.api.health import healthz_router, readyz_router
 from taskq_api.errors import install_exception_handlers
 from taskq_api.service.runner import DRAIN_TIMEOUT  # [FR-08]
 
+# Status values that indicate a run is still progressing (and therefore
+# eligible to be marked `interrupted` if the drain budget expires).
+_LIVE_STATUSES: frozenset[str] = frozenset({"pending", "running"})
+
+# Poll interval for the shutdown-drain wait loop. Short enough that the
+# drain budget is respected within ~50ms; long enough not to busy-spin.
+_DRAIN_POLL_INTERVAL: float = 0.05
+
 
 def create_app() -> FastAPI:
     """Build the FastAPI app, register routers + problem+json handlers."""
@@ -64,12 +72,12 @@ async def shutdown_drain(
     while runner.in_flight > 0:
         if time.monotonic() >= deadline:
             break
-        await asyncio.sleep(0.05)
+        await asyncio.sleep(_DRAIN_POLL_INTERVAL)
     # Mark every still-pending or still-running row as interrupted.
     # AC-8.1 — over-budget tasks are marked `interrupted`.
     for task_runs in runner._runs.values():  # type: ignore[attr-defined]
         for row in task_runs.values():
-            if row.get("status") in ("pending", "running"):
+            if row.get("status") in _LIVE_STATUSES:
                 row["status"] = "interrupted"
 
 
