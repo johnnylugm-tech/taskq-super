@@ -1,0 +1,63 @@
+{
+  "classified_at": "2026-08-14T12:48:59Z",
+  "cli_tools": [
+    "alembic",
+    "bandit",
+    "fastapi",
+    "httpx",
+    "lint-imports",
+    "make",
+    "mutmut",
+    "pip-licenses",
+    "pydantic",
+    "pytest",
+    "pytest_benchmark",
+    "pytest_cov",
+    "python3.11",
+    "radon",
+    "ruff",
+    "scancode",
+    "sqlalchemy",
+    "uvicorn"
+  ],
+  "enforcer_sha": "6ab5be002d7ba82b4380044de3257423de1e421f-dirty",
+  "env_vars": {
+    "dev_opt_in": [],
+    "has_default": [
+      "TASKQ_CORS_ORIGINS",
+      "TASKQ_DB_POOL_SIZE",
+      "TASKQ_DB_URL",
+      "TASKQ_DRAIN_TIMEOUT",
+      "TASKQ_HOST",
+      "TASKQ_LOG_FORMAT",
+      "TASKQ_LOG_LEVEL",
+      "TASKQ_MAX_CONCURRENT",
+      "TASKQ_PORT",
+      "TASKQ_RATE_BURST",
+      "TASKQ_RATE_PER_SEC",
+      "TASKQ_TASK_TIMEOUT"
+    ],
+    "mandatory": []
+  },
+  "infra_services": {
+    "docker_compose_services": [],
+    "required": [
+      {
+        "checked_via": "python -c 'import sqlite3; sqlite3.connect(\":memory:\").execute(\"CREATE TABLE t(id INT)\")'",
+        "fix": null,
+        "name": "sqlite",
+        "reachable": true,
+        "type": "SQLite (Python stdlib)"
+      },
+      {
+        "checked_via": "psql -h localhost -p 5432 -U postgres -c 'SELECT 1'",
+        "fix": "Dev/test target is SQLite per SPEC.md §2.1. Production PostgreSQL connection will be supplied at deploy time via TASKQ_DB_URL; not required for in-process Phase 3 build/test cycle.",
+        "name": "postgres",
+        "reachable": false,
+        "type": "PostgreSQL 18 (production target)"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "source_sha256": "f36531aabef16b99a284ce6ad946e62d2832c8fa89104b360f91778ce6c212f3"
+}

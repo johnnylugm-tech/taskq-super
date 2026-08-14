@@ -11,8 +11,15 @@
       "timestamp": "2026-08-14T05:34:11.639469+00:00"
     },
     "2": {
-      "sha": "492e3b0ae723bb7f93aa98b23f0c3bfcb56861c2",
-      "timestamp": "2026-08-14T10:49:35.710219+00:00"
+      "sha": "13b37337880e807c36b4966a55bd1ffc9efd4bca",
+      "timestamp": "2026-08-14T10:52:28.447180+00:00",
+      "enforcer_sha": "6ab5be002d7ba82b4380044de3257423de1e421f",
+      "enforcer_surface": {
+        "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+        "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+        "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+      },
+      "delivered_tree_sha256": "acf67386042bda290d0105476ec31a2b206cab00d5deef9328da2cc8f4214cf7"
     }
   },
   "test_inventory_checksum": "40507aed5f48d9604573cc34b04181d7aa4f8a533de74a3ddbab7fc9ab61d1d3",
