@@ -579,4 +579,21 @@ __all__ = [
     "test_unit_check_rate_limit_retry_after_matches_refill_window",
     "test_unit_check_rate_limit_per_token_isolation",
     "test_unit_check_rate_limit_inproc_subprocess_branch",
+    "test_unit_check_rate_limit_blank_token_bypass",
 ]
+
+
+def test_unit_check_rate_limit_blank_token_bypass() -> None:
+    """Coverage-filling branch: ``check_rate_limit`` with an empty/blank
+    token short-circuits to ``{"allow": True, "remaining": DEFAULT_BURST}``
+    without touching the bucket. The branch exists so anonymous probes
+    (e.g. unauthenticated preflight) never get rate-limited by accident
+    — the routing-layer exemption for ``/healthz``/``/readyz`` is the
+    primary defense, this branch is a backstop.
+    """
+    # NP-03
+    # NFR-05 — public-API docstring coverage on `check_rate_limit`
+    for empty in (None, ""):
+        result = check_rate_limit(empty)  # type: ignore[arg-type]
+        assert result.get("allow") is True, result
+        assert result.get("remaining") == DEFAULT_BURST, result
