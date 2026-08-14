@@ -295,6 +295,21 @@ def test_fr03_cli_main_key_create_branch_prints_plaintext_inproc(
     assert str(len(non_empty)) == plaintext_lines, captured
 
 
+def test_fr03_valid_key_and_scope_returns_record() -> None:
+    """AC-3.1 happy path: a valid key with matching scope flows through
+    `deps.require_scope` and returns the record dict.
+
+    Covers `api/deps.py:45` (the success `return record` line).
+
+    [FR-03] — NFR-02.
+    """
+    # NFR-02
+    # GET /v1/tasks with the admin key authenticates and renders the task
+    # list — the auth path is exercised end-to-end.
+    resp = _request("GET", "/v1/tasks", api_key="sk-test-admin-key")
+    assert resp.status_code == 200, resp.text
+
+
 def test_fr03_cli_main_default_branch_calls_uvicorn(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -364,6 +379,44 @@ def test_fr03_insufficient_scope_branch_returns_marker(
     record = verify_key("sk-test-read-key", "admin")
     assert isinstance(record, dict)
     assert record.get("_insufficient_scope") is True
+
+
+def test_fr03_missing_x_api_key_header_returns_401() -> None:
+    """AC-3.1 — A request with NO X-API-Key header returns 401 + problem+json.
+
+    Covers `api/deps.py:36` (the `if not x_api_key` branch).
+    [FR-03] — NFR-02.
+    """
+    # NFR-02
+    resp = _request("POST", "/v1/tasks", json_body={"name": "x", "command": "echo"})
+    assert resp.status_code == 401, resp.text
+    assert _content_type(resp) == "application/problem+json"
+
+
+def test_fr03_known_key_insufficient_scope_returns_403(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """FR-04 / NFR-02 — A known key without required scope returns 403 + problem+json.
+
+    Covers `api/deps.py:42-44` (the `if record.get(_INSUFFICIENT_SCOPE_MARKER)`
+    branch).
+    [FR-03] / [FR-04]
+    """
+    # NFR-02
+    from taskq_api.api import deps as deps_module
+
+    monkeypatch.setattr(
+        deps_module,
+        "verify_key",
+        lambda presented_key, required_scope: {  # noqa: ARG005
+            "_insufficient_scope": True,
+            "scopes": ["read"],
+            "key_id": "k",
+        },
+    )
+    resp = _request("POST", "/v1/tasks", api_key="k", json_body={"name": "x", "command": "echo"})
+    assert resp.status_code == 403, resp.text
+    assert _content_type(resp) == "application/problem+json"
 
 
 # ---------------------------------------------------------------------------
