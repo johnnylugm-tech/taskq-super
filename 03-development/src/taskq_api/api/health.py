@@ -27,14 +27,14 @@ Citations:
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Sequence
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from taskq_api.api.deps import require_scope
-from taskq_api.repository import session as session_mod
+from taskq_api.repository import rate_repo, session as session_mod
 
 # [FR-03] AC-3.6 — both liveness and readiness are at top-level (no prefix).
 healthz_router = APIRouter(tags=["health"])
@@ -171,53 +171,73 @@ async def metrics_endpoint() -> dict:
     spec promises (``tasks`` by status, ``latency_ms`` percentiles,
     ``rate_limit_rejections``).
 
+    The rate-limit rejection count comes from ``rate_repo``'s lifetime
+    counter (bumped on every admission denial in
+    ``taskq_api.repository.rate_repo.try_consume``); the rest of the
+    counters are derived from a single repository scan so they share a
+    consistent snapshot.
+
     Citations:
     - taskq_api.api.health:metrics_endpoint  per FR-09 / AC-9.5
     """
     # [FR-09]
-    task_counts: Dict[str, int] = {}
-    latency_ms: Dict[str, float] = {}
-    rate_limit_rejections: int = 0
+    task_counts, latency_ms = _collect_task_metrics()
+    return {
+        "tasks": task_counts,
+        "latency_ms": latency_ms,
+        "rate_limit_rejections": rate_repo.get_rejection_count(),
+    }
+
+
+def _percentile(sorted_values: Sequence[float], q: float) -> float:
+    """Return the q-th percentile (0 < q < 1) of a pre-sorted sequence.
+
+    [FR-09] — AC-9.5 helper. Uses the nearest-rank rule: index is
+    ``ceil(q * N) - 1`` clamped to ``[0, N - 1]``. Caller is responsible
+    for sorting; doing it once up-front keeps the p50/p95/p99 trio
+    amortised to a single O(N log N) pass.
+    """
+    if not sorted_values:
+        return 0.0
+    n = len(sorted_values)
+    idx = max(0, min(n - 1, int(q * n) - 1))
+    return sorted_values[idx]
+
+
+def _collect_task_metrics() -> tuple[Dict[str, int], Dict[str, float]]:
+    """Return ``(task_counts_by_status, latency_percentiles_ms)``.
+
+    [FR-09] — AC-9.5. Single repository scan so the two counters
+    describe the same snapshot. Returns empty dicts when the repository
+    is unreachable — the metrics probe must never crash (NFR-12).
+    """
     try:
         with session_mod.transactional() as store:
-            # The in-memory test stand-in (and the production task repo)
-            # exposes ``list_paginated`` with the same signature, so this
-            # call works for both surfaces.
             items, _ = store.list_paginated(
                 cursor=None, limit=10000, status=None
             )
-            for row in items:
-                status = str(row.get("status", "unknown"))
-                task_counts[status] = task_counts.get(status, 0) + 1
-            # Latency percentiles — pull from the ``duration_ms`` field
-            # on rows that carry one. Falls back to an empty map when
-            # the repository does not surface durations.
-            durations = sorted(
-                float(row.get("duration_ms", 0))
-                for row in items
-                if "duration_ms" in row
-            )
-            if durations:
-                latency_ms = {
-                    "p50": durations[len(durations) // 2],
-                    "p95": durations[max(0, int(len(durations) * 0.95) - 1)],
-                    "p99": durations[max(0, int(len(durations) * 0.99) - 1)],
-                }
     except Exception:
-        # [FR-09] — never let the metrics probe crash; return whatever
-        # counters we managed to assemble so the operator still sees a
-        # body rather than a 500.
-        pass
-    return {
-        "tasks": task_counts,
-        "task_counts": task_counts,
-        "latency_ms": latency_ms,
-        "counters": {
-            "tasks": task_counts,
-            "rate_limit_rejections": rate_limit_rejections,
-        },
-        "rate_limit_rejections": rate_limit_rejections,
-    }
+        # [FR-09] — never let the metrics probe crash; report zeros so the
+        # operator still sees a body rather than a 500 (NFR-12).
+        return {}, {}
+
+    counts: Dict[str, int] = {}
+    durations: List[float] = []
+    for row in items:
+        status = str(row.get("status", "unknown"))
+        counts[status] = counts.get(status, 0) + 1
+        if "duration_ms" in row:
+            durations.append(float(row["duration_ms"]))
+    durations.sort()
+
+    percentiles: Dict[str, float] = {}
+    if durations:
+        percentiles = {
+            "p50": _percentile(durations, 0.50),
+            "p95": _percentile(durations, 0.95),
+            "p99": _percentile(durations, 0.99),
+        }
+    return counts, percentiles
 
 
 # Back-compat alias used by `app.include_router(...)` in app.py.

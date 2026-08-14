@@ -85,6 +85,13 @@ def _build_engine() -> Engine:
 _init_lock = threading.Lock()
 _engine: Engine | None = None
 
+# [FR-09] AC-9.5 — lifetime rate-limit rejection counter. Bumped under
+# ``_counter_lock`` on every rejection in ``try_consume`` so the admin
+# ``/v1/metrics`` endpoint can surface a real count rather than a
+# hard-coded zero. Reset by ``reset_for_test`` between test boundaries.
+_rejection_count: int = 0
+_counter_lock: threading.Lock = threading.Lock()
+
 
 def _get_engine() -> Engine:
     """Return the process-wide engine, building it on first access."""
@@ -95,6 +102,27 @@ def _get_engine() -> Engine:
         if _engine is None:
             _engine = _build_engine()
     return _engine
+
+
+def get_rejection_count() -> int:
+    """Return the lifetime number of rate-limit rejections observed.
+
+    [FR-09] — AC-9.5. Read by ``taskq_api.api.health.metrics_endpoint``
+    so ``/v1/metrics`` reports an honest ``rate_limit_rejections``
+    counter instead of a stand-in zero. The counter is process-scoped:
+    it reflects admissions this process has denied since startup (or
+    since the last ``reset_for_test`` call), not historical rejections
+    from prior runs.
+    """
+    with _counter_lock:
+        return _rejection_count
+
+
+def _record_rejection() -> None:
+    """Bump the lifetime rejection counter by one (test/operator visible)."""
+    global _rejection_count
+    with _counter_lock:
+        _rejection_count += 1
 
 
 def _select_sql() -> str:
@@ -131,15 +159,18 @@ def _ensure_schema() -> None:
 
 
 def reset_for_test() -> None:
-    """Wipe every row in ``rate_buckets``.
+    """Wipe every row in ``rate_buckets`` and zero the rejection counter.
 
     Driven by the autouse fixtures in ``03-development/tests/conftest.py``
     and ``03-development/tests/test_fr05.py`` via the back-compat
     ``_rl._buckets.clear()`` hook on ``taskq_api.service.ratelimit``.
     """
+    global _rejection_count
     _ensure_schema()
     with _get_engine().begin() as conn:
         conn.execute(text("DELETE FROM rate_buckets"))
+    with _counter_lock:
+        _rejection_count = 0
 
 
 def try_consume(
@@ -190,7 +221,9 @@ def try_consume(
             text(_UPSERT_SQL),
             {"token": token, "tokens": refilled, "last_refill": now},
         )
+        # [FR-09] AC-9.5 — record the rejection so /v1/metrics can report it.
+        _record_rejection()
         return False, refilled
 
 
-__all__: list[str] = ["try_consume", "reset_for_test"]
+__all__: list[str] = ["try_consume", "reset_for_test", "get_rejection_count"]
