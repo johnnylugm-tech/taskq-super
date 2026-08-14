@@ -2,16 +2,20 @@
 
 [FR-01] — NFR-10 mandates integration via httpx ASGI transport (the
 test exercises this exact code path).
+[FR-02] — adds the run/lifecycle endpoints and the runs history endpoint.
 
 Citations:
 - taskq_api.api.tasks:create_task_endpoint  AC-1.1 / AC-1.2 / AC-1.3 / AC-1.7
 - taskq_api.api.tasks:get_task_endpoint     AC-1.4 / AC-1.5
 - taskq_api.api.tasks:list_tasks_endpoint   AC-1.8 / AC-1.9
 - taskq_api.api.tasks:delete_task_endpoint  AC-1.6 / AC-1.10
+- taskq_api.api.tasks:run_task_endpoint     AC-2.1 / AC-2.3 / AC-2.4
+- taskq_api.api.tasks:list_runs_endpoint    AC-2.6
 """
 
 from __future__ import annotations
 
+import os
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Response, status
@@ -21,6 +25,7 @@ from taskq_api.config import get_settings
 from taskq_api.errors import problem
 from taskq_api.models.schemas import TaskCreate
 from taskq_api.service import tasks as tasks_service
+from taskq_api.service import runner as runner_service
 from taskq_api.service.tasks import InvalidLimit
 
 router = APIRouter(prefix="/v1/tasks", tags=["tasks"])
@@ -112,10 +117,68 @@ async def delete_task_endpoint(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+# ---------------------------------------------------------------------------
+# FR-02 — Run and runs-history endpoints
+# ---------------------------------------------------------------------------
+
+
+def _read_task_timeout() -> float:
+    """Read TASKQ_TASK_TIMEOUT from the env (defaults to 30s)."""
+    raw = os.environ.get("TASKQ_TASK_TIMEOUT")
+    if raw is None:
+        return 30.0
+    try:
+        return float(raw)
+    except ValueError:
+        return 30.0
+
+
+@router.post("/{task_id}/run", status_code=status.HTTP_202_ACCEPTED)
+async def run_task_endpoint(
+    task_id: str,
+    _auth: dict = Depends(require_scope("write")),
+) -> dict:
+    """Schedule a task run; return HTTP 202 with a `run_id`.
+
+    The subprocess is executed synchronously inside the handler so the
+    lifecycle transition (`pending → running → done | failed | timeout`)
+    is fully persisted before the HTTP response is finalised — that is
+    what the polling test relies on (NFR-10 / AC-2.1 / AC-2.3).
+
+    Citations:
+    - taskq_api.api.tasks:run_task_endpoint  AC-2.1 / AC-2.3 / AC-2.4
+    """
+    # [FR-02]
+    task = tasks_service.get_task(task_id)
+    command = task["command"]
+    timeout = _read_task_timeout()
+    row = await runner_service.run_command(task_id, command, timeout=timeout)
+    return {"run_id": row["id"], "status": row["status"]}
+
+
+@router.get("/{task_id}/runs")
+async def list_runs_endpoint(
+    task_id: str,
+    _auth: dict = Depends(require_scope("read")),
+) -> dict:
+    """Return run history for the task, newest-first by `finished_at` desc.
+
+    Citations:
+    - taskq_api.api.tasks:list_runs_endpoint  AC-2.6
+    """
+    # [FR-02]
+    # 404 if the task itself doesn't exist (consistent with GET /v1/tasks/{id}).
+    tasks_service.get_task(task_id)
+    items = runner_service.list_runs(task_id)
+    return {"items": items}
+
+
 __all__: list[str] = [
     "router",
     "create_task_endpoint",
     "get_task_endpoint",
     "list_tasks_endpoint",
     "delete_task_endpoint",
+    "run_task_endpoint",
+    "list_runs_endpoint",
 ]

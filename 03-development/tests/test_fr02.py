@@ -391,24 +391,25 @@ def test_fr02_run_task_timeout_kill_awaits_process(
     # the row is persisted with status="timeout". The test inspects the
     # child pid that the runner handed to subprocess.Popen and asserts it
     # is no longer alive after run_command returns.
-    helper = (
-        "import asyncio, os, sys; "
-        f"sys.path.insert(0, {str((Path(__file__).resolve().parent.parent / 'src'))!r}); "
-        "from taskq_api.service.runner import run_command; "
+    helper_src = (
+        "import asyncio, sys\n"
+        f"sys.path.insert(0, {str((Path(__file__).resolve().parent.parent / 'src'))!r})\n"
+        "from taskq_api import service\n"
+        "from taskq_api.service import runner as runner_mod\n"
+        "pid_holder = []\n"
+        "orig_exec = runner_mod.asyncio.create_subprocess_exec\n"
+        "async def _wrapped(*a, **kw):\n"
+        "    proc = await orig_exec(*a, **kw)\n"
+        "    pid_holder.append(proc.pid)\n"
+        "    return proc\n"
+        "runner_mod.asyncio.create_subprocess_exec = _wrapped\n"
         "async def _main():\n"
-        "    pid_holder = []\n"
-        "    orig_exec = __import__('asyncio').subprocess.create_subprocess_exec\n"
-        "    async def _wrapped(*a, **kw):\n"
-        "        proc = await orig_exec(*a, **kw)\n"
-        "        pid_holder.append(proc.pid)\n"
-        "        return proc\n"
-        "    __import__('asyncio').subprocess.create_subprocess_exec = _wrapped\n"
-        f"    await run_command({task_id!r}, 'sleep 30', timeout=1.0)\n"
+        f"    await runner_mod.run_command({task_id!r}, 'sleep 30', timeout=1.0)\n"
         "    sys.stdout.write('CHILD_PID=' + str(pid_holder[0]) + '\\n')\n"
         "asyncio.run(_main())\n"
     )
     child = subprocess.run(  # noqa: S603 — test drives its own subprocess
-        [sys.executable, "-c", helper],
+        [sys.executable, "-c", helper_src],
         env=_spawn_child_env(),
         capture_output=True,
         text=True,
