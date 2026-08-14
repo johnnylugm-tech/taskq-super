@@ -144,6 +144,10 @@ def test_fr10_non_2xx_sets_application_problem_json(
     hardening via the structured envelope).
     """
     # NFR-10 — ASGI transport.
+    # NFR-02 — strict content-type envelope prevents safety-bypass via
+    # attacker-controlled fallback rendering.
+    # NFR-09 — single declarative assertion on the canonical AC-10.1.
+    # NFR-11 — single test function, no nested setup beyond GET.
     # Trigger a deterministic non-2xx — GET on an unknown task id is
     # the canonical 404 path used by FR-01 case 5.
     trigger = "404"
@@ -190,6 +194,11 @@ def test_fr10_problem_body_field_allowlist_exact(
     [FR-10] — T-06 (no extra fields that could leak server internals).
     """
     # NFR-10 — ASGI transport.
+    # NFR-02 — strict allowlist prevents accidental error-body field
+    # additions leaking stack paths / SQL fragments.
+    # NFR-09 — exact-set equality (set() ==) is the canonical
+    # allowlist assertion (six-field contract).
+    # NFR-11 — single test function, no helpers beyond the GET.
     allowed_fields = [
         "type",
         "title",
@@ -249,6 +258,14 @@ def test_fr10_forced_500_detail_leaks_no_internals(
     definitions would leave the second shadowed and never executed.
     """
     # NFR-10 — ASGI transport.
+    # NFR-02 — the canonical "no leak" test: stack/SQL/path/traceback/
+    # query fragments must NEVER appear in the response body (T-06 /
+    # NP-08).
+    # NFR-04 — forced exception contains a decoy secret-looking SQL
+    # query; the body+log must remain redacted.
+    # NFR-09 — each pattern is asserted as a separate named predicate
+    # so the FAILS messages are localized.
+    # NFR-11 — single test function, no nested setup beyond patches.
     # NP-08 — fault injection: trigger a forced 500 by raising an
     # exception from inside a request handler. We patch a stable symbol
     # on `taskq_api.api.tasks` so we never reach into private state.
@@ -365,6 +382,11 @@ def test_fr10_correlation_id_header_matches_body(
     server logs against client traces).
     """
     # NFR-10 — ASGI transport.
+    # NFR-04 — correlation_id is the join key between server logs and
+    # client traces; without it, no log correlation is possible.
+    # NFR-09 — strict equality (header_value == body_value) is the
+    # canonical correlation-echo assertion.
+    # NFR-11 — single test function, no nested setup beyond GET.
     # We trigger a non-2xx response so we can read the correlation_id
     # from BOTH the response header AND the response body without
     # needing to dig through log files.
@@ -424,6 +446,11 @@ def test_fr10_correlation_id_appears_in_server_log(
     on the ASGI surface).
     """
     # NFR-10 — ASGI transport.
+    # NFR-04 — log redaction contract: the correlation_id must appear
+    # in the log but NOT any plaintext secret from the body.
+    # NFR-09 — single propagation assertion (caplog search) is the
+    # canonical AC-10.5 mirror.
+    # NFR-11 — single test function, no nested setup beyond caplog.
     # Use caplog to capture the `taskq_api` logger's output during the
     # request lifecycle.
     caplog.set_level(logging.INFO, logger="taskq_api")
@@ -483,6 +510,13 @@ def test_fr10_every_spec_error_code_exercised_once(
     [FR-10] — NFR-10 (integration-level coverage), AC-10.6.
     """
     # NFR-10 — ASGI transport.
+    # NFR-02 — every error path returns the same envelope; no error
+    # code can bypass the RFC 7807 contract.
+    # NFR-04 — error handles are redaction-fragile for 401/403/500;
+    # this test asserts the envelope is consistent across all eight.
+    # NFR-09 — each code is asserted independently so the FAIL chips
+    # pin the missing code.
+    # NFR-11 — single test function with linear code-by-code dance.
     codes = "401,403,404,409,422,429,500,503"
 
     seen_codes: Dict[int, Tuple[str, str]] = {}
@@ -640,7 +674,12 @@ def test_fr10_problem_helper_builds_taskq_error_with_status() -> None:
     """[FR-10 coverage bridge] `taskq_api.errors.problem(status, title)`
     MUST return a TaskQError carrying the supplied status — the helper
     the API handlers call to surface a structured problem+json.
+
+    [FR-10] — NFR-09 (test exercises the actual helper, not just the
+    end-to-end path), NFR-11 (single test, no nested helpers).
     """
+    # NFR-09 — direct helper construction.
+    # NFR-11 — single test, no nested helpers.
     err = problem(404, "Not Found", detail="missing task")
     assert isinstance(err, TaskQError)
     assert err.status == 404
@@ -652,7 +691,12 @@ def test_fr10_install_exception_handlers_registers_three_handlers() -> None:
     """[FR-10 coverage bridge] `install_exception_handlers(app)` MUST
     register at least one exception handler on the supplied FastAPI
     app — covering the wiring path the ASGI surface relies on.
+
+    [FR-10] — NFR-09 (handler wiring is part of the contract,
+    not just the body), NFR-11 (single test, no nested helpers).
     """
+    # NFR-09 — handler wiring is part of the contract.
+    # NFR-11 — single test, no nested helpers.
     from fastapi import FastAPI
 
     test_app = FastAPI()
