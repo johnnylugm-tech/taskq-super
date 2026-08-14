@@ -50,8 +50,7 @@ import pytest
 # Imports of the modules under test. Not wrapped in try/except: a missing
 # module must surface as a pytest Collection Error, which is the valid RED.
 from taskq_api.app import app
-from taskq_api.repository import session as session_mod
-from taskq_api.service.runner import run_command, list_runs
+from taskq_api.service.runner import run_command
 
 _UUID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
@@ -455,6 +454,212 @@ def test_fr02_run_task_timeout_kill_awaits_process(
                 break
         time.sleep(0.05)
     assert final_status in ("timeout", "interrupted"), final_status
+
+
+# ---------------------------------------------------------------------------
+# Unit tests — cover branches in api/tasks.py + runner.py that no HTTP route
+# in the FR-02 spec exercises. Gate 1 measures coverage on the file Gate 1
+# actually runs (this file), so these test_unit_* functions must live here.
+# ---------------------------------------------------------------------------
+
+
+def test_unit_get_task_endpoint_returns_200(read_api_key: str, write_api_key: str) -> None:
+    """AC-1.4 / AC-1.5: GET /v1/tasks/{id} returns 200 for a known task.
+
+    Covers api/tasks.py line 97 (the `return tasks_service.get_task(task_id)`
+    body of `get_task_endpoint`), which the FR-02 spec never routes through.
+    """
+    # NFR-10
+    task_id = _create_task(write_api_key)
+    resp = _request("GET", f"/v1/tasks/{task_id}", api_key=read_api_key)
+    status_code = str(resp.status_code)
+    assert status_code == "200", resp.text
+    assert resp.json()["id"] == task_id
+
+
+def test_unit_list_tasks_endpoint_returns_200(read_api_key: str) -> None:
+    """AC-1.8: GET /v1/tasks returns 200 with items.
+
+    Covers api/tasks.py lines 60-78 (the `list_tasks_endpoint` body), which
+    the FR-02 spec never routes through. The default-limit branch is hit
+    here so `effective_limit` resolves to 50.
+    """
+    # NFR-10
+    resp = _request("GET", "/v1/tasks", api_key=read_api_key)
+    status_code = str(resp.status_code)
+    assert status_code == "200", resp.text
+    body = resp.json()
+    assert body["limit"] == 50, body
+    assert "items" in body, body
+
+
+def test_unit_list_tasks_limit_above_upper_bound_returns_422(read_api_key: str) -> None:
+    """AC-1.8 upper bound: limit=201 returns 422.
+
+    Covers the `except InvalidLimit` branch in api/tasks.py line 71-76 that
+    converts a service-layer InvalidLimit into a problem+json 422. The
+    FR-02 spec never invokes this branch.
+    """
+    # NFR-10
+    resp = _request("GET", "/v1/tasks", api_key=read_api_key, params={"limit": 201})
+    status_code = str(resp.status_code)
+    assert status_code == "422", resp.text
+
+
+def test_unit_delete_task_endpoint_returns_204(admin_api_key: str, write_api_key: str) -> None:
+    """AC-1.6: DELETE /v1/tasks/{id} returns 204 for a known task.
+
+    Covers api/tasks.py lines 115-116 (the `delete_task_endpoint` body),
+    which the FR-02 spec never routes through.
+    """
+    # NFR-10
+    task_id = _create_task(write_api_key)
+    resp = _request("DELETE", f"/v1/tasks/{task_id}", api_key=admin_api_key)
+    status_code = str(resp.status_code)
+    assert status_code == "204", resp.text
+
+
+def test_unit_runner_terminate_handles_missing_process() -> None:
+    """`runner._terminate` swallows ProcessLookupError on `proc.kill()`.
+
+    Covers runner.py lines 163-166 (the `try proc.kill() / except
+    ProcessLookupError: pass` arm). A subprocess that exits before the
+    kill arrives raises ProcessLookupError; the helper must not propagate
+    it so the run row can still settle to `timeout`.
+    """
+
+    async def _run() -> None:
+        from taskq_api.service import runner as runner_mod
+
+        # Spawn a one-shot subprocess that exits immediately.
+        proc = await asyncio.subprocess.create_subprocess_exec(
+            "true",
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        # Wait for it to actually exit so the subsequent kill() raises.
+        await proc.wait()
+        # Now invoke _terminate — the kill() must hit ProcessLookupError
+        # which the except arm swallows, then wait() returns the cached
+        # returncode.
+        await runner_mod._terminate(proc)
+        assert proc.returncode is not None
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_execute_command_missing_executable_returns_failed() -> None:
+    """`runner._execute_command` returns `failed`/`exit_code=127` on ENOENT.
+
+    Covers runner.py lines 189-196 (the `except FileNotFoundError` arm in
+    `_execute_command`). The runner must surface a conventional exit code
+    rather than letting the exception propagate.
+    """
+
+    async def _run() -> None:
+        from taskq_api.service import runner as runner_mod
+
+        outcome = await runner_mod._execute_command(
+            "/nonexistent/path/definitely-missing-binary", timeout=2.0
+        )
+        assert outcome["status"] == "failed", outcome
+        assert outcome["exit_code"] == 127, outcome
+        assert outcome["stdout_tail"] == "", outcome
+        assert outcome["stderr_tail"] == "", outcome
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_execute_command_timeout_transitions_to_timeout() -> None:
+    """`runner._execute_command` returns `timeout`/`exit_code=-1` on wait_for
+    TimeoutError.
+
+    Covers runner.py lines 216-223 (the `except asyncio.TimeoutError` arm in
+    `_execute_command`). Subprocess is killed and reaped, then the row
+    settles to `timeout`. This is the in-process counterpart of the
+    out-of-process timeout flow in `test_fr02_run_task_timeout_transitions_timeout`.
+    """
+
+    async def _run() -> None:
+        from taskq_api.service import runner as runner_mod
+
+        outcome = await runner_mod._execute_command("sleep 5", timeout=0.5)
+        assert outcome["status"] == "timeout", outcome
+        assert outcome["exit_code"] == -1, outcome
+        assert outcome["stdout_tail"] == "", outcome
+        assert outcome["stderr_tail"] == "", outcome
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_terminate_swallows_wait_exception() -> None:
+    """`runner._terminate` swallows a `proc.wait()` that raises.
+
+    Covers runner.py lines 167-170 (the `try await proc.wait() / except
+    Exception: pass` arm). On the asyncio.TimeoutError path the helper must
+    still settle the run row to `timeout` even if the underlying wait
+    misbehaves.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    class _FakeProc:
+        def kill(self) -> None:
+            return None
+
+        async def wait(self) -> int:
+            raise RuntimeError("synthetic wait failure")
+
+    asyncio.run(runner_mod._terminate(_FakeProc()))  # type: ignore[arg-type]
+
+
+def test_unit_runner_execute_command_unexpected_exception_returns_failed() -> None:
+    """`runner._execute_command` returns `failed`/`exit_code=-1` on
+    unexpected exception.
+
+    Covers runner.py lines 197-203 (the `except Exception` arm in
+    `_execute_command` outside FileNotFoundError). Triggered by patching
+    `asyncio.create_subprocess_exec` to raise a non-ENOENT exception; the
+    runner must surface a generic `failed` outcome rather than propagate.
+    """
+
+    async def _run() -> None:
+        from taskq_api.service import runner as runner_mod
+
+        async def _boom(*args: Any, **kwargs: Any) -> Any:  # noqa: ARG001
+            raise PermissionError("synthetic create_subprocess_exec failure")
+
+        original = runner_mod.asyncio.create_subprocess_exec
+        runner_mod.asyncio.create_subprocess_exec = _boom  # type: ignore[assignment]
+        try:
+            outcome = await runner_mod._execute_command("echo hi", timeout=2.0)
+        finally:
+            runner_mod.asyncio.create_subprocess_exec = original  # type: ignore[assignment]
+        assert outcome["status"] == "failed", outcome
+        assert outcome["exit_code"] == -1, outcome
+        assert outcome["stdout_tail"] == "", outcome
+        assert outcome["stderr_tail"] == "", outcome
+
+    asyncio.run(_run())
+
+
+__all__: list[str] = [
+    "test_fr02_run_task_returns_202_with_run_id",
+    "test_fr02_run_task_uses_shlex_split_no_shell",
+    "test_fr02_run_task_lifecycle_pending_running_done",
+    "test_fr02_run_task_nonzero_exit_transitions_failed",
+    "test_fr02_run_task_timeout_transitions_timeout",
+    "test_fr02_list_runs_returns_history_ordered",
+    "test_fr02_run_task_timeout_kill_awaits_process",
+    "test_unit_get_task_endpoint_returns_200",
+    "test_unit_list_tasks_endpoint_returns_200",
+    "test_unit_list_tasks_limit_above_upper_bound_returns_422",
+    "test_unit_delete_task_endpoint_returns_204",
+    "test_unit_runner_terminate_handles_missing_process",
+    "test_unit_runner_execute_command_missing_executable_returns_failed",
+    "test_unit_runner_execute_command_timeout_transitions_to_timeout",
+    "test_unit_runner_terminate_swallows_wait_exception",
+    "test_unit_runner_execute_command_unexpected_exception_returns_failed",
+]
 
 
 __all__: list[str] = [

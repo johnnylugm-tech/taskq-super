@@ -1,8 +1,8 @@
 # Harness-executed: pytest-cov
 # returncode: 0
-# agent_score: 100.0 | threshold: 80.0
+# agent_score: 88.0 | threshold: 80.0
 
-............                                                             [100%]
+...................                                                      [100%]
 ================================ tests coverage ================================
 ______________ coverage: platform darwin, python 3.11.15-final-0 _______________
 
@@ -13,9 +13,9 @@ Name                                                   Stmts   Miss  Cover   Mis
 03-development/src/taskq_api/api/__init__.py               0      0   100%
 03-development/src/taskq_api/api/deps.py                  15      0   100%
 03-development/src/taskq_api/api/health.py                 7      1    86%   21
-03-development/src/taskq_api/api/tasks.py                 30      0   100%
+03-development/src/taskq_api/api/tasks.py                 41      0   100%
 03-development/src/taskq_api/app.py                       13      0   100%
-03-development/src/taskq_api/config.py                    12      0   100%
+03-development/src/taskq_api/config.py                    21      4    81%   35-38
 03-development/src/taskq_api/errors.py                    25      2    92%   61-67
 03-development/src/taskq_api/models/__init__.py            0      0   100%
 03-development/src/taskq_api/models/orm.py                13     13     0%   9-51
@@ -26,7 +26,8 @@ Name                                                   Stmts   Miss  Cover   Mis
 03-development/src/taskq_api/repository/task_repo.py      11     11     0%   15-52
 03-development/src/taskq_api/service/__init__.py           0      0   100%
 03-development/src/taskq_api/service/auth.py              31      3    90%   72, 76, 82
+03-development/src/taskq_api/service/runner.py            81     15    81%   163-170, 189-198, 216-218
 03-development/src/taskq_api/service/tasks.py             35      0   100%
 ------------------------------------------------------------------------------------
-TOTAL                                                    261     53    80%
-12 passed in 0.32s
+TOTAL                                                    362     72    80%
+19 passed in 2.54s

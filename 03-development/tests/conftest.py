@@ -8,14 +8,10 @@ themselves are missing — not because of bad signatures or missing rows.
 
 from __future__ import annotations
 
-import asyncio
-import hashlib
 import hmac
-import os
 import sys
-import uuid
 from pathlib import Path
-from typing import Any, AsyncIterator, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pytest
 
