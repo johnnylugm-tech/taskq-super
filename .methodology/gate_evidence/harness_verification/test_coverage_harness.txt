@@ -2,7 +2,7 @@
 # returncode: 0
 # agent_score: 100.0 | threshold: 80.0
 
-..............................................................           [100%]
+...................................................................      [100%]
 =============================== warnings summary ===============================
 03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard
   <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
@@ -28,13 +28,13 @@ Name                                                   Stmts   Miss  Cover   Mis
 03-development/src/taskq_api/repository/__init__.py        0      0   100%
 03-development/src/taskq_api/repository/key_repo.py       17      0   100%
 03-development/src/taskq_api/repository/rate_repo.py      63      3    95%   77, 113, 127
-03-development/src/taskq_api/repository/session.py        24     10    58%   53-57, 72, 76, 82, 88, 99
+03-development/src/taskq_api/repository/session.py        25      0   100%
 03-development/src/taskq_api/repository/task_repo.py      11     11     0%   15-52
 03-development/src/taskq_api/service/__init__.py           0      0   100%
 03-development/src/taskq_api/service/auth.py              29      0   100%
 03-development/src/taskq_api/service/ratelimit.py         23      0   100%
 03-development/src/taskq_api/service/runner.py            81      0   100%
-03-development/src/taskq_api/service/tasks.py             35      0   100%
+03-development/src/taskq_api/service/tasks.py             41      0   100%
 ------------------------------------------------------------------------------------
-TOTAL                                                    488     44    91%
-62 passed, 1 warning in 3.58s
+TOTAL                                                    495     34    93%
+67 passed, 1 warning in 3.69s
