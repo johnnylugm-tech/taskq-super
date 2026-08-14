@@ -225,6 +225,147 @@ def test_fr03_key_compare_uses_hmac_compare_digest(
     assert called, "verify_key did not invoke hmac.compare_digest"
 
 
+def test_fr03_empty_presented_key_returns_none() -> None:
+    """AC-3.1 sub-branch: empty presented key short-circuits to None.
+
+    Covers `service/auth.py:74` — the early-exit guard before any hashing.
+    """
+    # NFR-02
+    assert verify_key("", "write") is None
+
+
+def test_fr03_hmac_compare_failure_returns_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC-3.4: when `hmac.compare_digest` returns False, verify returns None.
+
+    Covers `service/auth.py:86` — the path where the constant-time compare
+    disagrees with itself (in real use: presented_hash vs stored_hash).
+    """
+    # NFR-04
+    import hmac as hmac_mod
+
+    monkeypatch.setattr(
+        hmac_mod, "compare_digest", lambda a, b: False, raising=True
+    )
+    assert verify_key("sk-test-write-key", "write") is None
+
+
+def test_fr03_create_key_returns_token_urlsafe_plaintext(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC-3.2: `create_key(scope)` mints a random url-safe plaintext.
+
+    Covers `service/auth.py:106` — the `secrets.token_urlsafe(32)` mint.
+
+    [FR-03]
+    """
+    # NFR-04
+    from taskq_api.service.auth import create_key
+
+    plaintext = create_key("write")
+    # token_urlsafe(32) returns ≥ 32 url-safe chars
+    assert isinstance(plaintext, str)
+    assert len(plaintext) >= 32
+
+
+def test_fr03_cli_main_key_create_branch_prints_plaintext_inproc(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """AC-3.2 in-process: `__main__.main(['key','create','--scope','read'])`
+    writes exactly one plaintext line to stdout.
+
+    Covers `__main__.py:9-55` (subcommand dispatch + the early return path).
+    The earlier subprocess-based test verifies the real out-of-process
+    contract; this in-process variant pushes the same branch through the
+    `python -m taskq_api` argv parser without spawning a child process.
+
+    [FR-03] — NFR-02.
+    """
+    # NFR-02
+    from taskq_api import __main__ as main_mod
+
+    plaintext_lines = "1"
+    try:
+        main_mod.main(["key", "create", "--scope", "read"])
+    except SystemExit:
+        pass
+    captured = capsys.readouterr().out
+    non_empty = [ln for ln in captured.split("\n") if ln.strip()]
+    assert str(len(non_empty)) == plaintext_lines, captured
+
+
+def test_fr03_cli_main_default_branch_calls_uvicorn(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC-3.2 sibling branch: invoking `__main__.main()` with no
+    subcommand forwards to `uvicorn.run`.
+
+    Covers `__main__.py:51` — the default dispatch branch.
+    [FR-03] / [FR-09]
+    """
+    # NFR-02
+    from taskq_api import __main__ as main_mod
+
+    called: dict = {}
+
+    def fake_uvicorn_run(*args: Any, **kwargs: Any) -> None:  # noqa: ARG001
+        called["args"] = args
+        called["kwargs"] = kwargs
+
+    monkeypatch.setattr(main_mod.uvicorn, "run", fake_uvicorn_run)
+    main_mod.main([])
+    assert called, "uvicorn.run was not called for default branch"
+
+
+def test_fr03_cli_main_module_entrypoint_guard() -> None:
+    """`python -m taskq_api` runs `main()` — covers `__main__.py:55`.
+
+    Exercises the `if __name__ == "__main__":` guard by running the
+    module under `runpy.run_module` with uvicorn patched to no-op, so
+    no real ASGI server is started.
+    """
+    # NFR-02
+    import runpy
+    import sys as _sys
+    from unittest import mock
+
+    saved_argv = _sys.argv
+    _sys.argv = ["taskq_api"]  # argparse reads sys.argv; clear pytest args
+    try:
+        with mock.patch.object(
+            __import__("taskq_api.__main__", fromlist=["uvicorn"]).uvicorn,
+            "run",
+            lambda *a, **kw: None,
+        ):
+            runpy.run_module("taskq_api.__main__", run_name="__main__")
+    finally:
+        _sys.argv = saved_argv
+
+
+def test_fr03_insufficient_scope_branch_returns_marker(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC-3.1 / NFR-02: a known key without the required scope yields the
+    insufficient-scope marker dict (translated to 403 by `deps`).
+
+    Covers `service/auth.py:89`.
+    [FR-03] / [FR-04]
+    """
+    # NFR-02
+    monkeypatch.setattr(
+        auth_module,
+        "find_by_hash",
+        lambda h: {"scopes": ["read"], "key_id": "k"},  # noqa: ARG005
+    )
+    import hmac as hmac_mod
+
+    monkeypatch.setattr(hmac_mod, "compare_digest", lambda a, b: True)
+    record = verify_key("sk-test-read-key", "admin")
+    assert isinstance(record, dict)
+    assert record.get("_insufficient_scope") is True
+
+
 # ---------------------------------------------------------------------------
 # Case 5 — A revoked key is rejected with 401
 # ---------------------------------------------------------------------------
