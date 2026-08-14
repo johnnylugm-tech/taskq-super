@@ -294,6 +294,8 @@ def test_fr07_upgrade_head_and_downgrade_base_exit_zero(
     FR07-upgrade-zero: `exit_code == "0"` (TEST_SPEC sub-assertion).
     FR07-downgrade-zero: `exit_code2 == "0"` (TEST_SPEC sub-assertion).
     SPEC.md §8 #13: exit 0, no residual tables.
+
+    # NFR-10 — integration coverage (exercises the alembic CLI end-to-end).
     """
     # AC-7.1 — both commands must finish with no error.
     upgrade = _run_alembic(alembic_home, "upgrade", "head")
@@ -323,6 +325,8 @@ def test_fr07_downgrade_base_leaves_no_residual_tables(
 
     FR07-no-residual: `tables_after_downgrade == "0"` (TEST_SPEC sub-assertion).
     SPEC.md §8 #13: exit 0, 無殘留表 (no residual tables).
+
+    # NFR-10 — integration coverage (full round-trip on real SQLite).
     """
     # Bring the DB up to head, then back down to base.
     upgrade = _run_alembic(alembic_home, "upgrade", "head")
@@ -376,6 +380,8 @@ def test_fr07_migrations_run_against_real_sqlite_file(
 
     FR07-real-sqlite: `in_memory == "false"` (TEST_SPEC sub-assertion).
     SPEC.md §8 #12; NFR-09 round-specific clause.
+
+    # NFR-09 — zero-skip iron rule; FR-07 must use a real SQLite file (not :memory:).
     """
     # The alembic.ini in this fixture pins sqlalchemy.url to a real
     # sqlite file under the tmp project home. Subprocess alembic
@@ -417,6 +423,9 @@ def test_fr07_roundtrip_preserves_sample_rows_byte_identical(
     FR07-roundtrip-match: `round_trip_match == "true"` (TEST_SPEC sub-assertion).
     SPEC.md §8 #12; NP-10 (data round-trip).
     v3 data migration is the focus of this clause.
+
+    # NFR-10 — integration coverage (full round-trip data preservation).
+    # NFR-03 — error handling / transaction correctness (data must survive rollback path).
     """
     # Step 1: upgrade head so all tables (incl. task_results from v3) exist.
     upgrade = _run_alembic(alembic_home, "upgrade", "head")
@@ -512,6 +521,9 @@ def test_fr07_v3_downgrade_reverses_data_move(
     tasks.result_json is restored, task_results is gone, no rows lost.
     FR07-v3-data-count-stable: `pre_count == post_count` (TEST_SPEC sub-assertion).
     SPEC.md §3 FR-07: 「資料不得遺失」clause.
+
+    # NFR-10 — integration coverage (v3 data-move reversibility end-to-end).
+    # NFR-03 — error handling / transaction correctness (downgrade must not lose rows).
     """
     # Step 1: upgrade head so v3 (data move into task_results) is applied.
     upgrade = _run_alembic(alembic_home, "upgrade", "head")
@@ -579,6 +591,8 @@ def test_fr07_migration_files_contain_no_destructive_shortcut() -> None:
     The static scan only fires when GREEN has actually placed the
     three revision files under `03-development/src/migrations/versions/`.
     Each file is scanned line-by-line for the forbidden pattern.
+
+    # NFR-03 — error handling (no destructive shortcut: rollback must be a real downgrade).
     """
     # GREEN TODO: must create three revision files at
     # 03-development/src/migrations/versions/{v1_initial,v2_tags,
@@ -628,6 +642,8 @@ def test_fr07_migrations_render_under_alembic_offline_sql_mode(
     three GREEN revisions collectively generate a non-empty SQL
     payload, which is the proof they actually contain real upgrade
     operations (not no-op `pass` bodies).
+
+    # NFR-10 — integration coverage (offline SQL render end-to-end).
     """
     # subprocess decision: out-of-process. Pytest-cov CANNOT measure
     # coverage of code inside a subprocess, so the in-process coverage
