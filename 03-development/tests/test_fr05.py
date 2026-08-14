@@ -156,6 +156,9 @@ def test_fr05_burst_requests_then_429_with_retry_after(
     """
     # NP-03
     # SPEC.md §8 #9
+    # NFR-02 — 429 problem+json content-type (security/error contract)
+    # NFR-03 — per-request transaction boundary (token-bucket mutation)
+    # NFR-10 — ASGI integration coverage
     # GREEN TODO: taskq_api.service.ratelimit.check_rate_limit(token)
     # must enforce TASKQ_RATE_BURST (default 20) per refilling window;
     # the over-budget call returns a 429 problem+json with `Retry-After`
@@ -233,6 +236,7 @@ def test_fr05_retry_after_is_positive_integer_seconds(
     """
     # NP-03
     # SPEC.md §8 #9
+    # NFR-02 — Retry-After header is the canonical problem+json extension
     # GREEN TODO: check_rate_limit(token) must return the seconds until
     # the next token is available (>= 1) so the gate emits
     # `Retry-After: <positive int>` on the over-budget response.
@@ -274,6 +278,7 @@ def test_fr05_healthz_and_readyz_exempt_from_rate_limit() -> None:
     """
     # FR-09
     # NFR-12
+    # NFR-10 — ASGI integration coverage (liveness exemption path)
     # GREEN TODO: the rate-limit gate must NOT be wired into the
     # /healthz or /readyz routers (taskq_api.api.health). The exemption
     # is at the routing layer; a token bucket draining on /v1 must not
@@ -323,6 +328,9 @@ def test_fr05_parallel_double_burst_no_over_admission(
     """
     # NP-13
     # SPEC.md §9 R12
+    # NFR-03 — per-request transaction boundary + row-level lock (no
+    # bare except, no lost-update race; single SELECT FOR UPDATE).
+    # NFR-10 — ASGI integration coverage (concurrent admission path)
     # GREEN TODO: check_rate_limit(token) must be invoked inside a single
     # transaction that takes a row-level lock on the `rate_buckets` row
     # for that token (`SELECT ... FOR UPDATE`). Two parallel bursts from
@@ -374,6 +382,7 @@ def test_fr05_rate_bucket_update_acquires_row_level_lock() -> None:
     """
     # SPEC.md §9 R12
     # NP-13
+    # NFR-03 — explicit transaction boundary with SELECT FOR UPDATE
     # GREEN TODO: taskq_api.service.ratelimit must execute the bucket
     # update inside `with engine.begin() as conn: SELECT ... FROM
     # rate_buckets WHERE token = :token FOR UPDATE; UPDATE rate_buckets
@@ -407,6 +416,7 @@ def test_unit_check_rate_limit_admits_within_burst() -> None:
     path fixtures.
     """
     # NP-03
+    # NFR-05 — public-API docstring coverage on `check_rate_limit`
     # GREEN TODO: check_rate_limit(token) -> {"allow": True, "remaining": N}
     # when the bucket has capacity; the /v1 deps wrapper translates this
     # into a 200 response.
@@ -425,6 +435,7 @@ def test_unit_check_rate_limit_rejects_over_burst() -> None:
     `{"allow": False, "retry_after": N}` where N is a positive int.
     """
     # NP-03
+    # NFR-02 — over-budget rejection is the security/error contract
     token = "unit-token-reject"
     for _ in range(DEFAULT_BURST):
         check_rate_limit(token)
