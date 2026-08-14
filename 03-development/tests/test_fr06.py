@@ -278,6 +278,26 @@ def test_fr06_one_session_per_request_lifecycle(
     )
 
 
+def test_fr06_get_engine_returns_process_wide_engine() -> None:
+    """AC-6.5: `get_engine()` returns the module-level engine singleton.
+
+    Covers the `return _engine` line of `taskq_api.repository.session.get_engine`
+    — the public accessor that handlers (and tests) use to reach the engine
+    without re-importing private state.
+    """
+    from taskq_api.repository import session as session_module  # noqa: E402
+
+    engine = session_module.get_engine()
+    assert engine is session_module._engine, (
+        "get_engine() must return the same engine object held at module level"
+    )
+    # Pool pre-ping wiring must be present on the returned engine (AC-6.5).
+    pool = engine.pool
+    assert pool._pre_ping is True, (
+        "Engine returned by get_engine() must be configured with pool_pre_ping=True"
+    )
+
+
 # ---------------------------------------------------------------------------
 # 4. Engine uses pool_size=TASKQ_DB_POOL_SIZE and pool_pre_ping=True (AC-6.5)
 # ---------------------------------------------------------------------------
