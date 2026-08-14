@@ -1,7 +1,7 @@
 {
   "schema": "harness/traceability/attestation/v1",
-  "git_sha": "20c7cd42953cee3ef0f257420ad77bc656ce284a",
-  "content_sha256": "2ac162b6ff0470373561299696fc1e8ab1c201bbf22486bb25239c16fa7e4b65",
+  "git_sha": "492e3b0ae723bb7f93aa98b23f0c3bfcb56861c2",
+  "content_sha256": "76bb7c2b7754d4b1d3233b8a45b7399512989927f0fadb1627af775f62a1ccab",
   "tool": "scripts/build_trace_attestation.py",
   "overlay_used": null,
   "overlay_errors": [],
@@ -9,21 +9,37 @@
     "schema_version": "harness/traceability/overlay/v1",
     "project_id": "taskq-super",
     "completeness": {
-      "total_requirements": 2,
+      "total_requirements": 10,
       "srs_coverage": "100.0%",
       "code_coverage": "0.0%",
       "test_coverage": "0.0%",
       "verification_rate": "0.0%",
-      "total_links": 2,
+      "total_links": 10,
       "missing_mappings": {
         "fr_without_srs": [],
         "fr_without_code": [
           "FR-01",
-          "FR-02"
+          "FR-02",
+          "FR-03",
+          "FR-04",
+          "FR-05",
+          "FR-06",
+          "FR-07",
+          "FR-08",
+          "FR-09",
+          "FR-10"
         ],
         "fr_without_test": [
           "FR-01",
-          "FR-02"
+          "FR-02",
+          "FR-03",
+          "FR-04",
+          "FR-05",
+          "FR-06",
+          "FR-07",
+          "FR-08",
+          "FR-09",
+          "FR-10"
         ]
       }
     },
@@ -31,30 +47,118 @@
       "fr_without_srs": [],
       "fr_without_code": [
         "FR-01",
-        "FR-02"
+        "FR-02",
+        "FR-03",
+        "FR-04",
+        "FR-05",
+        "FR-06",
+        "FR-07",
+        "FR-08",
+        "FR-09",
+        "FR-10"
       ],
       "fr_without_test": [
         "FR-01",
-        "FR-02"
+        "FR-02",
+        "FR-03",
+        "FR-04",
+        "FR-05",
+        "FR-06",
+        "FR-07",
+        "FR-08",
+        "FR-09",
+        "FR-10"
       ]
     },
     "requirements": {
       "FR-01": {
         "fr_id": "FR-01",
-        "status": "pending",
+        "status": "in_progress",
         "srs_section": "SAD.md",
         "code_files": [],
         "test_files": [],
-        "sad_module": "—",
+        "sad_module": "api/tasks.py",
         "priority": "HIGH"
       },
       "FR-02": {
         "fr_id": "FR-02",
-        "status": "pending",
+        "status": "in_progress",
         "srs_section": "SAD.md",
         "code_files": [],
         "test_files": [],
-        "sad_module": "—",
+        "sad_module": "api/tasks.py",
+        "priority": "HIGH"
+      },
+      "FR-03": {
+        "fr_id": "FR-03",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "api/deps.py",
+        "priority": "HIGH"
+      },
+      "FR-04": {
+        "fr_id": "FR-04",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "api/deps.py",
+        "priority": "HIGH"
+      },
+      "FR-05": {
+        "fr_id": "FR-05",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "api/deps.py",
+        "priority": "HIGH"
+      },
+      "FR-06": {
+        "fr_id": "FR-06",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "repository/session.py",
+        "priority": "HIGH"
+      },
+      "FR-07": {
+        "fr_id": "FR-07",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "migrations/versions/v1_initial.py",
+        "priority": "HIGH"
+      },
+      "FR-08": {
+        "fr_id": "FR-08",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "service/runner.py",
+        "priority": "HIGH"
+      },
+      "FR-09": {
+        "fr_id": "FR-09",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "api/health.py",
+        "priority": "HIGH"
+      },
+      "FR-10": {
+        "fr_id": "FR-10",
+        "status": "in_progress",
+        "srs_section": "SAD.md",
+        "code_files": [],
+        "test_files": [],
+        "sad_module": "errors.py",
         "priority": "HIGH"
       }
     },
