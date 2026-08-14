@@ -1,10 +1,18 @@
 """problem+json error helpers — RFC 7807 shape.
 
+[FR-01] — TaskQError + problem() for FR-01 AC-1.2/AC-1.3/AC-1.5/AC-1.6/AC-1.7.
+[FR-05] — AC-5.1 / AC-5.2: problem() carries optional `headers` so the
+rate-limit gate can attach `Retry-After: <seconds>` to a 429 response
+without bypassing the problem+json handler.
+
 Citations:
 - taskq_api.errors:line 18-44  TaskQError & problem() per FR-01 AC-1.2/AC-1.3/AC-1.5/AC-1.6/AC-1.7
+- taskq_api.errors:problem  extended with `headers=` per FR-05 AC-5.1
 """
 
 from __future__ import annotations
+
+from typing import Dict, Optional
 
 from fastapi import Request
 from fastapi.exceptions import RequestValidationError
@@ -14,16 +22,28 @@ from fastapi.responses import JSONResponse
 class TaskQError(Exception):
     """Raised by service/handler code to surface a structured problem+json."""
 
-    def __init__(self, status: int, title: str, detail: str = "") -> None:
-        # [FR-01]
+    def __init__(
+        self,
+        status: int,
+        title: str,
+        detail: str = "",
+        headers: Optional[Dict[str, str]] = None,
+    ) -> None:
+        # [FR-01] [FR-05] AC-5.1 — headers round-trip into the JSONResponse.
         self.status = status
         self.title = title
         self.detail = detail
+        self.headers: Dict[str, str] = dict(headers or {})
 
 
-def problem(status: int, title: str, detail: str = "") -> TaskQError:
+def problem(
+    status: int,
+    title: str,
+    detail: str = "",
+    headers: Optional[Dict[str, str]] = None,
+) -> TaskQError:
     """Build a TaskQError that the global handler renders as problem+json."""
-    return TaskQError(status=status, title=title, detail=detail)
+    return TaskQError(status=status, title=title, detail=detail, headers=headers)
 
 
 async def problem_json_response(
@@ -42,6 +62,7 @@ async def problem_json_response(
             status_code=exc.status,
             content=body,
             media_type="application/problem+json",
+            headers=exc.headers or None,
         )
 
     if isinstance(exc, RequestValidationError):

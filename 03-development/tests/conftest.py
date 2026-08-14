@@ -9,11 +9,18 @@ themselves are missing — not because of bad signatures or missing rows.
 from __future__ import annotations
 
 import hmac
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pytest
+
+# FR-05 — keep the production default burst (20) at import time so FR-05
+# tests (which compute `burst_capacity = str(DEFAULT_BURST)` before their
+# own monkeypatch) see 20. The conftest autouse fixture below lifts the
+# burst to 10000 for non-FR-05 tests, so seeding scenarios outside FR-05
+# are not rate-limited.
 
 # Ensure 03-development/src is importable when pytest is invoked from
 # the project root (`python3 -m pytest 03-development/tests/test_fr01.py`).
@@ -170,3 +177,46 @@ def read_api_key() -> str:
 @pytest.fixture
 def admin_api_key() -> str:
     return TEST_API_KEYS["admin"]
+
+
+# ---------------------------------------------------------------------------
+# FR-05 — rate-limit isolation between tests
+# ---------------------------------------------------------------------------
+# The token-bucket state in `taskq_api.service.ratelimit` is module-level.
+# Without a per-test reset, tests that issue more than `TASKQ_RATE_BURST`
+# requests against the same `X-API-Key` (e.g. seeding 51 rows for the
+# cursor-pagination test) would hit a 429 mid-test. This autouse fixture
+# clears the bucket dict at every test boundary AND lifts the burst
+# capacity for non-FR-05 tests so seeding scenarios are not rate-limited.
+# FR-05's own tests override DEFAULT_BURST per-test via monkeypatch.
+@pytest.fixture(autouse=True)
+def _reset_rate_limit_state_for_all_tests(request: pytest.FixtureRequest) -> None:
+    """Reset the in-process rate-limit bucket between every test."""
+    try:
+        from taskq_api.service import ratelimit as _rl  # type: ignore
+        if hasattr(_rl, "_buckets"):
+            _rl._buckets.clear()  # type: ignore[attr-defined]
+        # Lift the burst capacity for non-FR-05 tests so seeding scenarios
+        # that issue >20 calls per single test (FR-01 cursor pagination)
+        # are not rate-limited. FR-05's own tests override DEFAULT_BURST
+        # per-test via monkeypatch.setattr inside the test body, which
+        # happens AFTER this fixture runs.
+        node_path = str(request.node.fspath)
+        is_fr05_test = "test_fr05" in node_path
+        if is_fr05_test:
+            # Make sure FR-05 tests run with the production burst (20),
+            # regardless of what previous non-FR-05 tests left behind.
+            if hasattr(_rl, "DEFAULT_BURST"):
+                _rl.DEFAULT_BURST = 20  # type: ignore[attr-defined]
+        else:
+            if hasattr(_rl, "DEFAULT_BURST"):
+                _rl.DEFAULT_BURST = 10000  # type: ignore[attr-defined]
+    except Exception:
+        pass
+    yield
+    try:
+        from taskq_api.service import ratelimit as _rl  # type: ignore
+        if hasattr(_rl, "_buckets"):
+            _rl._buckets.clear()  # type: ignore[attr-defined]
+    except Exception:
+        pass
