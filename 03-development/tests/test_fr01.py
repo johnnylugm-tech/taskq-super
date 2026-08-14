@@ -104,7 +104,13 @@ def _valid_body(name: str = "sample-task") -> Dict[str, Any]:
 async def test_fr01_create_task_returns_201_with_id_and_status_pending(
     write_api_key: str,
 ) -> None:
-    """AC-1.1: valid POST /v1/tasks returns 201 + UUID id; status == pending."""
+    """AC-1.1: valid POST /v1/tasks returns 201 + UUID id; status == pending.
+
+    NFR-01 (perf: ORM-backed store must stay sub-frame),
+    NFR-10 (integration: driven via httpx ASGI transport).
+    """
+    # NFR-01
+    # NFR-10
     async with _client() as c:
         resp = await c.post(
             "/v1/tasks",
@@ -129,7 +135,13 @@ async def test_fr01_create_task_returns_201_with_id_and_status_pending(
 
 @pytest.mark.asyncio
 async def test_fr01_create_task_without_api_key_returns_401() -> None:
-    """AC-1.2: POST /v1/tasks without X-API-Key returns 401 + problem+json."""
+    """AC-1.2: POST /v1/tasks without X-API-Key returns 401 + problem+json.
+
+    NFR-02 (authn: every /v1/* requires X-API-Key, 401 otherwise),
+    NFR-10 (integration: driven via httpx ASGI transport).
+    """
+    # NFR-02
+    # NFR-10
     async with _client() as c:
         resp = await c.post(
             "/v1/tasks",
@@ -152,7 +164,11 @@ async def test_fr01_create_task_without_api_key_returns_401() -> None:
 async def test_fr01_create_task_invalid_body_returns_422(
     write_api_key: str,
 ) -> None:
-    """AC-1.3: empty `name` violates TaskCreate -> 422 + problem+json."""
+    """AC-1.3: empty `name` violates TaskCreate -> 422 + problem+json.
+
+    NFR-10 (integration: 422 path via httpx ASGI transport).
+    """
+    # NFR-10
     async with _client() as c:
         resp = await c.post(
             "/v1/tasks",
@@ -176,7 +192,12 @@ async def test_fr01_get_task_with_read_key_returns_200(
     write_api_key: str,
     read_api_key: str,
 ) -> None:
-    """AC-1.4: GET known task with a read key returns 200 + all task columns."""
+    """AC-1.4: GET known task with a read key returns 200 + all task columns.
+
+    NFR-01 (perf: single-row fetch), NFR-10 (integration).
+    """
+    # NFR-01
+    # NFR-10
     async with _client() as c:
         # Create first so we have a known id.
         create = await c.post(
@@ -206,7 +227,11 @@ async def test_fr01_get_task_with_read_key_returns_200(
 
 @pytest.mark.asyncio
 async def test_fr01_get_unknown_task_returns_404(read_api_key: str) -> None:
-    """AC-1.5: GET unknown id returns 404 + problem+json."""
+    """AC-1.5: GET unknown id returns 404 + problem+json.
+
+    NFR-10 (integration: 404 path via httpx ASGI transport).
+    """
+    # NFR-10
     unknown_id = "00000000-0000-0000-0000-000000000000"
     async with _client() as c:
         resp = await c.get(
@@ -230,7 +255,13 @@ async def test_fr01_delete_task_with_write_scope_returns_403(
     write_api_key: str,
 ) -> None:
     """AC-1.6: DELETE with a write-scoped key returns 403; body must not
-    leak whether `id` exists (T-05)."""
+    leak whether `id` exists (T-05).
+
+    NFR-02 (no-leak: 403 must not reveal resource existence),
+    NFR-10 (integration).
+    """
+    # NFR-02
+    # NFR-10
     target_id = str(uuid.uuid4())  # arbitrary id; leakage must be impossible
     async with _client() as c:
         resp = await c.delete(
@@ -252,7 +283,11 @@ async def test_fr01_delete_task_with_write_scope_returns_403(
 async def test_fr01_create_task_duplicate_name_returns_409(
     write_api_key: str,
 ) -> None:
-    """AC-1.7: second POST with the same name returns 409 + problem+json."""
+    """AC-1.7: second POST with the same name returns 409 + problem+json.
+
+    NFR-10 (integration: 409 path via httpx ASGI transport).
+    """
+    # NFR-10
     async with _client() as c:
         first = await c.post(
             "/v1/tasks",
@@ -286,7 +321,10 @@ async def test_fr01_list_tasks_limit_bounds_and_default(
 
     Scenario A of three sharing this test_fn name (TEST_SPEC cases 8/9/10).
     Function name MUST stay exactly as TEST_SPEC dictates.
+
+    NFR-10 (integration: 422 lower-bound path via httpx ASGI transport).
     """
+    # NFR-10
     async with _client() as c:
         resp = await c.get(
             "/v1/tasks",
@@ -309,7 +347,10 @@ async def test_fr01_list_tasks_limit_bounds_and_default(
     """AC-1.8 upper-bound: limit=201 is out of [1, 200]; expect 422.
 
     Scenario B of three sharing this test_fn name.
+
+    NFR-10 (integration: 422 upper-bound path via httpx ASGI transport).
     """
+    # NFR-10
     async with _client() as c:
         resp = await c.get(
             "/v1/tasks",
@@ -332,7 +373,12 @@ async def test_fr01_list_tasks_limit_bounds_and_default(
     """AC-1.8 default: omitting `limit` defaults to 50; expect 200.
 
     Scenario C of three sharing this test_fn name.
+
+    NFR-01 (perf: list must stay constant-time SQL-wise),
+    NFR-10 (integration).
     """
+    # NFR-01
+    # NFR-10
     async with _client() as c:
         resp = await c.get(
             "/v1/tasks",
@@ -362,7 +408,12 @@ async def test_fr01_list_tasks_uses_cursor_pagination_not_offset(
     """AC-1.9: list endpoint MUST expose `cursor`, MUST NOT expose `offset`.
 
     Seeds more than `limit` rows so a cursor is actually returned.
+
+    NFR-01 (perf: cursor-based pagination is the N+1 guard),
+    NFR-10 (integration).
     """
+    # NFR-01
+    # NFR-10
     async with _client() as c:
         # Seed at least 51 rows so the default limit of 50 forces a cursor.
         for i in range(51):
@@ -402,7 +453,11 @@ async def test_fr01_delete_task_with_admin_key_returns_204(
 ) -> None:
     """AC-1.10: DELETE with an admin key on a known id returns 204; the same
     transaction also removes any matching rows in `task_results` and
-    `task_tags` (SAD §3.1.1)."""
+    `task_tags` (SAD §3.1.1).
+
+    NFR-10 (integration: admin DELETE path via httpx ASGI transport).
+    """
+    # NFR-10
     async with _client() as c:
         create = await c.post(
             "/v1/tasks",

@@ -1,0 +1,10 @@
+[importlinter]
+root_packages =
+    taskq_api
+
+[importlinter:contract:independence]
+name = config_and_errors_independence
+type = independence
+modules =
+    taskq_api.config
+    taskq_api.errors
