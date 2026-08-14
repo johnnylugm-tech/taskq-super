@@ -15,7 +15,6 @@ Citations:
 
 from __future__ import annotations
 
-import os
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Response, status
@@ -122,17 +121,6 @@ async def delete_task_endpoint(
 # ---------------------------------------------------------------------------
 
 
-def _read_task_timeout() -> float:
-    """Read TASKQ_TASK_TIMEOUT from the env (defaults to 30s)."""
-    raw = os.environ.get("TASKQ_TASK_TIMEOUT")
-    if raw is None:
-        return 30.0
-    try:
-        return float(raw)
-    except ValueError:
-        return 30.0
-
-
 @router.post("/{task_id}/run", status_code=status.HTTP_202_ACCEPTED)
 async def run_task_endpoint(
     task_id: str,
@@ -146,13 +134,15 @@ async def run_task_endpoint(
     what the polling test relies on (NFR-10 / AC-2.1 / AC-2.3).
 
     Citations:
-    - taskq_api.api.tasks:run_task_endpoint  AC-2.1 / AC-2.3 / AC-2.4
+    - taskq_api.api.tasks:run_task_endpoint  AC-2.1 / AC-2.3 / AC-2.4 / AC-2.5
     """
     # [FR-02]
     task = tasks_service.get_task(task_id)
-    command = task["command"]
-    timeout = _read_task_timeout()
-    row = await runner_service.run_command(task_id, command, timeout=timeout)
+    row = await runner_service.run_command(
+        task_id,
+        task["command"],
+        timeout=get_settings().task_timeout,
+    )
     return {"run_id": row["id"], "status": row["status"]}
 
 

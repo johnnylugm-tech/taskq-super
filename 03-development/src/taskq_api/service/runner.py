@@ -25,13 +25,17 @@ import sqlite3
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 # Cross-process shared store. Both the parent test process and the
 # FR-02 out-of-process subprocess map here so the persisted run row
 # is observable to the parent's GET /v1/tasks/{id}/runs polling.
 _DB_PATH: str = os.environ.get("TASKQ_RUNNER_DB", "/tmp/taskq_runner.db")
+
+# AC-2.3 — only the trailing N chars of each stream are persisted to keep
+# rows bounded; full output lives in the subprocess pipe until it's closed.
+_OUTPUT_TAIL_CHARS: int = 2000
 
 
 def _now_iso() -> str:
@@ -125,14 +129,9 @@ def list_runs(task_id: str) -> List[Dict[str, Any]]:
         conn.close()
 
 
-async def _run_async(task_id: str, command: str, timeout: float) -> Dict[str, Any]:
-    """Execute the command and persist the lifecycle transitions.
-
-    Citations:
-    - taskq_api.service.runner:_run_async  AC-2.1 / AC-2.3 / AC-2.4 / AC-2.5
-    """
-    # [FR-02]
-    row: Dict[str, Any] = {
+def _new_pending_row(task_id: str, command: str) -> Dict[str, Any]:
+    """Build the initial `pending` row for a new run."""
+    return {
         "id": str(uuid.uuid4()),
         "task_id": task_id,
         "command": command,
@@ -144,69 +143,111 @@ async def _run_async(task_id: str, command: str, timeout: float) -> Dict[str, An
         "finished_at": None,
         "duration_ms": 0,
     }
-    _upsert(row)
 
-    # pending → running.
-    row["status"] = "running"
-    _upsert(row)
 
+def _decode_tail(buf: bytes) -> str:
+    """Decode a captured subprocess stream; return the trailing N chars only."""
+    if not buf:
+        return ""
+    return buf.decode("utf-8", errors="replace")[-_OUTPUT_TAIL_CHARS:]
+
+
+async def _terminate(proc: asyncio.subprocess.Process) -> None:
+    """Kill the subprocess and reap it.
+
+    AC-2.5 / NP-15 — kill then await wait so no orphan pid remains after a
+    timeout. Both calls are best-effort: `ProcessLookupError` (already
+    exited) and any reap failure are swallowed so the run can still settle
+    to `timeout`.
+    """
+    try:
+        proc.kill()
+    except ProcessLookupError:
+        pass
+    try:
+        await proc.wait()
+    except Exception:
+        pass
+
+
+async def _execute_command(command: str, timeout: float) -> Dict[str, Any]:
+    """Run the command and return the row-fragment keys for settlement.
+
+    Returns a dict with `status`, `exit_code`, `stdout_tail`, `stderr_tail`
+    — the four fields the row-finalisation step needs. The subprocess is
+    launched via `asyncio.create_subprocess_exec(*shlex.split(command))` so
+    shell metacharacters pass straight through to `execve` (AC-2.2 / T-03:
+    the shell-passing flag is forbidden).
+    """
     arglist = shlex.split(command)
-    started_monotonic = time.monotonic()
-
-    final_status = "failed"
-    exit_code = -1
-    stdout_tail = ""
-    stderr_tail = ""
-
     try:
         proc = await asyncio.create_subprocess_exec(
             *arglist,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        try:
-            stdout_b, stderr_b = await asyncio.wait_for(
-                proc.communicate(), timeout=timeout
-            )
-            exit_code = proc.returncode if proc.returncode is not None else -1
-            stdout_tail = (
-                stdout_b.decode("utf-8", errors="replace")[-2000:]
-                if stdout_b
-                else ""
-            )
-            stderr_tail = (
-                stderr_b.decode("utf-8", errors="replace")[-2000:]
-                if stderr_b
-                else ""
-            )
-            final_status = "done" if exit_code == 0 else "failed"
-        except asyncio.TimeoutError:
-            # AC-2.5 — kill + await wait() so no orphan pid remains.
-            try:
-                proc.kill()
-            except ProcessLookupError:
-                pass
-            try:
-                await proc.wait()
-            except Exception:
-                pass
-            final_status = "timeout"
-            exit_code = -1
     except FileNotFoundError:
-        final_status = "failed"
-        exit_code = 127
+        # AC-2.4 — executable missing; record the conventional 127.
+        return {
+            "status": "failed",
+            "exit_code": 127,
+            "stdout_tail": "",
+            "stderr_tail": "",
+        }
     except Exception:
-        final_status = "failed"
+        return {
+            "status": "failed",
+            "exit_code": -1,
+            "stdout_tail": "",
+            "stderr_tail": "",
+        }
 
-    finished_at = _now_iso()
-    duration_ms = int((time.monotonic() - started_monotonic) * 1000)
+    try:
+        stdout_b, stderr_b = await asyncio.wait_for(
+            proc.communicate(), timeout=timeout
+        )
+        exit_code = proc.returncode if proc.returncode is not None else -1
+        return {
+            "status": "done" if exit_code == 0 else "failed",
+            "exit_code": exit_code,
+            "stdout_tail": _decode_tail(stdout_b),
+            "stderr_tail": _decode_tail(stderr_b),
+        }
+    except asyncio.TimeoutError:
+        await _terminate(proc)
+        return {
+            "status": "timeout",
+            "exit_code": -1,
+            "stdout_tail": "",
+            "stderr_tail": "",
+        }
+
+
+async def _run_async(task_id: str, command: str, timeout: float) -> Dict[str, Any]:
+    """Execute the command and persist the lifecycle transitions.
+
+    Lifecycle: `pending → running → done | failed | timeout`. The subprocess
+    execution is delegated to `_execute_command` so this function only owns
+    the row lifecycle (initial create, running-transition persist, settle).
+
+    Citations:
+    - taskq_api.service.runner:_run_async  AC-2.1 / AC-2.3 / AC-2.4 / AC-2.5
+    """
+    # [FR-02]
+    row = _new_pending_row(task_id, command)
+    _upsert(row)
+
+    # pending → running.
+    row["status"] = "running"
+    _upsert(row)
+
+    started_monotonic = time.monotonic()
+    outcome = await _execute_command(command, timeout)
+
     row.update(
-        status=final_status,
-        exit_code=exit_code,
-        stdout_tail=stdout_tail,
-        stderr_tail=stderr_tail,
-        finished_at=finished_at,
-        duration_ms=duration_ms,
+        outcome,
+        finished_at=_now_iso(),
+        duration_ms=int((time.monotonic() - started_monotonic) * 1000),
     )
     _upsert(row)
     return row

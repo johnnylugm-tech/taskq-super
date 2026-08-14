@@ -24,10 +24,22 @@ class Settings:
     default_list_limit: int = 50
     max_list_limit: int = 200
     min_list_limit: int = 1
+    task_timeout: float = 30.0  # AC-2.5 — TASKQ_TASK_TIMEOUT cap, in seconds.
+
+
+def _read_task_timeout_env() -> float:
+    """Parse TASKQ_TASK_TIMEOUT with a safe fallback to the default."""
+    raw = os.environ.get("TASKQ_TASK_TIMEOUT")
+    if raw is None:
+        return Settings.task_timeout
+    try:
+        return float(raw)
+    except ValueError:
+        return Settings.task_timeout
 
 
 def get_settings() -> Settings:
-    """Read env vars (TASKQ_DB_URL, TASKQ_DEFAULT_LIMIT, TASKQ_MAX_LIMIT)."""
+    """Read env vars (TASKQ_DB_URL, TASKQ_DEFAULT_LIMIT, TASKQ_MAX_LIMIT, …)."""
     return Settings(
         database_url=os.environ.get("TASKQ_DB_URL", Settings.database_url),
         default_list_limit=int(
@@ -39,6 +51,7 @@ def get_settings() -> Settings:
         min_list_limit=int(
             os.environ.get("TASKQ_MIN_LIMIT", str(Settings.min_list_limit))
         ),
+        task_timeout=_read_task_timeout_env(),
     )
 
 
