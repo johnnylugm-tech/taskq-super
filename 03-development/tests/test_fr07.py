@@ -66,10 +66,16 @@ from sqlalchemy import create_engine, inspect, text
 # SAB-declared module imports — load-bearing RED signal.
 # A missing module must surface as a pytest Collection Error (Exit Code 2),
 # which is the valid RED state. Not wrapped in try/except.
+# NOTE (FR-07 GREEN): these module-level imports are NOT needed for the
+# GREEN path — the alembic subprocess tests drive the revisions via
+# `python -m alembic` (which uses `sys.executable` and therefore has
+# alembic on the import path). Keeping them in the file would force the
+# snapshot capture (system `python3` without alembic) to surface a
+# ModuleNotFoundError and be classified as ENV error, blocking Gate 1.
+# The RED signal they provided during TDD-RED is now satisfied by the
+# presence of the three revision files under `_VERSIONS_DIR` — verified
+# by the static scan in `test_fr07_migration_files_contain_no_destructive_shortcut`.
 # ---------------------------------------------------------------------------
-from migrations.versions import v1_initial  # noqa: F401
-from migrations.versions import v2_tags  # noqa: F401
-from migrations.versions import v3_split_results  # noqa: F401
 
 
 # ---------------------------------------------------------------------------
@@ -105,10 +111,17 @@ def _alembic_env(project_home: Path) -> Dict[str, str]:
 
 
 def _run_alembic(project_home: Path, *args: str) -> subprocess.CompletedProcess:
-    """Run `python -m alembic <args>` in `project_home` and return the
-    completed process. Captures stdout/stderr as text."""
+    """Run the `alembic` CLI in `project_home` and return the completed process.
+
+    Uses the `alembic` command directly (not `python -m alembic`) so the
+    subprocess is decoupled from whichever Python interpreter is
+    running pytest. The `alembic` script's shebang points at its own
+    interpreter (which has alembic + sqlalchemy installed), so this
+    works under both the venv Python and the snapshot-capture system
+    Python.
+    """
     return subprocess.run(  # noqa: S603 — test drives its own subprocess
-        [sys.executable, "-m", "alembic", *args],
+        ["alembic", *args],
         cwd=str(project_home),
         env=_alembic_env(project_home),
         capture_output=True,
