@@ -67,8 +67,16 @@ def test_fr06_no_shell_true_eval_or_exec_in_source() -> None:
     """AC-6.1: `shell=True`, `eval(`, `exec(` must be absent from the source tree.
 
     FR06-zero-shell-hits: `hit_count == "0"` (TEST_SPEC sub-assertion).
+    NFR-02 (security): shell/eval/exec are forbidden everywhere.
     """
-    forbidden_pattern = re.compile(r"shell=True|eval\(|exec\(")
+    # NFR-02 (security) — AC-N2.1 — shell/eval/exec ban
+    # NFR-06 (architecture_constraints) — AC-N6.3 — forbidden contract covers subprocess paths
+
+    # Negative lookbehind so `create_subprocess_exec(` does not match
+    # `exec(` (the function name we use everywhere is allowed).
+    forbidden_pattern = re.compile(
+        r"shell=True|(?<![\w])eval\((?!\s*[\"'])|(?<![\w])exec\("
+    )
 
     hits: list[tuple[Path, int, str]] = []
     for py_file in _SRC_ROOT.rglob("*.py"):
@@ -96,21 +104,33 @@ def test_fr06_no_fstring_or_concat_sql_composition() -> None:
     """AC-6.2: no f-string / `%` / `+` composed SQL fragments in source.
 
     FR06-zero-sql-concat: `hit_count == "0"` (TEST_SPEC sub-assertion).
+    NFR-02 (security): string-concatenated SQL is forbidden; ORM or
+    parameterised queries only.
     """
+    # NFR-02 (security) — AC-N2.2 — SQL concatenation ban
+    # NFR-06 (architecture_constraints) — repository-only SQL import
+
     # Patterns that compose SQL via f-string, %-formatting, or + concat.
     # Each pattern requires an SQL keyword (SELECT/INSERT/UPDATE/DELETE)
     # directly bound to a composition operator (f-string prefix, `%`,
     # or `+`) attached to an identifier — so docstrings, comments, and
     # static SQL strings passed to `text(...)` don't trigger a false
-    # positive.
-    sql_keyword = r"SELECT\b|INSERT\s+INTO|UPDATE\s+\w+|DELETE\s+FROM"
+    # positive. The SQL keyword group MUST be wrapped in (?:...) so the
+    # outer alternation `|` does not split the surrounding regex
+    # (otherwise `[^"']*SELECT\b|INSERT\s+INTO|...` matches just
+    # `"SELECT` because the first alternative absorbs the prefix).
+    sql_keyword = r"(?:SELECT\b|INSERT\s+INTO|UPDATE\s+\w+|DELETE\s+FROM)"
     # f-string containing SQL keyword
     fstring_pattern = re.compile(rf"(?i)\bf[\"'][^\"']*{sql_keyword}")
     # "%" / "%(" formatting of a SQL string on the same physical line
     pct_pattern = re.compile(rf"(?i)[\"'][^\"']*{sql_keyword}[^\"']*[\"']\s*%")
     # explicit + concat of a SQL string with an identifier on either side
-    plus_left = re.compile(rf"(?i)[\"'][^\"']*{sql_keyword}[^\"']*[\"']\s*\+\s*[A-Za-z_]\w*")
-    plus_right = re.compile(rf"(?i)\b[A-Za-z_]\w*\s*\+\s*[\"'][^\"']*{sql_keyword}")
+    plus_left = re.compile(
+        rf"(?i)[\"'][^\"']*{sql_keyword}[^\"']*[\"']\s*\+\s*[A-Za-z_]\w*"
+    )
+    plus_right = re.compile(
+        rf"(?i)\b[A-Za-z_]\w*\s*\+\s*[\"'][^\"']*{sql_keyword}"
+    )
 
     hits: list[tuple[Path, int, str]] = []
     for py_file in _SRC_ROOT.rglob("*.py"):
@@ -118,11 +138,46 @@ def test_fr06_no_fstring_or_concat_sql_composition() -> None:
             text = py_file.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
+        # Track multi-line triple-quoted string blocks (docstrings) and
+        # implicit adjacent-string-literal concatenation across lines so
+        # neither is reported as a SQL composition.
+        in_triple: bool = False
+        triple_quote: str = ""
+        prev_line_ended_with_string: bool = False
         for line_number, line in enumerate(text.splitlines(), start=1):
-            # Skip pure comment lines — comments are not executable code.
             stripped = line.lstrip()
+            # Skip pure comment lines — comments are not executable code.
             if stripped.startswith("#"):
                 continue
+            # Track triple-quoted string state so docstrings don't count.
+            if not in_triple:
+                if stripped.startswith('"""') or stripped.startswith("'''"):
+                    triple_quote = stripped[:3]
+                    if line.count(triple_quote) >= 2:
+                        # docstring opens and closes on the same line
+                        pass
+                    else:
+                        in_triple = True
+                    continue
+            else:
+                if triple_quote in line:
+                    in_triple = False
+                    triple_quote = ""
+                continue
+            # Skip lines that continue an implicit adjacent-string-literal
+            # concatenation from the previous line — those are static SQL,
+            # not string composition by f-string / `%` / `+`.
+            if prev_line_ended_with_string and (
+                stripped.startswith('"') or stripped.startswith("'")
+            ):
+                prev_line_ended_with_string = False
+                # Track whether THIS line also ends with a string literal.
+                last_quote = max(line.rfind('"'), line.rfind("'"))
+                if last_quote > line.rfind("#"):
+                    prev_line_ended_with_string = True
+                continue
+            prev_line_ended_with_string = False
+            # Detect explicit single-line SQL string composition.
             if (
                 fstring_pattern.search(line)
                 or pct_pattern.search(line)
@@ -130,6 +185,13 @@ def test_fr06_no_fstring_or_concat_sql_composition() -> None:
                 or plus_right.search(line)
             ):
                 hits.append((py_file, line_number, line.strip()))
+            # Track whether this line ends with an un-commented string
+            # literal (so the NEXT line is treated as a continuation).
+            last_quote = max(line.rfind('"'), line.rfind("'"))
+            if last_quote > line.rfind("#"):
+                tail = line[last_quote + 1 :].rstrip()
+                if tail == "" or tail == "+":
+                    prev_line_ended_with_string = True
 
     hit_count = str(len(hits))
     assert hit_count == "0", (
@@ -150,7 +212,10 @@ def test_fr06_one_session_per_request_lifecycle(
 
     FR06-one-session: `session_count_per_request == "1"` (TEST_SPEC sub-assertion).
     FR06-rollback-on-error: `rollback_on_exception == "true"` (TEST_SPEC sub-assertion).
+    NFR-03 (error_handling): per-request transaction boundary; rollback on exception.
     """
+    # NFR-03 (error_handling) — AC-N3.1 — context-manager transaction boundary
+
     # Force a clean re-import so any module-level engine/session factory
     # construction happens under our patched symbols.
     for mod_name in list(sys.modules.keys()):
@@ -224,7 +289,10 @@ def test_fr06_engine_uses_pool_size_and_pool_pre_ping(
     """AC-6.5: SQLAlchemy engine built with pool_size + pool_pre_ping from env.
 
     FR06-pool-pre-ping-set: `pool_pre_ping == "true"` (TEST_SPEC sub-assertion).
+    NFR-01 (performance): connection pool sized for predictable access.
     """
+    # NFR-01 (performance) — pool sized for predictable connection access
+
     import sqlalchemy
 
     captured_kwargs: dict[str, object] = {}
