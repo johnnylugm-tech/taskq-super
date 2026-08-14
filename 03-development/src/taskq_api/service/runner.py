@@ -159,7 +159,7 @@ async def _run_async(task_id: str, command: str, timeout: float) -> Dict[str, An
     stderr_tail = ""
 
     try:
-        proc = await asyncio.subprocess.create_subprocess_exec(
+        proc = await asyncio.create_subprocess_exec(
             *arglist,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
