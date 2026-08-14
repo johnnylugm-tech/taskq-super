@@ -1,9 +1,9 @@
 # Harness-executed: pytest-cov
 # returncode: 0
-# agent_score: 100.0 | threshold: 80.0
+# agent_score: 90.0 | threshold: 80.0
 
-........................................................................ [ 84%]
-.............                                                            [100%]
+........................................................................ [ 80%]
+..................                                                       [100%]
 =============================== warnings summary ===============================
 03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard
   <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
@@ -26,7 +26,7 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/api/deps.py                        23      0   100%
 03-development/src/taskq_api/api/health.py                      12      0   100%
 03-development/src/taskq_api/api/tasks.py                       41      0   100%
-03-development/src/taskq_api/app.py                             14      0   100%
+03-development/src/taskq_api/app.py                             32      3    91%   73-75
 03-development/src/taskq_api/config.py                          21      4    81%   35-38
 03-development/src/taskq_api/errors.py                          27      2    93%   82-88
 03-development/src/taskq_api/models/__init__.py                  0      0   100%
@@ -40,8 +40,8 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
 03-development/src/taskq_api/service/auth.py                    29      0   100%
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
-03-development/src/taskq_api/service/runner.py                  81      0   100%
+03-development/src/taskq_api/service/runner.py                 172     17    90%   322, 371, 422, 515-522, 535-541
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
 ------------------------------------------------------------------------------------------
-TOTAL                                                          585     60    90%
-85 passed, 1 warning in 5.49s
+TOTAL                                                          694     80    88%
+90 passed, 1 warning in 11.41s
