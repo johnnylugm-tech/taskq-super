@@ -1,8 +1,8 @@
 # Harness-executed: pytest-cov
 # returncode: 0
-# agent_score: 88.0 | threshold: 80.0
+# agent_score: 100.0 | threshold: 80.0
 
-...................                                                      [100%]
+............................                                             [100%]
 ================================ tests coverage ================================
 ______________ coverage: platform darwin, python 3.11.15-final-0 _______________
 
@@ -26,8 +26,8 @@ Name                                                   Stmts   Miss  Cover   Mis
 03-development/src/taskq_api/repository/task_repo.py      11     11     0%   15-52
 03-development/src/taskq_api/service/__init__.py           0      0   100%
 03-development/src/taskq_api/service/auth.py              31      3    90%   72, 76, 82
-03-development/src/taskq_api/service/runner.py            81     15    81%   163-170, 189-198, 216-218
+03-development/src/taskq_api/service/runner.py            81      0   100%
 03-development/src/taskq_api/service/tasks.py             35      0   100%
 ------------------------------------------------------------------------------------
-TOTAL                                                    362     72    80%
-19 passed in 2.54s
+TOTAL                                                    362     57    84%
+28 passed in 3.10s
