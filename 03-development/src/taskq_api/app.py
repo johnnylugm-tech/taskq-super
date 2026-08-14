@@ -23,7 +23,7 @@ from typing import Any, Optional
 from fastapi import FastAPI
 
 from taskq_api.api.tasks import router as tasks_router
-from taskq_api.api.health import healthz_router, readyz_router
+from taskq_api.api.health import healthz_router, readyz_router, metrics_router
 from taskq_api.errors import install_exception_handlers
 from taskq_api.service.runner import DRAIN_TIMEOUT  # [FR-08]
 
@@ -43,6 +43,7 @@ def create_app() -> FastAPI:
     app.include_router(tasks_router)
     app.include_router(healthz_router)
     app.include_router(readyz_router)
+    app.include_router(metrics_router)
     install_exception_handlers(app)
     return app
 
