@@ -9,7 +9,6 @@ prints exactly one plaintext line on stdout, then exits.
 from __future__ import annotations
 
 import argparse
-import sys
 
 import uvicorn
 
@@ -32,7 +31,12 @@ def main(argv: list[str] | None = None) -> None:
     """
     # [FR-09] [FR-03]
     args = _build_parser().parse_args(argv)
-    if args.command == "key" and args.key_command == "create":
+    # Subcommand dispatch uses ``getattr(..., None)`` so the Namespace
+    # lookup stays valid when ``--help`` / no-subcommand paths leave
+    # ``key_command`` unset on the parsed Namespace.
+    command = getattr(args, "command", None)
+    sub_command = getattr(args, "key_command", None)
+    if command == "key" and sub_command == "create":
         _run_key_create(args.scope)
         return
     _run_uvicorn()
@@ -65,9 +69,10 @@ def _run_key_create(scope: str) -> None:
     [FR-03] — AC-3.2 contract: the CLI exits with the key as the sole
     non-empty line so a caller can pipe it into another process.
     """
-    plaintext = create_key(scope)
-    sys.stdout.write(plaintext + "\n")
-    sys.stdout.flush()
+    # [FR-03] AC-3.2 — ``flush=True`` ensures the key is on disk before
+    # the process exits, so a caller that pipes through ``xargs`` or
+    # ``pbcopy`` does not race the kernel pipe buffer.
+    print(create_key(scope), flush=True)
 
 
 def _run_uvicorn() -> None:

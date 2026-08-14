@@ -27,7 +27,9 @@ Citations:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Sequence
+import re
+from pathlib import Path
+from typing import Any, Sequence
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -35,6 +37,7 @@ from sqlalchemy import text
 
 from taskq_api.api.deps import require_scope
 from taskq_api.repository import rate_repo, session as session_mod
+from taskq_api.repository import task_repo
 
 # [FR-03] AC-3.6 — both liveness and readiness are at top-level (no prefix).
 healthz_router = APIRouter(tags=["health"])
@@ -42,12 +45,97 @@ readyz_router = APIRouter(tags=["health"])
 # [FR-09] AC-9.5 — observability surface; admin scope required (SAD §3.1.1).
 metrics_router = APIRouter(prefix="/v1", tags=["metrics"])
 
+# Location of the alembic migration scripts. The head revision is derived
+# at module-load time from the actual files on disk so a freshly added
+# revision becomes "head" automatically — no constant to keep in sync.
+_MIGRATIONS_DIR: Path = (
+    Path(__file__).resolve().parents[3] / "src" / "migrations" / "versions"
+)
+
+
+def _resolve_alembic_head() -> str:
+    """Return the leaf revision of the alembic migration graph on disk.
+
+    [FR-09] — AC-9.3 / AC-9.6. Walks every ``*.py`` under
+    ``migrations/versions/`` and reads the ``revision`` /
+    ``down_revision`` module-level assignments (the same identifiers
+    alembic itself consults). The head is the revision that no other
+    revision declares as its ``down_revision``; ties are broken
+    alphabetically so the result is deterministic.
+
+    Falls back to the empty string when no migration files are
+    reachable — a deliberately "not at head" value that makes the
+    readiness probe fail closed (AC-9.6) until a real migration
+    directory is wired up.
+    """
+    if not _MIGRATIONS_DIR.is_dir():
+        return ""
+    revisions: dict[str, str | None] = {}
+    for migration_file in sorted(_MIGRATIONS_DIR.glob("*.py")):
+        if migration_file.name.startswith("_"):
+            continue
+        # [FR-09] — parse, do NOT import. Migration files import
+        # `alembic` / `sqlalchemy` and can have side effects; a
+        # lightweight regex read is sufficient for two well-known
+        # module-level string assignments.
+        try:
+            text_source = migration_file.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        revision = _extract_string_assignment(text_source, "revision")
+        down_revision = _extract_string_assignment(
+            text_source, "down_revision"
+        )
+        if revision is not None:
+            revisions[revision] = down_revision
+
+    if not revisions:
+        return ""
+
+    # Head = revision no other revision names as its `down_revision`.
+    children = {rev for rev in revisions.values() if rev is not None}
+    heads = sorted(r for r in revisions if r not in children)
+    return heads[0] if heads else ""
+
+
+_STRING_ASSIGNMENT_RE = re.compile(
+    r"""^[ \t]*                              # leading indent
+        (?P<name>[A-Za-z_][A-Za-z0-9_]*)    # identifier
+        [ \t]*=[ \t]*
+        (?P<quote>['\"])
+        (?P<value>[^'\"]*)
+        (?P=quote)""",
+    re.MULTILINE | re.VERBOSE,
+)
+
+
+def _extract_string_assignment(source: str, name: str) -> str | None:
+    """Return the string value of the first ``name = "..."`` line in ``source``.
+
+    Matches the top-level ``revision = "..."`` / ``down_revision = "..."``
+    form alembic generates. Returns ``None`` when the attribute is
+    absent, multi-line, or assigned a non-literal expression.
+    """
+    for match in _STRING_ASSIGNMENT_RE.finditer(source):
+        if match.group("name") != name:
+            continue
+        value = match.group("value")
+        return value if value else None
+    return None
+
+
 # [FR-09] AC-9.3 / AC-9.6 — the migration version pair the readiness
 # gate compares. Module-level so tests can ``monkeypatch.setattr(...)``
 # individual revisions (e.g. simulating "deployed v3 without running
 # the migration" by setting ``ALEMBIC_CURRENT = "v2"``).
-ALEMBIC_CURRENT: str = "v3_split_results"
-ALEMBIC_HEAD: str = "v3_split_results"
+#
+# `ALEMBIC_HEAD` is derived from the migrations directory at import
+# time (the leaf of the alembic revision DAG). `ALEMBIC_CURRENT`
+# mirrors what `alembic current` would report against the live DB;
+# it is initialised to the head so a fresh deployment reads "at head"
+# until the alembic_version table exists to override it.
+ALEMBIC_HEAD: str = _resolve_alembic_head()
+ALEMBIC_CURRENT: str = ALEMBIC_HEAD
 
 
 def check_db_reachable() -> bool:
@@ -135,12 +223,9 @@ async def readyz() -> JSONResponse:
             "migration not at head "
             f"(current={ALEMBIC_CURRENT}, head={ALEMBIC_HEAD})"
         )
-    detail = "; ".join(failed)
-    # AC-9.2 / AC-9.3 — body names which condition failed; the test
-    # asserts on the substring "db"/"database" or "migration"/"alembic".
-    body: Dict[str, Any] = {
+    body: dict[str, Any] = {
         "status": "fail",
-        "detail": detail,
+        "detail": "; ".join(failed),
         "checks": {
             "db_reachable": db_ok,
             "migration_at_head": migration_ok,
@@ -204,7 +289,7 @@ def _percentile(sorted_values: Sequence[float], q: float) -> float:
     return sorted_values[idx]
 
 
-def _collect_task_metrics() -> tuple[Dict[str, int], Dict[str, float]]:
+def _collect_task_metrics() -> tuple[dict[str, int], dict[str, float]]:
     """Return ``(task_counts_by_status, latency_percentiles_ms)``.
 
     [FR-09] — AC-9.5. Single repository scan so the two counters
@@ -213,16 +298,16 @@ def _collect_task_metrics() -> tuple[Dict[str, int], Dict[str, float]]:
     """
     try:
         with session_mod.transactional() as store:
-            items, _ = store.list_paginated(
-                cursor=None, limit=10000, status=None
+            items, _ = task_repo.list_tasks(
+                store, cursor=None, limit=10000, status=None
             )
     except Exception:
         # [FR-09] — never let the metrics probe crash; report zeros so the
         # operator still sees a body rather than a 500 (NFR-12).
         return {}, {}
 
-    counts: Dict[str, int] = {}
-    durations: List[float] = []
+    counts: dict[str, int] = {}
+    durations: list[float] = []
     for row in items:
         status = str(row.get("status", "unknown"))
         counts[status] = counts.get(status, 0) + 1
@@ -230,7 +315,7 @@ def _collect_task_metrics() -> tuple[Dict[str, int], Dict[str, float]]:
             durations.append(float(row["duration_ms"]))
     durations.sort()
 
-    percentiles: Dict[str, float] = {}
+    percentiles: dict[str, float] = {}
     if durations:
         percentiles = {
             "p50": _percentile(durations, 0.50),

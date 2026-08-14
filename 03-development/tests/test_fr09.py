@@ -447,3 +447,192 @@ def test_fr09_migration_not_at_head_fails_closed_on_deploy(
         f"head after deploy; got deploy_outcome={deploy_outcome!r}; "
         f"body={resp.text!r}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridges — exercise internal helper paths not reached by the
+# 9 TEST_SPEC cases above. These are NOT new acceptance criteria; they
+# raise the line-coverage of `taskq_api.api.health` so Gate 1's
+# `test_coverage` dimension passes its 80% threshold.
+# ---------------------------------------------------------------------------
+
+
+def test_fr09_coverage_resolve_alembic_head_returns_empty_when_dir_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """[FR-09 / AC-9.6 coverage bridge] When the migrations directory does
+    not exist on disk, `_resolve_alembic_head()` MUST return the empty
+    string so the readiness probe fails closed (AC-9.6 「fail closed」).
+    Covers line 72.
+    """
+    missing_dir = health_module.Path("/nonexistent/path/that/never/exists")
+    monkeypatch.setattr(health_module, "_MIGRATIONS_DIR", missing_dir)
+    assert health_module._resolve_alembic_head() == ""
+
+
+def test_fr09_coverage_resolve_alembic_head_skips_unreadable_files(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    """[FR-09 / AC-9.6 coverage bridge] When a migration file exists but
+    is unreadable (raises `OSError`), `_resolve_alembic_head()` MUST skip
+    it (not crash) and keep scanning the remaining files. Covers lines
+    83-84.
+    """
+    # Real directory so the `is_dir()` guard passes.
+    monkeypatch.setattr(health_module, "_MIGRATIONS_DIR", tmp_path)
+    # One good migration plus one that raises on read_text. We patch
+    # `Path.read_text` so it raises only when called for the boom file
+    # (a name-keyed gate) — the good file is read normally.
+    (tmp_path / "v1_initial.py").write_text(
+        'revision = "v1"\ndown_revision = None\n', encoding="utf-8"
+    )
+    (tmp_path / "v9_boom.py").write_text(
+        'revision = "v9"\ndown_revision = None\n', encoding="utf-8"
+    )
+
+    _real_read_text = health_module.Path.read_text
+
+    def _patched_read_text(self, *args, **kwargs):
+        if self.name == "v9_boom.py":
+            raise OSError("simulated read failure")
+        return _real_read_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(health_module.Path, "read_text", _patched_read_text)
+    # Only the readable file's revision survives — `v9` was skipped.
+    assert health_module._resolve_alembic_head() == "v1"
+
+
+def test_fr09_coverage_resolve_alembic_head_empty_when_no_revisions(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    """[FR-09 / AC-9.6 coverage bridge] When the migrations directory is
+    present but no files expose a `revision = "..."` assignment, the head
+    MUST be the empty string (fail closed). Covers line 93.
+    """
+    monkeypatch.setattr(health_module, "_MIGRATIONS_DIR", tmp_path)
+    # A migration file with NO `revision = "..."` assignment.
+    (tmp_path / "v0_placeholder.py").write_text(
+        "# placeholder, no revision assigned\n", encoding="utf-8"
+    )
+    assert health_module._resolve_alembic_head() == ""
+
+
+def test_fr09_coverage_check_db_reachable_returns_false_on_exception(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """[FR-09 / AC-9.2 coverage bridge] When the engine raises during the
+    `SELECT 1` probe, `check_db_reachable()` MUST return `False` (the
+    readiness probe fails closed). Covers lines 159-160.
+    """
+
+    class _BoomEngine:
+        def connect(self):
+            raise RuntimeError("simulated DB outage")
+
+    class _BoomEngineFactory:
+        def connect(self):
+            raise RuntimeError("simulated DB outage")
+
+    # The real code calls `session_mod.get_engine()`; stub the symbol on
+    # the already-imported `session_mod` reference held by health_module.
+    monkeypatch.setattr(
+        health_module.session_mod,
+        "get_engine",
+        lambda: _BoomEngineFactory(),
+    )
+    assert health_module.check_db_reachable() is False
+
+
+def test_fr09_coverage_percentile_returns_zero_on_empty_sequence() -> None:
+    """[FR-09 / AC-9.5 coverage bridge] `_percentile([])` MUST return
+    `0.0` (the empty-sequence branch) instead of raising IndexError.
+    Covers lines 285-289.
+    """
+    assert health_module._percentile([], 0.5) == 0.0
+    assert health_module._percentile([], 0.95) == 0.0
+
+
+def test_fr09_coverage_collect_task_metrics_returns_empty_on_db_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """[FR-09 / AC-9.5 / NFR-12 coverage bridge] When the repository raises
+    while collecting metrics, `_collect_task_metrics()` MUST return
+    `({}, {})` so the metrics probe never crashes the operator dashboard.
+    Covers lines 304-307.
+    """
+    import contextlib
+
+    @contextlib.contextmanager
+    def _broken_session():
+        raise RuntimeError("simulated repo outage")
+        yield  # unreachable; needed to make this a generator
+
+    monkeypatch.setattr(
+        health_module.session_mod,
+        "transactional",
+        _broken_session,
+    )
+    counts, percentiles = health_module._collect_task_metrics()
+    assert counts == {}
+    assert percentiles == {}
+
+
+def test_fr09_coverage_collect_task_metrics_with_rows_and_durations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """[FR-09 / AC-9.5 coverage bridge] When `task_repo.list_tasks` returns
+    rows WITH `duration_ms`, the helper MUST compute per-status counts
+    AND populate the latency percentiles dict. Covers lines 312-315, 320.
+    """
+    rows = [
+        {"id": "t-1", "status": "pending", "duration_ms": 100.0},
+        {"id": "t-2", "status": "done", "duration_ms": 200.0},
+        {"id": "t-3", "status": "pending", "duration_ms": 50.0},
+        {"id": "t-4", "status": "done"},  # no duration_ms — skipped
+    ]
+
+    class _MiniStore:
+        pass
+
+    # Stub task_repo.list_tasks so the metrics scan sees our rows.
+    def _fake_list_tasks(store, cursor, limit, status):
+        return rows, None
+
+    monkeypatch.setattr(
+        health_module.task_repo, "list_tasks", _fake_list_tasks
+    )
+
+    counts, percentiles = health_module._collect_task_metrics()
+    assert counts == {"pending": 2, "done": 2}
+    assert set(percentiles.keys()) == {"p50", "p95", "p99"}
+    # Sorted durations are [50.0, 100.0, 200.0]; nearest-rank helper uses
+    # ``int(q * n) - 1`` clamped to [0, n-1], so:
+    #   p50  -> int(0.5 * 3) - 1 = 0  -> 50.0
+    #   p95  -> int(0.95 * 3) - 1 = 1 -> 100.0
+    #   p99  -> int(0.99 * 3) - 1 = 1 -> 100.0
+    assert percentiles["p50"] == 50.0
+    assert percentiles["p95"] == 100.0
+    assert percentiles["p99"] == 100.0
+
+
+def test_fr09_coverage_collect_task_metrics_with_rows_no_durations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """[FR-09 / AC-9.5 coverage bridge] When `task_repo.list_tasks` returns
+    rows WITHOUT `duration_ms`, `percentiles` MUST stay empty (the
+    `if durations:` guard on line 320 stays falsy). Covers line 320.
+    """
+    rows = [
+        {"id": "t-1", "status": "pending"},
+        {"id": "t-2", "status": "done"},
+    ]
+
+    def _fake_list_tasks(store, cursor, limit, status):
+        return rows, None
+
+    monkeypatch.setattr(
+        health_module.task_repo, "list_tasks", _fake_list_tasks
+    )
+    counts, percentiles = health_module._collect_task_metrics()
+    assert counts == {"pending": 1, "done": 1}
+    assert percentiles == {}
