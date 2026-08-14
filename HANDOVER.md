@@ -2,7 +2,7 @@
 
 **Checkpoint**: `P1-exit-20260814`  
 **Phase**: P1 — Spec & Discovery  
-**Generated**: 2026-08-14T05:25:50Z
+**Generated**: 2026-08-14T05:34:11Z
 
 > ⚠️  **開始下一個工作階段前，請先執行 `/compact` 壓縮上下文**，再從「接下來的工作」繼續。
 
@@ -84,17 +84,18 @@ P1 phase completed — pushed for record.
   - ? / loadpy-01-requirements-SRS-md-a1: **complete**
 
 **Recently Committed Files:**
-  - `harness`
-  - `.methodology/.state.lock`
   - `.methodology/agent_b_approvals/SPEC_TRACKING.md.json`
   - `.methodology/agent_b_approvals/SRS.md.json`
   - `.methodology/agent_b_approvals/TEST_INVENTORY.yaml.json`
   - `.methodology/agent_b_approvals/TRACEABILITY_MATRIX.md.json`
   - `.methodology/state.json`
+  - `.methodology/workflow_blocks.jsonl`
   - `01-requirements/SPEC_TRACKING.md`
-  - `01-requirements/SRS.md`
   - `01-requirements/TRACEABILITY_MATRIX.md`
   - `HANDOVER.md`
+  - `harness`
+  - `.methodology/.state.lock`
+  - `01-requirements/SRS.md`
   - `TEST_INVENTORY.yaml`
   - `srs_vs_spec_diff.json`
   - `.github/workflows/harness_quality_gate.yml`
@@ -103,7 +104,6 @@ P1 phase completed — pushed for record.
   - `.methodology/phase1_plan.md`
   - `.methodology/phase2_plan.md`
   - `.methodology/phase3_plan.md`
-  - `.methodology/phase4_plan.md`
 
 ## 接下來的工作
 
