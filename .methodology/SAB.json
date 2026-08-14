@@ -113,7 +113,10 @@
         {
           "name": "migrations.versions.v3_split_results"
         },
-        "taskq_api"
+        "taskq_api",
+        "migrations",
+        "migrations.versions",
+        "sitecustomize"
       ],
       "allowed_dependencies": []
     }
