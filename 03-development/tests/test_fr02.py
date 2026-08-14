@@ -175,6 +175,7 @@ def test_fr02_run_task_uses_shlex_split_no_shell() -> None:
     enforces zero `shell=True` literals.
     """
     # NFR-10
+    # NFR-02 — shell=True must not appear in src; runner uses shlex.split.
     command = "echo hi"
     arglist = shlex.split(command)
     shell_used = "true" if _shell_true_hits_in_src() > 0 else "false"
@@ -277,6 +278,7 @@ def test_fr02_run_task_timeout_transitions_timeout(
     [FR-02] — NFR-10 / NP-15 (timeout-kill sub-flow).
     """
     # NFR-10
+    # NFR-03 — kill + wait sub-flow on timeout (NP-15).
     # NP-15
     # Force a tiny timeout so the test finishes quickly.
     monkeypatch.setenv("TASKQ_TASK_TIMEOUT", "1.0")
@@ -378,6 +380,7 @@ def test_fr02_run_task_timeout_kill_awaits_process(
     [FR-02] — NP-15 (kill+wait sub-flow), FR-08 cross-link.
     """
     # NFR-10
+    # NFR-03 — kill + wait sub-flow leaves no orphan (NP-15).
     # NP-15
     monkeypatch.setenv("TASKQ_TASK_TIMEOUT", "1.0")
     task_id = _create_task(write_api_key, command="sleep 30")
