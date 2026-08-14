@@ -333,10 +333,14 @@ def test_fr06_engine_uses_pool_size_and_pool_pre_ping(
         f"all kwargs={captured_kwargs!r}"
     )
 
-    pool_pre_ping = captured_kwargs.get("pool_pre_ping")
-    pool_pre_ping_flag = "true" if pool_pre_ping is True else "false"
-    assert pool_pre_ping_flag == "true", (
+    # Predicate mirrored verbatim from TEST_SPEC FR06-pool-pre-ping-set:
+    # `pool_pre_ping == "true"` (the string). The raw value captured from
+    # `create_engine` kwargs is a boolean (True/False); coerce to the
+    # TEST_SPEC predicate's string form so the assertion reads verbatim.
+    pool_pre_ping_raw = captured_kwargs.get("pool_pre_ping")
+    pool_pre_ping = "true" if pool_pre_ping_raw is True else "false"
+    assert pool_pre_ping == "true", (
         f"create_engine must be called with pool_pre_ping=True; "
-        f"got pool_pre_ping={pool_pre_ping!r}; "
+        f"got pool_pre_ping={pool_pre_ping_raw!r}; "
         f"all kwargs={captured_kwargs!r}"
     )
