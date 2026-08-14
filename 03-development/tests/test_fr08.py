@@ -150,6 +150,8 @@ async def test_fr08_graceful_drain_marks_over_budget_task_interrupted() -> None:
     [FR-08] — AC-8.1, NFR-03 (graceful drain), subprocess_mode=out_of_process.
     """
     # NFR-03 — graceful drain: over-budget tasks are marked `interrupted`.
+    # NFR-10 — integration coverage (drain exercised both in-process and out-of-process).
+    # NFR-09 — zero-skip iron rule; this test must run end-to-end (no `skipif`).
     drain_timeout = 1.0
     task_runtime = "30"
     final_status = "pending"
@@ -219,7 +221,8 @@ def test_fr08_timeout_kill_leaves_no_orphan_process() -> None:
     [FR-08] — AC-8.2, NP-15 (kill+wait sub-flow), subprocess_mode=out_of_process.
     """
     # NFR-03 — kill + wait sub-flow leaves no orphan (NP-15).
-    # NP-15
+    # NFR-10 — integration coverage (subprocess kill+await end-to-end).
+    # NFR-09 — zero-skip iron rule (no `skipif`; orphan check must actually run).
     command = "sleep 30"
     timeout_seconds = 1.0
     orphan_pids_after_kill = "1"
@@ -306,6 +309,8 @@ async def test_fr08_concurrency_cap_queues_excess_tasks(
     [FR-08] — AC-8.3, NP-13 (concurrency cap).
     """
     # NFR-03 — concurrency cap: never exceed `TASKQ_MAX_CONCURRENT`.
+    # NFR-10 — integration coverage (TaskGroup + semaphore exercised in-process).
+    # NFR-09 — zero-skip iron rule (no `skipif`).
     max_concurrent = 2
     submitted = 5
 
@@ -385,6 +390,7 @@ async def test_fr08_timeout_path_kills_and_awaits_process(
     """
     # NFR-03 — kill + wait sub-flow: TimeoutError → kill + await wait.
     # NP-15
+    # NFR-09 — zero-skip iron rule (kill+await observable, no skip).
     command = "sleep 5"
     kill_called = "false"
     wait_awaited = "false"
@@ -478,6 +484,7 @@ def test_fr08_cancelled_error_propagates_not_swallowed() -> None:
     [FR-08] — AC-8.5, NFR-03 (no cancellation swallow), T-09.
     """
     # NFR-03 — CancelledError must propagate, never be swallowed (T-09).
+    # NFR-09 — zero-skip iron rule (cancellation check is mandatory, no skip).
     cancellation = "raised"
     handler_chain_catches = "false"
 
