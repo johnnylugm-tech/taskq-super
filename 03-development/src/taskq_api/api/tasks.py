@@ -96,16 +96,19 @@ async def get_task_endpoint(
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task_endpoint(
     task_id: str,
-    auth: dict = Depends(require_scope("admin")),
+    _auth: dict = Depends(require_scope("admin")),
 ) -> Response:
     """Delete a task (admin scope only).
+
+    Admin authorization is enforced by the `require_scope("admin")` dep
+    above; the dep raises 403 before any existence check, so the response
+    cannot leak whether `task_id` exists (AC-1.6 / T-05).
 
     Citations:
     - taskq_api.api.tasks:delete_task_endpoint  AC-1.6 / AC-1.10
     """
     # [FR-01]
-    is_admin = "admin" in auth.get("scopes", [])
-    tasks_service.delete_task(task_id, is_admin=is_admin)
+    tasks_service.delete_task(task_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

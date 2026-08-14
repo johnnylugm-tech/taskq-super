@@ -88,20 +88,18 @@ def list_tasks(
     return page, next_cursor
 
 
-def delete_task(task_id: str, *, is_admin: bool) -> None:
-    """Delete a task; admin scope only.
+def delete_task(task_id: str) -> None:
+    """Delete a task.
 
-    The non-admin branch is intentionally eager: a 403 is returned BEFORE
-    the existence check so the response never reveals whether `task_id`
-    exists (NFR-02 / T-05).
+    Authorization is the caller's responsibility: the HTTP layer enforces
+    `admin` scope via `require_scope("admin")` (AC-1.6 / AC-1.10), which
+    raises 403 before this function is reached, so the response cannot
+    leak whether `task_id` exists (NFR-02 / T-05).
 
     Citations:
     - taskq_api.service.tasks:delete_task  AC-1.6 / AC-1.10
     """
     # [FR-01]
-    if not is_admin:
-        # No existence lookup -> no id-leak.
-        raise problem(403, "Forbidden", "admin scope required to delete")
     with session_mod.transactional() as store:
         deleted = store.delete(task_id)
     if not deleted:
