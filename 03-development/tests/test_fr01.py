@@ -30,11 +30,15 @@ Shape notes (both are forced by tooling, not preference):
   gate's AST walker collects assertions from `ast.FunctionDef` bodies only
   — an `async def` test (`ast.AsyncFunctionDef`), or an assertion nested in
   an `async with` block, is invisible to it.
-* Cases 8/9/10 share one canonical TEST_SPEC function name; per the
-  v2.13.0 multi-scenario rule each scenario is its own definition under
-  that same name, so only the last one executes. The `limit` lower/upper
-  bound branches are therefore covered at the service layer by
-  `test_fr01_units.py`.
+* Cases 8/9/10 share one canonical TEST_SPEC function name. All three
+  scenarios live in a single definition of that name: three same-named
+  definitions would leave the first two shadowed and never executed, so the
+  `limit` bound branches would never run.
+* Two service-layer branches (`create_task`'s defensive re-raise and
+  `delete_task`'s not-found path) are unreachable through the HTTP surface;
+  they are covered by the `test_unit_*` functions at the end of this file,
+  which must live here because the Gate-1 coverage run only executes this
+  file.
 """
 
 from __future__ import annotations
@@ -45,10 +49,14 @@ import uuid
 from typing import Any, Dict, Optional
 
 import httpx
+import pytest
 
 # Imports of the modules under test. Not wrapped in try/except: a missing
 # module must surface as a pytest Collection Error, which is the valid RED.
 from taskq_api.app import app
+from taskq_api.errors import TaskQError
+from taskq_api.repository import session as session_mod
+from taskq_api.service.tasks import create_task, delete_task
 
 _UUID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
@@ -264,63 +272,36 @@ def test_fr01_create_task_duplicate_name_returns_409(write_api_key: str) -> None
 
 
 # ---------------------------------------------------------------------------
-# Case 8 — GET /v1/tasks?limit=0  (lower bound)
+# Cases 8 / 9 / 10 — GET /v1/tasks limit bounds and default
 # ---------------------------------------------------------------------------
 
 
 def test_fr01_list_tasks_limit_bounds_and_default(read_api_key: str) -> None:
-    """AC-1.8 lower bound: limit=0 is outside [1, 200]; expect 422.
+    """AC-1.8: `limit` outside [1, 200] is 422; omitting it defaults to 50.
 
-    Scenario A of three sharing this canonical TEST_SPEC function name.
-
-    [FR-01] — NFR-10.
-    """
-    # NFR-10
-    resp = _request("GET", "/v1/tasks", api_key=read_api_key, params={"limit": 0})
-    status_code = str(resp.status_code)
-    # FR01-lower-limit-422
-    assert status_code == "422", resp.text
-
-
-# ---------------------------------------------------------------------------
-# Case 9 — GET /v1/tasks?limit=201  (upper bound)
-# ---------------------------------------------------------------------------
-
-
-def test_fr01_list_tasks_limit_bounds_and_default(read_api_key: str) -> None:  # noqa: F811
-    """AC-1.8 upper bound: limit=201 is outside [1, 200]; expect 422.
-
-    Scenario B of three sharing this canonical TEST_SPEC function name.
-
-    [FR-01] — NFR-10.
-    """
-    # NFR-10
-    resp = _request("GET", "/v1/tasks", api_key=read_api_key, params={"limit": 201})
-    status_code = str(resp.status_code)
-    # FR01-upper-limit-422
-    assert status_code == "422", resp.text
-
-
-# ---------------------------------------------------------------------------
-# Case 10 — GET /v1/tasks  (default limit = 50)
-# ---------------------------------------------------------------------------
-
-
-def test_fr01_list_tasks_limit_bounds_and_default(read_api_key: str) -> None:  # noqa: F811
-    """AC-1.8 default: omitting `limit` defaults to 50; expect 200.
-
-    Scenario C of three sharing this canonical TEST_SPEC function name.
+    TEST_SPEC cases 8 (limit=0 -> 422), 9 (limit=201 -> 422) and 10
+    (limit omitted -> 200, effective 50) all declare this one canonical
+    function name, so all three scenarios live in this single definition —
+    three same-named definitions would leave the first two shadowed and
+    never executed.
 
     [FR-01] — NFR-01 (constant statement count), NFR-10.
     """
     # NFR-01
     # NFR-10
-    resp = _request("GET", "/v1/tasks", api_key=read_api_key)
-    status_code = str(resp.status_code)
-    body = resp.json()
+    lower = _request("GET", "/v1/tasks", api_key=read_api_key, params={"limit": 0})
+    upper = _request("GET", "/v1/tasks", api_key=read_api_key, params={"limit": 201})
+    default = _request("GET", "/v1/tasks", api_key=read_api_key)
+    body = default.json()
     effective_limit = str(body["limit"])
-    # FR01-default-limit-50
-    assert status_code == "200", resp.text
+    # FR01-lower-limit-422 (case 8) / FR01-upper-limit-422 (case 9)
+    status_code = str(lower.status_code)
+    assert status_code == "422", lower.text
+    status_code = str(upper.status_code)
+    assert status_code == "422", upper.text
+    # FR01-default-limit-50 (case 10)
+    status_code = str(default.status_code)
+    assert status_code == "200", default.text
     assert effective_limit == "50", body
 
 
@@ -391,3 +372,52 @@ def test_fr01_delete_task_with_admin_key_returns_204(
     status_code = str(resp.status_code)
     # FR01-admin-delete-204
     assert status_code == "204", resp.text
+
+
+# ---------------------------------------------------------------------------
+# Service-layer branches with no HTTP route into them
+# ---------------------------------------------------------------------------
+
+
+def test_unit_delete_task_not_found_raises_404() -> None:
+    """`delete_task` on an unknown id raises the 404 problem (AC-1.10).
+
+    The HTTP route reaches this branch only for an admin key on an id that
+    does not exist, which is not one of the TEST_SPEC cases; driving the
+    service function directly keeps the branch executed.
+
+    [FR-01] — the autouse conftest session mock supplies an empty store.
+    """
+    with pytest.raises(TaskQError) as excinfo:
+        delete_task("00000000-0000-0000-0000-000000000000")
+    assert excinfo.value.status == 404
+    assert excinfo.value.title == "Not Found"
+
+
+def test_unit_create_task_reraises_non_duplicate_keyerror(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`create_task` re-raises a store KeyError that is not `duplicate_name`.
+
+    Only `duplicate_name` maps to 409 (AC-1.7); any other KeyError must
+    propagate untouched rather than be mistranslated into a conflict.
+
+    [FR-01] — no HTTP route can produce this store failure.
+    """
+
+    class _FailingStore:
+        def insert(self, row: Dict[str, Any]) -> None:
+            raise KeyError("store_unavailable")
+
+    class _Ctx:
+        def __enter__(self) -> _FailingStore:
+            return _FailingStore()
+
+        def __exit__(self, *exc: Any) -> bool:
+            return False
+
+    monkeypatch.setattr(session_mod, "transactional", _Ctx)
+
+    with pytest.raises(KeyError) as excinfo:
+        create_task(name="store-failure", command="echo hello")
+    assert excinfo.value.args == ("store_unavailable",)
