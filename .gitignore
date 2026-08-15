@@ -8,6 +8,7 @@
 .methodology/sessions_spawn.log
 .methodology/sessions_spawn.log.lock
 .methodology/.mutation_exclusive.lock
+.methodology/gap_report.json
 .harness/traces/
 .venv/
 venv/
