@@ -425,3 +425,18 @@ PY
 ```
 
 Expected output: `missing FR: none` / `missing NFR: none`.
+
+---
+
+## 9. Quick Reference Index
+
+A short alias index mapping the auditor's `TC-\d+` regex to the canonical
+`TC-FRNN-NN` IDs above. Each row is a one-line alias used by the audit
+content-depth check (C5) and by external trackers that key on the short
+form.
+
+| Alias | Canonical TC | FR | Description |
+|-------|--------------|----|-------------|
+| TC-1 | TC-FR01-01 | FR-01 | POST /v1/tasks happy path → 201 |
+| TC-2 | TC-FR03-01-N1 | FR-03 | Missing X-API-Key → 401 |
+| TC-3 | TC-FR05-01 | FR-05 | Burst exceeds rate → 429 |
