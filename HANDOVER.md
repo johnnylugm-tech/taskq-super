@@ -1,8 +1,8 @@
 # Harness Methodology — Session Handover
 
-**Checkpoint**: `P4-gate3-20260815`  
+**Checkpoint**: `P4-entry-20260815`  
 **Phase**: P4 — Testing  
-**Generated**: 2026-08-15T18:22:32Z
+**Generated**: 2026-08-15T11:55:59Z
 
 > ⚠️  **開始下一個工作階段前，請先執行 `/compact` 壓縮上下文**，再從「接下來的工作」繼續。
 
@@ -14,9 +14,9 @@
 # 1. Clone (if working directory cleared)
 git clone --recurse-submodules https://github.com/johnnylugm-tech/taskq-super.git && cd taskq-super
 
-# 2. Read plan and start Phase 5
-cat .methodology/phase5_plan.md
-# Follow SKILL.md §0.1 Phase 5 entry check, then execute
+# 2. Read plan and continue Phase 4
+cat .methodology/phase4_plan.md
+# Follow the active plan and continue from where you left off
 ```
 
 ---
@@ -31,45 +31,39 @@ git clone --recurse-submodules https://github.com/johnnylugm-tech/taskq-super.gi
 git log --oneline -3
 
 # Confirm FSM state
-cat .methodology/state.json   # expected: phase=4 state=RUNNING last_gate=3
+cat .methodology/state.json   # expected: phase=4 state=RUNNING last_gate=2 last_fr=FR-10
 
 # Read active plan
-cat .methodology/phase5_plan.md
+cat .methodology/phase4_plan.md
 ```
 
 | 欄位 | 值 |
 |------|----|
 | Remote | `https://github.com/johnnylugm-tech/taskq-super.git` |
 | Branch | `main` |
-| State | `phase=4 state=RUNNING last_gate=3` |
-| Plan | `.methodology/phase5_plan.md` |
+| State | `phase=4 state=RUNNING last_gate=2 last_fr=FR-10` |
+| Plan | `.methodology/phase4_plan.md` |
 
 ---
 
 ## 任務背景
 
-Gate 3 PASS — quality cycle complete.
+Phase 3 complete (10/10 FRs Gate 1 PASS). Gate 2 (score=94.09). Advancing to Phase 4.
 
 ## 目前執行狀況
 
-Gate 3 PASS: score=92.4. — full test suite
+Phase 3: 10/10 FRs Gate 1 PASS. Gate 2 (score=94.09) — quality_complete. Ready to begin Phase 4.
 
 ## 接下來的工作
 
-1. Proceed to P5: Review Baseline
-2. Generate BASELINE.md
-3. On BASELINE.md ready → call commit_and_push_p5_baseline()
+1. Follow SKILL.md §0.1 Phase 4 entry checklist
+2. Read the Phase 4 plan and execute
 
 ## 注意事項
 
 - 100% follow SKILL.md
 - Do NOT commit `.sessi-work/` or `.methodology/` runtime artifacts
 - Git failures are warnings — they never block the pipeline
-
-## 附加資訊
-
-- **gate**: 3
-- **score**: 92.4
 
 ---
 *由 `HandoverGenerator` 自動生成。下次 push 時此檔案將被覆寫。*
