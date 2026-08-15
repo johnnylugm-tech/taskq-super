@@ -566,6 +566,19 @@ class Runner:
             row["finished_at"] = _now_iso()
             row["duration_ms"] = int((time.monotonic() - started) * 1000)
             return
+        except ValueError:
+            # shlex.split raises ValueError on unbalanced quotes / trailing
+            # backslash. Report as a malformed-command failure so the row
+            # reaches a terminal status (otherwise the ValueError propagates
+            # past the row-finalisation block below and the row stays in
+            # status="running" indefinitely — bug-hunt runner#5).
+            row["status"] = "failed"
+            row["exit_code"] = -1
+            row["stdout_tail"] = ""
+            row["stderr_tail"] = ""
+            row["finished_at"] = _now_iso()
+            row["duration_ms"] = int((time.monotonic() - started) * 1000)
+            return
 
         try:
             stdout_b, stderr_b = await asyncio.wait_for(
