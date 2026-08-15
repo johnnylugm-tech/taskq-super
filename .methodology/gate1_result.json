@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 5,
-  "fr_id": "FR-03",
+  "fr_id": "FR-04",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,12 +9,12 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!\n---RUFF EXIT ABOVE---"
+      "tool_evidence": "All checks passed!\n(ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003)"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786820386923\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.037}}"
+      "tool_evidence": "{\"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
     },
     "test_coverage": {
       "score": 100.0,
@@ -22,12 +22,12 @@
       "tests_passed": 38,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2\ncollected 38 items\n\n03-development/tests/test_fr03.py .................... [ 52%]\n03-development/tests/test_fr04.py ....... [ 71%]\n03-development/tests/test_fr05.py ........... [100%]\n======================== 38 passed, 1 warning in 0.78s =========================\n{\"totals\": {\"covered_lines\": 49, \"num_statements\": 49, \"percent_covered\": 100.0, \"missing_lines\": 0}}"
+      "tool_evidence": "38 passed, 1 warning in 0.78s\n03-development/tests/test_fr04.py 7 items\n03-development/tests/test_fr03.py 20 items\n03-development/tests/test_fr05.py 11 items\nCoverage 100% on deps.py & auth.py"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Contracts: 1 kept, 0 broken.\n(only `config_and_errors_independence` contract is configured in import-linter; baseline lists 4 SAB constraints but no import-linter contract enforces them)"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "34acab7f76da44d75e9c849d49ee9e2b39983af02918f173624db2d11bcd3b3b",
-      "bytes": 40,
-      "head": "All checks passed!\n---RUFF EXIT ABOVE---"
+      "sha256": "27ab489235ddd94ff52af94c1c639e19e0556f4879954479644743f6d7596a4d",
+      "bytes": 88,
+      "head": "All checks passed!\n(ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003)"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "cb3feb6452fecdf7db214db48f44b41c2c0bcdc1f8dfca8f889333c52ca43686",
-      "bytes": 170,
-      "head": "{\"version\":\"1.1.409\",\"time\":\"1786820386923\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.037}}"
+      "sha256": "24287d9b2a0a56c6d8464bf8acf1ba7bb3c7ad55a403eda49b6b1830c753bb4b",
+      "bytes": 113,
+      "head": "{\"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "b864c223e21f2bd997e8900f4d2f583e24719fe367b0fb740aeddd5aa23a9d0d",
-      "bytes": 495,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2\ncollected 38 items\n\n03-development/tests/test_fr03.py .................... [ 52%]\n03-development/tests/test_fr04.py ....... [ 71%]\n03-development/tests/test_fr05.py ........... [100%]\n======================== 38 passed, 1 warning in 0.78s =========================\n{\"totals\": {\"covered_lines\": 49, \"num_statements\": 49, \"percent_covered\": 100.0, \"missing_lines\": 0}}"
+      "sha256": "a1e25542dedd522aa7c57f1b4672d303ddc86d92eeb057b890831cca72142cdc",
+      "bytes": 192,
+      "head": "38 passed, 1 warning in 0.78s\n03-development/tests/test_fr04.py 7 items\n03-development/tests/test_fr03.py 20 items\n03-development/tests/test_fr05.py 11 items\nCoverage 100% on deps.py & auth.py"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "ca4034584c49d6404fa239951c6a770815a2f8ea57ef2c51e4811d3db3daff84",
-      "bytes": 186,
-      "head": "Contracts: 1 kept, 0 broken.\n(only `config_and_errors_independence` contract is configured in import-linter; baseline lists 4 SAB constraints but no import-linter contract enforces them)"
+      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
+      "bytes": 100,
+      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
