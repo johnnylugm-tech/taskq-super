@@ -1,3 +1,6 @@
+# TEST_INVENTORY.yaml
+# YAML test inventory for the taskq-api project.
+# This file is the canonical SSOT for test coverage tracking across all FRs.
 test_inventory:
   format_version: '2.0'
   project: taskq-api
