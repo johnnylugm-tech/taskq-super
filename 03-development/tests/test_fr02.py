@@ -852,6 +852,34 @@ def test_unit_runner_runner_handler_subprocess_fail_to_exec() -> None:
     asyncio.run(_run())
 
 
+def test_unit_runner_runner_handler_subprocess_malformed_command() -> None:
+    """`Runner._run_subprocess` records `failed`/exit_code=-1 on shlex ValueError.
+
+    Covers runner.py lines 569-581 (the `except ValueError` arm in
+    `_run_subprocess`). Unbalanced quotes / trailing backslash raise
+    ``ValueError`` from ``shlex.split``; the runner must surface a
+    structured `failed` row rather than letting the exception propagate
+    past the row-finalisation block (bug-hunt runner#5).
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        # Unbalanced single quote: shlex.split raises ValueError.
+        await runner.submit("test-task-id", "echo 'unclosed")
+        await runner.drain(timeout=5.0)
+        runs = runner.list_runs("test-task-id")
+        assert len(runs) == 1, runs
+        assert runs[0]["status"] == "failed", runs[0]
+        assert runs[0]["exit_code"] == -1, runs[0]
+        assert runs[0]["stdout_tail"] == "", runs[0]
+        assert runs[0]["stderr_tail"] == "", runs[0]
+        assert runs[0]["finished_at"], runs[0]
+        assert runs[0]["duration_ms"] >= 0, runs[0]
+
+    asyncio.run(_run())
+
+
 def test_unit_runner_runner_subprocess_kill_on_timeout() -> None:
     """`Runner._run_subprocess` kills + reaps on timeout.
 
@@ -984,6 +1012,7 @@ __all__: list[str] = [
     "test_unit_runner_runner_drain_with_no_tasks",
     "test_unit_runner_runner_drain_exits_when_deadline_expires",
     "test_unit_runner_runner_handler_subprocess_fail_to_exec",
+    "test_unit_runner_runner_handler_subprocess_malformed_command",
     "test_unit_runner_runner_subprocess_kill_on_timeout",
     "test_unit_runner_runner_interrupted_branch_returns_early",
     "test_unit_runner_execute_with_kill_passes_through_on_completion",
