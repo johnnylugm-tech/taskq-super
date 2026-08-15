@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-10",
+  "fr_id": "FR-08",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,77 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "pyright 03-development/src/ --outputjson → errorCount=0, filesAnalyzed=28 (exit 0)"
+      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0\n    }\n}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 46,
+      "tests_passed": 62,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "pytest test_fr10.py + test_fr08.py → 46 passed, 0 failed in 37.20s. Coverage on FR-10 source files (errors.py 69/69, app.py 47/47): 100%. Spec coverage: 7/7 required tests present and passing (100%). score = min(100, 100) = 100."
+      "tool_evidence": "pytest test_fr08.py test_fr02.py test_fr10.py → 62 passed, 0 failed in 40.06s. Coverage on FR-08 source files (runner.py + app.py): 100% (219/219 statements). Spec coverage: 5/5 required tests present and passing (100%). score = min(100, 100) = 100."
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
       "tool_evidence": "PYTHONPATH=03-development/src lint-imports → Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken. (exit 0)"
+    }
+  },
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "mutation_testing::setup.cfg": {
+      "source": "setup.cfg (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
+      "bytes": 882,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
+    },
+    "test_coverage::pyproject.toml": {
+      "source": "pyproject.toml (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "2896aa603461decb11c60c6b256571422191cfe7c4163f76b21942f072ffc99b",
+      "bytes": 829,
+      "head": "[tool.pytest.ini_options]\n# Project-level pytest configuration.\n# This file is at the project root so pytest picks it up from anywhere\n# in the tree (e.g. mutmut's runner that uses `python3 -m pytest ...`).\nasyncio_mode = \"auto\"\nmarkers = [\n    \"asyncio: Mark async test functions for pytest-asyncio (STRICT mode fallback).\",\n]\nfilterwarnings = [\n    \"ignore::DeprecationWarning\",\n    \"ignore::UserWarning\",\n]\n\n[tool.mypy]\n# advance-phase runs `mypy . --ignore-missing-imports --exclude ^harness/`.\n# This block tells mypy to skip the tests/ tree too — pytest test files\n# are not part of the production surface that gate 2's type-safety\n# dimension (pyright errorCount=0 over 28 src files) measured. Tests\n# are still checked by ruff and pytest.\nexclude = [\"^harness/\", \"^03-development/tests/\"]"
+    },
+    "test_coverage::setup.cfg": {
+      "source": "setup.cfg (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
+      "bytes": 882,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
+    },
+    "linting": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "49bf5ad45cbda978bbaef010d26ceb8e15a401ef6e9d32aa939cad143a75b9df",
+      "bytes": 99,
+      "head": "ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003 → All checks passed! (exit 0)"
+    },
+    "type_safety": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "31fb5f34d831f1406a40bde4837d77a43c58e53b03f70a156b97a9ed6ce091d2",
+      "bytes": 193,
+      "head": "{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0\n    }\n}"
+    },
+    "test_coverage": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "cf08b58ed46e85f09de89dad37bb178e0a7221a659ca9161bd8e4e7c84e9d8fa",
+      "bytes": 251,
+      "head": "pytest test_fr08.py test_fr02.py test_fr10.py → 62 passed, 0 failed in 40.06s. Coverage on FR-08 source files (runner.py + app.py): 100% (219/219 statements). Spec coverage: 5/5 required tests present and passing (100%). score = min(100, 100) = 100."
+    },
+    "architecture_constraints": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "45981ac70d2655edf66dd4cfe0644b523338d5c084899f299bf9f8c60a9e8fc7",
+      "bytes": 157,
+      "head": "PYTHONPATH=03-development/src lint-imports → Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken. (exit 0)"
     }
   },
   "composite_score": 100.0,
