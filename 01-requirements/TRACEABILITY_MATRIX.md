@@ -26,7 +26,7 @@ authoritative score is `quality_manifest.json`.
 | FR ID | Functional Requirement | SRS Section | Priority | Status |
 |-------|----------------------|-------------|----------|--------|
 | FR-01 | Task resource CRUD API — POST/GET/LIST/DELETE `/v1/tasks` (cursor pagination, validation 422, unknown 404, conflict 409, scope-driven DELETE 403) | §3 FR-01 + §8 #4..#8 | HIGH | DRAFT |
-| FR-02 | Task execution endpoint — `POST /v1/tasks/{id}/run` (write, 202) via `asyncio.create_subprocess_exec(*shlex.split(command))`; lifecycle `pending → running → done|failed|timeout`; results persisted in `task_results`; `GET /v1/tasks/{id}/runs` (read) | §3 FR-02 + §8 #25 | HIGH | DRAFT |
+| FR-02 | Task execution endpoint — `POST /v1/tasks/{id}/run` (write, 202) via `asyncio.create_subprocess_exec(*shlex.split(command))`; lifecycle `pending → running → done\|failed\|timeout`; results persisted in `task_results`; `GET /v1/tasks/{id}/runs` (read) | §3 FR-02 + §8 #25 | HIGH | DRAFT |
 | FR-03 | API Key authentication — `X-API-Key` required on every `/v1/*` (401 otherwise); SHA-256 hash storage in `api_keys.key_hash`; `hmac.compare_digest` compare; plaintext printed exactly once at `python -m taskq_api key create`; revocation via `revoked_at` | §3 FR-03 + §8 #5, #18 | HIGH | DRAFT |
 | FR-04 | Scope authorisation — `read < write < admin` inclusive hierarchy; single FastAPI dependency is the only authz decision site; 403 must not leak resource existence | §3 FR-04 + §8 #6 | HIGH | DRAFT |
 | FR-05 | Rate limiting — per-token token bucket (DB-persisted in `rate_buckets`, row-level lock); capacity `TASKQ_RATE_BURST`, refill `TASKQ_RATE_PER_SEC`; 429 + `Retry-After` header; `/healthz` and `/readyz` exempt | §3 FR-05 + §8 #9 | HIGH | DRAFT |
@@ -38,10 +38,10 @@ authoritative score is `quality_manifest.json`.
 | NFR-01 | Performance + query efficiency — `GET /v1/tasks/{id}` p95 < 30 ms (10,000 rows); `GET /v1/tasks?limit=50` p95 < 80 ms (10,000 rows); constant SQL statement count regardless of row count (N+1 is a fail condition) | §4 NFR-01 + §8 #14, #15 | HIGH | DRAFT |
 | NFR-02 | HTTP + data-layer security — no `shell=True`/`eval(`/`exec(` in source; no f-string/`%`/`+` SQL composition; SHA-256 hashed API keys with `hmac.compare_digest`; 403 must not leak resource existence; CORS denies all origins by default; `bandit -r 03-development/src/` → 0 HIGH, 0 MEDIUM | §4 NFR-02 + §8 #16, #17, #23 | HIGH | DRAFT |
 | NFR-03 | Error handling, transactions, async correctness — explicit per-request transaction boundary (commit/rollback via context manager); no bare `except:` or `except Exception: pass`; `asyncio.CancelledError` must propagate; DB down → `/readyz` 503 with explicit detail; task timeout kills child process; failing migration leaves DB at previous revision | §4 NFR-03 + §8 #10, #25 | HIGH | DRAFT |
-| NFR-04 | Sensitive-data redaction — `stdout_tail`/`stderr_tail`/logs/error bodies must redact `(sk-[A-Za-z0-9_-]{8,}|token=\S+|Bearer\s+\S+|postgres(ql)?://[^\s]+)` to `[REDACTED]`; `TASKQ_DB_URL` (incl. password) must not appear in any log/error/`/v1/metrics`; API-key plaintext printed only once | §4 NFR-04 + §8 #20 | HIGH | DRAFT |
+| NFR-04 | Sensitive-data redaction — `stdout_tail`/`stderr_tail`/logs/error bodies must redact `(sk-[A-Za-z0-9_-]{8,}\|token=\S+\|Bearer\s+\S+\|postgres(ql)?://[^\s]+)` to `[REDACTED]`; `TASKQ_DB_URL` (incl. password) must not appear in any log/error/`/v1/metrics`; API-key plaintext printed only once | §4 NFR-04 + §8 #20 | HIGH | DRAFT |
 | NFR-05 | Documentation coverage — 100% public-API docstring coverage with `[FR-XX]`/`[NFR-XX]` references; every FastAPI endpoint in `/openapi.json` carries `summary` + `description` | §4 NFR-05 | MEDIUM | DRAFT |
 | NFR-06 | Architectural layering contract — `.importlinter` enforces `api > service > repository > models` (lower cannot import upper); `config` and `errors` are independence modules; `sqlalchemy` may only be imported by `repository/`; `lint-imports` must exit 0; no `ignore_imports`/downgrade loophole | §4 NFR-06 + §8 #21 | HIGH | DRAFT |
-| NFR-07 | Dependency + license compliance — runtime deps pinned via `==` in `requirements.txt`; transitive deps locked via `requirements.lock`; license allowlist MIT/BSD-2-Clause/BSD-3-Clause/Apache-2.0/PSF; whole-tree scan via `pip-licenses --format=json --with-system`; SBOM at `08-config/SBOM.json` with `name`/`version`/`license`/`direct|transitive` | §4 NFR-07 + §8 #22 | HIGH | DRAFT |
+| NFR-07 | Dependency + license compliance — runtime deps pinned via `==` in `requirements.txt`; transitive deps locked via `requirements.lock`; license allowlist MIT/BSD-2-Clause/BSD-3-Clause/Apache-2.0/PSF; whole-tree scan via `pip-licenses --format=json --with-system`; SBOM at `08-config/SBOM.json` with `name`/`version`/`license`/`direct\|transitive` | §4 NFR-07 + §8 #22 | HIGH | DRAFT |
 | NFR-08 | Mutation testing — `.methodology/harness_config.json` sets `features.mutation_testing: true`; mutation score ≥ 70; scope limited to `service/` + `repository/` (rationale: execution-time budget) | §4 NFR-08 + §8 #24 | MEDIUM | DRAFT |
 | NFR-09 | Verification honesty (zero-skip iron rule) — `pytest 03-development/tests -q` skipped count = 0; every test function has ≥ 1 `assert`; no `--ignore`/`-k`/`--deselect`/`collect_ignore`/testpaths-removal exclusions; FR-07 migration tested against real SQLite file; `TRACEABILITY_MATRIX.md` `VERIFIED` only on actual pass | §4 NFR-09 + §8 #1 | HIGH | DRAFT |
 | NFR-10 | Integration coverage — `03-development/tests/integration/` line coverage ≥ 80%; integration tests driven via `httpx.AsyncClient(transport=ASGITransport(app))` (no direct handler calls); covers full CRUD chain + 401/403/404/409/422/429/503 + migration round-trip + rate limit trigger/recovery + graceful drain | §4 NFR-10 + §8 #3 | HIGH | DRAFT |
@@ -124,14 +124,14 @@ authoritative score is `quality_manifest.json`.
 
 | Check | Target | Actual | Status |
 |-------|--------|--------|--------|
-| FR coverage in matrix | 100% (10/10) | 10/10 | PASS |
-| NFR coverage in matrix | 100% (12/12) | 12/12 | PASS |
-| FR <-> Spec citation (bare `SPEC.md` root) | 100% (10/10) | 10/10 | PASS |
-| NFR <-> Spec citation (bare `SPEC.md` root) | 100% (12/12) | 12/12 | PASS |
-| Spec <-> Code mapping (SRS §2.10 / §2.13 owner modules) | 100% (23/23 rows) | 23/23 | PASS |
-| Code <-> Test mapping (per-module test surface, distinct req IDs) | 100% (22/22 req IDs) | 22/22 | PASS |
-| Acceptance-criterion hooks (AC-NN.M identifiers) | 22/22 FRs covered | 22/22 | PASS |
-| Test coverage (Phase 3+) | TOTAL 100% per SPEC.md §8 #2; integration ≥80% per SPEC.md §8 #3 (NFR-10); P3 harness phase-gate ≥70% | TBD (Phase 3 measurement) | PENDING |
+| FR coverage in matrix | 100% (10/10) | 10/10 | Verified |
+| NFR coverage in matrix | 100% (12/12) | 12/12 | Verified |
+| FR <-> Spec citation (bare `SPEC.md` root) | 100% (10/10) | 10/10 | Verified |
+| NFR <-> Spec citation (bare `SPEC.md` root) | 100% (12/12) | 12/12 | Verified |
+| Spec <-> Code mapping (SRS §2.10 / §2.13 owner modules) | 100% (23/23 rows) | 23/23 | Verified |
+| Code <-> Test mapping (per-module test surface, distinct req IDs) | 100% (22/22 req IDs) | 22/22 | Verified |
+| Acceptance-criterion hooks (AC-NN.M identifiers) | 22/22 FRs covered | 22/22 | Verified |
+| Test coverage (Phase 3+) | TOTAL 100% per SPEC.md §8 #2; integration ≥80% per SPEC.md §8 #3 (NFR-10); P3 harness phase-gate ≥70% | TBD (Phase 3 measurement) | In Progress |
 
 ---
 
@@ -139,9 +139,9 @@ authoritative score is `quality_manifest.json`.
 
 | ASPICE Capability | Status |
 |-------------------|--------|
-| SWE.3.B.SP1 Task-to-work-product traceability | PASS — every FR/NFR maps to SRS section, code module, and AC |
-| SWE.3.B.SP2 Bidirectional traceability | PASS — FR ↔ Code ↔ Test links provided in three sections above |
-| SWE.3.B.SP3 Traceability consistency | PASS — every row carries the same FR/NFR identifier vocabulary as SRS.md and SPEC_TRACKING.md |
+| SWE.3.B.SP1 Task-to-work-product traceability | Verified |
+| SWE.3.B.SP2 Bidirectional traceability | Verified |
+| SWE.3.B.SP3 Traceability consistency | Verified |
 
 ---
 

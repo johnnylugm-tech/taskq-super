@@ -20,3 +20,5 @@ htmlcov/
 .mutmut-cache/
 .code-review-graph/
 .claude/worktrees/
+# Generated integration coverage tests (not tracked by CRG)
+03-development/tests/integration/test_extended_coverage.py

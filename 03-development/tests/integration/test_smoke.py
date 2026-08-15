@@ -135,13 +135,12 @@ def test_runner_module_functions() -> None:
 
 def test_runner_sync_command() -> None:
     """Call run_command synchronously to cover its body and subprocess path."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service import runner
         # run_command creates a new Runner instance per call; just exercise the path
         try:
-            result = runner.run_command("smoke-test-id", "echo hi", timeout=5.0)
+            result = runner.run_command("smoke-test-id", "echo hi", timeout=5.0)  # noqa: F841
         except Exception:
             pass  # subprocess may not be available in test env
         assert runner is not None
@@ -178,7 +177,6 @@ def test_session_repository() -> None:
 
 def test_key_repo_lookup() -> None:
     """Touch the repository.key_repo lookup function."""
-    import os
     os.environ["TASKQ_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.repository import key_repo
@@ -194,7 +192,6 @@ def test_key_repo_lookup() -> None:
 
 def test_rate_repo_ensure_schema() -> None:
     """Touch the rate-bucket schema initialization."""
-    import os
     os.environ["TASKQ_RATE_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.repository import rate_repo
@@ -209,7 +206,6 @@ def test_rate_repo_ensure_schema() -> None:
 
 def test_runner_connect() -> None:
     """Touch the runner._connect function."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import _connect, _ensure_schema
@@ -222,7 +218,6 @@ def test_runner_connect() -> None:
 
 def test_runner_list_runs_empty() -> None:
     """Touch runner.list_runs when no rows exist."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import _connect, _ensure_schema, list_runs
@@ -237,7 +232,6 @@ def test_runner_list_runs_empty() -> None:
 
 def test_runner_upsert() -> None:
     """Touch runner._upsert with a synthetic row."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import _connect, _ensure_schema, _upsert
@@ -278,8 +272,6 @@ def test_repository_session_helpers() -> None:
 
 def test_run_command_succeeds() -> None:
     """Run a real command via runner.run_command to cover its async path."""
-    import os
-    import asyncio
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import run_command
@@ -294,7 +286,6 @@ def test_run_command_succeeds() -> None:
 
 def test_auth_create_key() -> None:
     """Create a key and verify it has the right shape."""
-    import os
     os.environ["TASKQ_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.service.auth import create_key
@@ -309,7 +300,6 @@ def test_auth_create_key() -> None:
 
 def test_ratelimit_check() -> None:
     """Call the rate-limit helper with a token."""
-    import os
     os.environ["TASKQ_RATE_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.service.ratelimit import check_rate_limit
@@ -324,7 +314,6 @@ def test_ratelimit_check() -> None:
 
 def test_repository_session_transactional() -> None:
     """Touch the session module's transactional helper."""
-    import os
     os.environ["TASKQ_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.repository.session import transactional
@@ -384,7 +373,6 @@ def test_api_health_readyz() -> None:
 
 def test_runner_run_command_echo() -> None:
     """Run a real command via run_command to cover its async + sync bodies."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import run_command
@@ -400,7 +388,6 @@ def test_runner_run_command_echo() -> None:
 
 def test_runner_run_command_fail() -> None:
     """Run a failing command to cover error paths."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import run_command
@@ -435,7 +422,6 @@ def test_tasks_service_list_tasks() -> None:
 
 def test_runner_run_command_succeeds_short() -> None:
     """Run a short successful command to cover run_command's happy path."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import run_command
@@ -450,7 +436,6 @@ def test_runner_run_command_succeeds_short() -> None:
 
 def test_runner_run_command_timeout() -> None:
     """Run a command that exceeds timeout to cover the timeout path."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import run_command
@@ -465,7 +450,6 @@ def test_runner_run_command_timeout() -> None:
 
 def test_runner_run_command_nonexistent() -> None:
     """Run a non-existent command to cover the not-found path."""
-    import os
     os.environ["TASKQ_RUNNER_DB"] = ":memory:"
     try:
         from taskq_api.service.runner import run_command
@@ -480,7 +464,6 @@ def test_runner_run_command_nonexistent() -> None:
 
 def test_rate_repo_migrate_with_bad_tokens() -> None:
     """Exercise _migrate_add_column with malformed SQL to cover the IndexError path."""
-    import os
     os.environ["TASKQ_RATE_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.repository import rate_repo
@@ -501,7 +484,6 @@ def test_rate_repo_migrate_with_bad_tokens() -> None:
 
 def test_rate_repo_ensure_schema_twice() -> None:
     """Call _ensure_schema twice to exercise the early-return path."""
-    import os
     os.environ["TASKQ_RATE_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.repository import rate_repo
@@ -516,7 +498,6 @@ def test_rate_repo_ensure_schema_twice() -> None:
 def test_app_lifespan() -> None:
     """Trigger app startup/shutdown via lifespan context manager to cover __main__."""
     import asyncio
-    from contextlib import asynccontextmanager
     from taskq_api.app import app
     async def _go():
         # ASGITransport triggers app lifespan which covers many lines

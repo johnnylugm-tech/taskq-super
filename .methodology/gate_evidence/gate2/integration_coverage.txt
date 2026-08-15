@@ -1,0 +1,45 @@
+..............................................                           [100%]
+=============================== warnings summary ===============================
+03-development/tests/integration/test_smoke.py::test_api_health_healthz
+  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
+    result = testfunction(**testargs)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.15-final-0 _______________
+
+Name                                                         Stmts   Miss  Cover
+--------------------------------------------------------------------------------
+03-development/src/migrations/__init__.py                        0      0   100%
+03-development/src/migrations/versions/__init__.py               0      0   100%
+03-development/src/migrations/versions/v1_initial.py            19      4    79%
+03-development/src/migrations/versions/v2_tags.py               17      6    65%
+03-development/src/migrations/versions/v3_split_results.py      28     12    57%
+03-development/src/sitecustomize.py                             26     20    23%
+03-development/src/taskq_api/__init__.py                         0      0   100%
+03-development/src/taskq_api/__main__.py                        29      1    97%
+03-development/src/taskq_api/api/__init__.py                     0      0   100%
+03-development/src/taskq_api/api/deps.py                        23      0   100%
+03-development/src/taskq_api/api/health.py                     100     21    79%
+03-development/src/taskq_api/api/tasks.py                       45      7    84%
+03-development/src/taskq_api/app.py                             47      4    91%
+03-development/src/taskq_api/config.py                          21      4    81%
+03-development/src/taskq_api/errors.py                          69     12    83%
+03-development/src/taskq_api/models/__init__.py                  0      0   100%
+03-development/src/taskq_api/models/orm.py                      13      0   100%
+03-development/src/taskq_api/models/schemas.py                  33      1    97%
+03-development/src/taskq_api/repository/__init__.py              0      0   100%
+03-development/src/taskq_api/repository/key_repo.py             17      0   100%
+03-development/src/taskq_api/repository/rate_repo.py            93     14    85%
+03-development/src/taskq_api/repository/session.py              25      7    72%
+03-development/src/taskq_api/repository/task_repo.py            11      0   100%
+03-development/src/taskq_api/service/__init__.py                 0      0   100%
+03-development/src/taskq_api/service/auth.py                    29      0   100%
+03-development/src/taskq_api/service/ratelimit.py               23      4    83%
+03-development/src/taskq_api/service/runner.py                 172     23    87%
+03-development/src/taskq_api/service/tasks.py                   41      1    98%
+--------------------------------------------------------------------------------
+TOTAL                                                          881    141    84%
+118 passed, 1 warning in 1.72s

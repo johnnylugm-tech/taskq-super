@@ -1,0 +1,25 @@
+# Harness-executed: system-verification
+# returncode: 0
+# agent_score: 100.0 | threshold: 100.0
+
+make verify-system: running test suite
+........................................................................ [ 26%]
+........................................................................ [ 52%]
+........................................................................ [ 79%]
+.........................................................                [100%]
+=============================== warnings summary ===============================
+03-development/tests/integration/test_smoke.py::test_api_health_healthz
+  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
+    result = testfunction(**testargs)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard
+  <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+273 passed, 2 warnings in 44.76s
+make verify-system: pytest exit=
+make verify-system: running CLI smoke test
+make verify-system: cli smoke exit=
+make verify-system: PASS

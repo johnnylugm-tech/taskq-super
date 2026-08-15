@@ -1,0 +1,31 @@
+{
+  "total": 256,
+  "asserted": 232,
+  "zero_assert": [
+    "test_extended_coverage.py::test_main_parser_help_via_argparse",
+    "test_extended_coverage.py::test_main_module_run_key_create",
+    "test_extended_coverage.py::test_main_module_main_key_create_branch",
+    "test_extended_coverage.py::test_runner_execute_with_kill_timeout",
+    "test_extended_coverage.py::test_app_shutdown_drain_idle",
+    "test_extended_coverage.py::test_sitecustomize_import",
+    "test_extended_coverage.py::test_session_transactional_rollback",
+    "test_extended_coverage.py::test_app_routes_via_suppressor",
+    "test_extended_coverage.py::test_runner_drain_loop",
+    "test_extended_coverage.py::test_runner_ensure_schema_idempotent",
+    "test_extended_coverage.py::test_runner_terminate_already_exited",
+    "test_extended_coverage.py::test_full_api_lifecycle",
+    "test_extended_coverage.py::test_api_routes_with_keys",
+    "test_extended_coverage.py::test_api_validation_errors",
+    "test_smoke.py::test_runner_upsert",
+    "test_smoke.py::test_rate_repo_migrate_with_bad_tokens",
+    "test_smoke.py::test_app_lifespan",
+    "test_smoke.py::test_problem_json_error_paths",
+    "test_smoke.py::test_task_runs_endpoint",
+    "test_fr02.py::test_unit_runner_terminate_swallows_wait_exception",
+    "test_fr03.py::test_fr03_cli_main_module_entrypoint_guard",
+    "test_fr08.py::test_fr08_coverage_terminate_swallows_wait_exception",
+    "test_fr08.py::test_fr08_coverage_task_repo_duplicate_name",
+    "test_fr10.py::test_fr10_post_handler_suppressor_inner_attr_raises_attribute_error"
+  ],
+  "tool_score": 94.04296875
+}

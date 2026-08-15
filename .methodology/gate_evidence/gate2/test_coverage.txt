@@ -1,13 +1,3 @@
-# Harness-executed: pytest-cov
-# returncode: 0
-# agent_score: 100.0 | threshold: 80.0
-
-........................................................................ [ 26%]
-........................................................................ [ 52%]
-........................................................................ [ 79%]
-.........................................................                [100%]
-=============================== warnings summary ===============================
-03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
     result = testfunction(**testargs)
   Enable tracemalloc to get traceback where the object was allocated.
@@ -20,8 +10,8 @@
 ================================ tests coverage ================================
 ______________ coverage: platform darwin, python 3.11.15-final-0 _______________
 
-Name                                                         Stmts   Miss  Cover   Missing
-------------------------------------------------------------------------------------------
+Name                                                         Stmts   Miss  Cover
+--------------------------------------------------------------------------------
 03-development/src/migrations/__init__.py                        0      0   100%
 03-development/src/migrations/versions/__init__.py               0      0   100%
 03-development/src/migrations/versions/v1_initial.py            19      0   100%
@@ -50,6 +40,6 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
 03-development/src/taskq_api/service/runner.py                 172      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
-------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 TOTAL                                                          881      0   100%
-273 passed, 2 warnings in 43.77s
+273 passed, 2 warnings in 44.09s

@@ -1,0 +1,1 @@
+{"success": true, "score": 73.3, "message": "killed=11 survived=4 score=73.3 [scope: 03-development/src/taskq_api/repository,03-development/src/taskq_api/service]", "cache_path": "/Users/johnny/projects/taskq-super/.mutmut-cache"}
