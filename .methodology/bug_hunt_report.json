@@ -28,7 +28,7 @@
       "resolution": {
         "status": "resolved",
         "fix_commit": "ffec69d",
-        "repro_test": "03-development/tests/test_bug_hunt_runner_submit_shlex.py::test_runner_submit_unbalanced_quote_does_not_leak_running_row"
+        "repro_test": "03-development/tests/test_bug_hunt_runner_submit_shlex.py"
       }
     },
     {
