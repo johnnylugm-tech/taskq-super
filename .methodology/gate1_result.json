@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-08",
+  "fr_id": "FR-03",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!\n"
+      "tool_evidence": "All checks passed!"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786796294915\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.089}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786796504047\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.065}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 62,
+      "tests_passed": 37,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nconfigfile: pyproject.toml\ncollected 62 items\n\n03-development/tests/test_fr08.py ................................       [ 51%]\n03-development/tests/test_fr02.py ................                       [ 77%]\n03-development/tests/test_fr10.py ...........                       [100%]\n\n============================= 62 passed in 40.07s =============================="
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\ncollected 37 items\n\n03-development/tests/test_fr03.py ...................                    [ 51%]\n03-development/tests/test_fr04.py .......                                [ 70%]\n03-development/tests/test_fr05.py ...........                            [100%]\n======================== 37 passed, 1 warning in 0.78s =========================\n\ncoverage json totals: percent_covered=100.0, covered_lines=52/52, files=deps.py+auth.py\nspec_cov_pct=100 (0/7 required tests missing)"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken.\n"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nContracts: 1 kept, 0 broken.\nconfig_and_errors_independence KEPT"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "223ef8661820e424b0883c08b61ab1a459b96530af440de36f8c3c6ca8bf2577",
-      "bytes": 170,
-      "head": "{\"version\":\"1.1.409\",\"time\":\"1786796294915\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.089}}"
+      "sha256": "b35f35f2ce88b1f1cbf1d2547cac9224c156eb19d26550395d9def830f0d8fb8",
+      "bytes": 186,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786796504047\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.065}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "a0f79ab1aa62f320f8c900fa09c43aa2f3782ede94aa586cf777d779c4be87a3",
-      "bytes": 506,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nconfigfile: pyproject.toml\ncollected 62 items\n\n03-development/tests/test_fr08.py ................................       [ 51%]\n03-development/tests/test_fr02.py ................                       [ 77%]\n03-development/tests/test_fr10.py ...........                       [100%]\n\n============================= 62 passed in 40.07s =============================="
+      "sha256": "2533dde7fb71adb912279c23f85fa287768b42b8ffea40e60e6108b6705b921d",
+      "bytes": 618,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\ncollected 37 items\n\n03-development/tests/test_fr03.py ...................                    [ 51%]\n03-development/tests/test_fr04.py .......                                [ 70%]\n03-development/tests/test_fr05.py ...........                            [100%]\n======================== 37 passed, 1 warning in 0.78s =========================\n\ncoverage json totals: percent_covered=100.0, covered_lines=52/52, files=deps.py+auth.py\nspec_cov_pct=100 (0/7 required tests missing)"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
+      "sha256": "12461fe130bc78dc8650683d2a6c1006f06fae4751081c78151174e1e325c258",
       "bytes": 100,
-      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "head": "Analyzed 22 files, 23 dependencies.\nContracts: 1 kept, 0 broken.\nconfig_and_errors_independence KEPT"
     }
   },
   "composite_score": 100.0,
