@@ -297,7 +297,7 @@
     ],
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 90154,
+      "saved_tokens": 90320,
       "saved_percent": 100
     }
   },
@@ -310,7 +310,7 @@
     "truncated": false,
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 90167,
+      "saved_tokens": 90333,
       "saved_percent": 100
     }
   },

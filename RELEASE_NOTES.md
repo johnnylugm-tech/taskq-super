@@ -1,6 +1,6 @@
 # Release Notes
 
-> **Generated**: 2026-08-15 22:00:09 UTC
+> **Generated**: 2026-08-15 22:05:27 UTC
 > **Version**: development
 
 ---
@@ -73,6 +73,7 @@
 
 - release(P6): Gate4 PASS score=93.9 — pipeline complete
 - release(P6): Gate4 PASS score=93.9 — pipeline complete
+- release(P6): Gate4 PASS score=93.9 — pipeline complete
 - handover: advance to Phase 6
 - test(p5): swallow transient assertions in nfr_phase6_gap gap tests
 - chore(p5): NFR-01/03/04 marked VERIFIED in TRACEABILITY_MATRIX
@@ -90,7 +91,6 @@
 - test(P4): Gate3 PASS score=92.4 — full test suite
 - test(P4): Gate3 PASS score=92.4 — full test suite
 - test(P4): Gate3 PASS score=92.4 — full test suite
-- chore(p4): test-plan + coverage + bug-hunt artifacts
 
 ---
 
