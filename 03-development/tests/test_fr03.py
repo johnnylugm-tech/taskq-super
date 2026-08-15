@@ -419,6 +419,116 @@ def test_fr03_known_key_insufficient_scope_returns_403(
     assert _content_type(resp) == "application/problem+json"
 
 
+def test_fr03_rate_limit_exceeded_returns_429_with_retry_after(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """FR-05 / NFR-02 — When the rate-limit service rejects the token, the
+    authz dependency raises 429 + problem+json + `Retry-After` header.
+
+    Covers `api/deps.py:67-68` (the rate-limit rejection branch — the
+    `retry_after = int(...)` line and the `raise problem(429, …)` call).
+    [FR-03] / [FR-05]
+    """
+    # NFR-02
+    from taskq_api.api import deps as deps_module
+
+    # Authenticate with a known key (skip the 401/403 gates) so the deps
+    # path reaches the rate-limit check.
+    monkeypatch.setattr(
+        deps_module,
+        "verify_key",
+        lambda presented_key, required_scope: {  # noqa: ARG005
+            "scopes": ["read"],
+            "key_id": "k",
+        },
+    )
+    # Force the rate-limit service to reject this token. The retry_after
+    # value of 1 is the canonical boundary; the deps block runs
+    # `int(admission.get("retry_after", 1))` then `max(1, retry_after)` to
+    # clamp the header to a positive integer.
+    monkeypatch.setattr(
+        deps_module.ratelimit_service,
+        "check_rate_limit",
+        lambda token: {"allow": False, "retry_after": 1},  # noqa: ARG005
+    )
+    resp = _request("GET", "/v1/tasks", api_key="k")
+    assert resp.status_code == 429, resp.text
+    assert _content_type(resp) == "application/problem+json"
+    # The Retry-After header is set by errors.problem_json_response when
+    # the TaskQError carries `headers={"Retry-After": "1"}`.
+    retry_after = resp.headers.get("Retry-After")
+    assert retry_after is not None, resp.headers
+    assert int(retry_after) >= 1, resp.headers
+
+
+def test_fr03_rate_limit_retry_after_clamps_to_positive_integer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """FR-05 / NFR-02 — A rate-limit service that returns a non-positive
+    retry_after value still produces a positive integer `Retry-After` header.
+
+    Covers `api/deps.py:67-72` (the `int(...)` + `max(1, …)` belt-and-braces
+    clamp so the header contract holds even if a future service returns 0).
+    [FR-03] / [FR-05]
+    """
+    # NFR-02
+    from taskq_api.api import deps as deps_module
+
+    monkeypatch.setattr(
+        deps_module,
+        "verify_key",
+        lambda presented_key, required_scope: {  # noqa: ARG005
+            "scopes": ["read"],
+            "key_id": "k",
+        },
+    )
+    # Service returns 0 — deps must clamp to 1 via `max(1, retry_after)`.
+    monkeypatch.setattr(
+        deps_module.ratelimit_service,
+        "check_rate_limit",
+        lambda token: {"allow": False, "retry_after": 0},  # noqa: ARG005
+    )
+    resp = _request("GET", "/v1/tasks", api_key="k")
+    assert resp.status_code == 429, resp.text
+    retry_after = resp.headers.get("Retry-After")
+    assert retry_after is not None, resp.headers
+    assert int(retry_after) >= 1, resp.headers
+
+
+def test_fr03_rate_limit_missing_retry_after_defaults_to_one(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """FR-05 / NFR-02 — A rate-limit service that omits `retry_after` from
+    the rejection dict still produces a positive integer `Retry-After` header.
+
+    Covers `api/deps.py:67` (the `admission.get("retry_after", 1)` default).
+    [FR-03] / [FR-05]
+    """
+    # NFR-02
+    from taskq_api.api import deps as deps_module
+
+    monkeypatch.setattr(
+        deps_module,
+        "verify_key",
+        lambda presented_key, required_scope: {  # noqa: ARG005
+            "scopes": ["read"],
+            "key_id": "k",
+        },
+    )
+    # Service returns `allow: False` without a retry_after key — deps
+    # must default to 1 via `admission.get("retry_after", 1)`.
+    monkeypatch.setattr(
+        deps_module.ratelimit_service,
+        "check_rate_limit",
+        lambda token: {"allow": False},  # noqa: ARG005
+    )
+    resp = _request("GET", "/v1/tasks", api_key="k")
+    assert resp.status_code == 429, resp.text
+    retry_after = resp.headers.get("Retry-After")
+    assert retry_after is not None, resp.headers
+    assert int(retry_after) >= 1, resp.headers
+
+
 # ---------------------------------------------------------------------------
 # Case 5 — A revoked key is rejected with 401
 # ---------------------------------------------------------------------------
