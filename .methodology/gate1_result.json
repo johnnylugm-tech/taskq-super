@@ -1,33 +1,33 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-07",
-  "overall_score": 98.9,
+  "fr_id": "FR-04",
+  "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
   "breakdown": {
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!"
+      "tool_evidence": "All checks passed!\n"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786806383316\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.132}}"
+      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786806504407\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.052\n    }\n}\n"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 27,
+      "tests_passed": 38,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 27 items\n\ntests/test_fr07.py ...........................                           [100%]\n\n============================== 27 passed in 2.33s ==============================\nName                                          Stmts   Miss  Cover\n-----------------------------------------------------------------\nsrc/migrations/versions/v1_initial.py            19      0   100%\nsrc/migrations/versions/v2_tags.py               17      0   100%\nsrc/migrations/versions/v3_split_results.py      32      3    91%\n-----------------------------------------------------------------\nTOTAL                                            68      3    96%"
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=3 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 38 items\n\ntests/test_fr04.py .......                                               [ 18%]\ntests/test_fr03.py ....................                                  [ 71%]\ntests/test_fr05.py ...........                                           [100%]\n======================== 38 passed, 1 warning in 0.82s ========================="
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "tool_evidence": "\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "46ccc53d88d58b267df4d38eff729f168514d1d3171459d730f671959c962084",
-      "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786806383316\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.132}}"
+      "sha256": "3c34ca8268c40675b4be53a3ffdf5c3438bffa34257b015dc8f9f687f43a1eef",
+      "bytes": 250,
+      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786806504407\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.052\n    }\n}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "b486a1d456323be22336141b6d8f343bf92cde88a16682ad05bcdb740978b12a",
-      "bytes": 1234,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 27 items\n\ntests/test_fr07.py ...........................                           [100%]\n\n============================== 27 passed in 2.33s ==============================\nName                                          Stmts   Miss  Cover\n-----------------------------------------------------------------\nsrc/migrations/versions/v1_initial.py            19      0   100%\nsrc/migrations/versions/v2_tags.py               17      0   100%\nsrc/migrations/versions/v3_split_results.py      32      3    91%\n-----------------------------------------------------------------\nTOTAL                                            68      3    96%"
+      "sha256": "00df0fa4a4feba65dca755a68c78d753ba0e2e63993a589d0820913ffd02f544",
+      "bytes": 913,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=3 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 38 items\n\ntests/test_fr04.py .......                                               [ 18%]\ntests/test_fr03.py ....................                                  [ 71%]\ntests/test_fr05.py ...........                                           [100%]\n======================== 38 passed, 1 warning in 0.82s ========================="
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
-      "bytes": 100,
-      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "sha256": "e80c93a4f99506d025028b5c585cd2594841d3aab20a2057799f01c342c1cbdc",
+      "bytes": 169,
+      "head": "---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
