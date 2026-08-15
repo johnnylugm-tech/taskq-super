@@ -1,0 +1,1 @@
+{"with_handler": 10, "no_handler": 2, "anti_patterns": [], "total": 12, "pct": 83.3}

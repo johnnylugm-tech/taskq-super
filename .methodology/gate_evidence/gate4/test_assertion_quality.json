@@ -1,0 +1,10 @@
+{
+  "dimension": "test_assertion_quality",
+  "round": 1,
+  "tool_score": 100,
+  "score": 100,
+  "threshold": 70,
+  "tool_outputs": ".sessi-work/round_1/tools/test_assertion_scoring.txt",
+  "findings": [],
+  "gaps": []
+}

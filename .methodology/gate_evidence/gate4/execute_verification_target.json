@@ -1,0 +1,10 @@
+{
+  "dimension": "execute_verification_target",
+  "round": 1,
+  "tool_score": 100,
+  "score": 100,
+  "threshold": 100,
+  "tool_outputs": ".sessi-work/round_1/tools/verify_system.txt",
+  "findings": [],
+  "gaps": []
+}

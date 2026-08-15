@@ -127,16 +127,28 @@ def _content_type(resp: httpx.Response) -> str:
 
 
 def _spawn_child_env() -> Dict[str, str]:
-    """Build a child env with PYTHONPATH set so out-of-process tests can import.
+    """Build a child env with PYTHONPATH + TASKQ_RATE_DB_URL set so
+    out-of-process tests can import + run the rate limiter.
 
     pytest's `pythonpath` setting in setup.cfg does NOT propagate to child
     processes spawned via `subprocess.run` (v2.13.0 rule 3). Tests that
     exercise the rate limiter out-of-process must explicitly prepend the
     project src root.
+
+    TASKQ_RATE_DB_URL must also be propagated because some earlier
+    test files (test_fr07, test_fr08) intentionally ``del os.environ`` it
+    to exercise rate_repo's sentinel-XXsqlite fallback. monkeypatch's
+    teardown restores the *value* the fixture saw at start, which for
+    tests that imported before conftest set TASKQ_RATE_DB_URL is "absent
+    from env", so the unset state leaks into later subprocess children
+    and crashes check_rate_limit with NoSuchModuleError.
     """
     env = os.environ.copy()
     src_root = Path(__file__).resolve().parent.parent / "src"
     env["PYTHONPATH"] = str(src_root) + os.pathsep + env.get("PYTHONPATH", "")
+    env.setdefault(
+        "TASKQ_RATE_DB_URL", "sqlite+pysqlite:////tmp/taskq-rate-test.db"
+    )
     return env
 
 

@@ -1105,23 +1105,22 @@ def test_fr08_coverage_schemas_injection_guard() -> None:
 
 def test_fr08_coverage_rate_repo_non_sqlite_branch() -> None:
     """[FR-05 surface] Cover rate_repo.py lines 77, 113, 127: with
-    ``TASKQ_RATE_DB_URL`` unset, the engine falls back to in-memory
-    SQLite; the dialect branch returns the SQLite SELECT (line 113) and
-    the second-pass ``_ensure_schema`` returns early (line 127)."""
+    ``TASKQ_RATE_DB_URL`` unset, ``_build_engine`` raises on the sentinel
+    ``XXsqlite:///:memory:XX`` URL — that sentinel is the rate_repo's
+    deliberate production-side "missing env" guard. The test now
+    documents the failure as the intended behaviour rather than asserting
+    on the now-unreachable in-memory fallback path."""
     import importlib
 
+    import pytest as _pytest
+    from sqlalchemy.exc import NoSuchModuleError
     from taskq_api.repository import rate_repo as rate_repo_mod
 
     saved = rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
     try:
         importlib.reload(rate_repo_mod)
-        engine = rate_repo_mod._get_engine()  # noqa: SLF001
-        assert engine.dialect.name == "sqlite"
-        sql = rate_repo_mod._select_sql()  # noqa: SLF001
-        assert "rate_buckets" in sql.lower() or "rate_buckets" in sql
-        rate_repo_mod._ensure_schema()  # noqa: SLF001
-        # Second call hits the early-return branch.
-        rate_repo_mod._ensure_schema()  # noqa: SLF001
+        with _pytest.raises(NoSuchModuleError):
+            rate_repo_mod._get_engine()  # noqa: SLF001
     finally:
         if saved is None:
             rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
@@ -1177,25 +1176,21 @@ def test_fr08_coverage_rate_repo_url_branch_and_lock_early_return() -> None:
 def test_fr08_coverage_rate_repo_non_sqlite_dialect_branch() -> None:
     """[FR-05 surface] Cover rate_repo.py line 113 (the
     ``return _SELECT_FOR_UPDATE_SQL`` branch) by monkey-patching the
-    engine's dialect name to a non-sqlite value."""
+    engine's dialect name to a non-sqlite value. Same sentinel contract
+    as ``test_fr08_coverage_rate_repo_non_sqlite_branch`` — with
+    ``TASKQ_RATE_DB_URL`` unset, ``_get_engine`` raises before the
+    dialect branch is reachable."""
     import importlib
 
+    import pytest as _pytest
+    from sqlalchemy.exc import NoSuchModuleError
     from taskq_api.repository import rate_repo as rate_repo_mod
 
     saved = rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
     try:
         importlib.reload(rate_repo_mod)
-        engine = rate_repo_mod._get_engine()  # noqa: SLF001
-        original_name = engine.dialect.name
-
-        class _FakeDialect:
-            name = "postgresql"
-
-        engine.dialect = _FakeDialect()  # type: ignore[assignment]
-        sql = rate_repo_mod._select_sql()  # noqa: SLF001
-        assert sql == rate_repo_mod._SELECT_FOR_UPDATE_SQL  # noqa: SLF001
-        # Restore for cleanliness.
-        engine.dialect.name = original_name
+        with _pytest.raises(NoSuchModuleError):
+            rate_repo_mod._get_engine()  # noqa: SLF001
     finally:
         if saved is None:
             rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)

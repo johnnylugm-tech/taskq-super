@@ -1,12 +1,8 @@
-# Harness-executed: pytest-cov
-# returncode: 0
-# agent_score: 100.0 | threshold: 80.0
-
 ........................................................................ [ 21%]
 ........................................................................ [ 43%]
 ........................................................................ [ 65%]
 ........................................................................ [ 87%]
-..........................................                               [100%]
+...........................................                              [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
@@ -21,8 +17,8 @@
 ================================ tests coverage ================================
 ______________ coverage: platform darwin, python 3.11.15-final-0 _______________
 
-Name                                                         Stmts   Miss  Cover   Missing
-------------------------------------------------------------------------------------------
+Name                                                         Stmts   Miss  Cover
+--------------------------------------------------------------------------------
 03-development/src/migrations/__init__.py                        0      0   100%
 03-development/src/migrations/versions/__init__.py               0      0   100%
 03-development/src/migrations/versions/v1_initial.py            19      0   100%
@@ -43,7 +39,7 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/models/schemas.py                  33      0   100%
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
 03-development/src/taskq_api/repository/key_repo.py             18      0   100%
-03-development/src/taskq_api/repository/rate_repo.py            93      1    99%   156
+03-development/src/taskq_api/repository/rate_repo.py            93      1    99%
 03-development/src/taskq_api/repository/session.py              25      0   100%
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
@@ -51,17 +47,18 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
 03-development/src/taskq_api/service/runner.py                 194      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
-------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 TOTAL                                                          913      1    99%
+Coverage JSON written to file .sessi-work/round_1/tools/coverage.json
 
 ---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
 Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-test_nfr01_get_task_p95_under_30ms_at_10k_rows                    82.9459 (1.0)        1,541.9791 (1.0)          143.3272 (1.0)          69.3162 (1.0)          125.0301 (1.0)          41.0364 (1.0)           6;6    6,977.0443 (1.0)         500           1
-test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     241,333.9680 (>1000.0)  335,292.0176 (217.44)   273,682.6989 (>1000.0)  19,396.3920 (279.82)   270,979.0133 (>1000.0)  25,749.4976 (627.48)       69;2        3.6539 (0.00)        200           1
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.0041 (1.0)        1,957.9893 (1.0)          132.2482 (1.0)          85.9327 (1.0)          125.0301 (1.0)           0.0582 (1.0)          2;96    7,561.5422 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     245,207.9789 (>1000.0)  332,915.9808 (170.03)   268,563.0738 (>1000.0)  16,755.6446 (194.99)   267,770.4906 (>1000.0)  28,250.0114 (>1000.0)      67;1        3.7235 (0.00)        200           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Legend:
   Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
   OPS: Operations Per Second, computed as 1 / Mean
-330 passed, 2 warnings in 49.84s
+331 passed, 2 warnings in 55.12s

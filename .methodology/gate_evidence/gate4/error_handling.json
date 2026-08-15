@@ -1,0 +1,10 @@
+{
+  "dimension": "error_handling",
+  "round": 1,
+  "tool_score": 83.3,
+  "score": 83.3,
+  "threshold": 80,
+  "tool_outputs": ".sessi-work/round_1/tools/error_handling_scoring.txt",
+  "findings": [],
+  "gaps": []
+}

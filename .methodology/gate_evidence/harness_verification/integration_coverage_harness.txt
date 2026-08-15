@@ -1,9 +1,9 @@
 # Harness-executed: pytest-cov-integration
 # returncode: 0
-# agent_score: 81.0 | threshold: 60.0
+# agent_score: 82.5 | threshold: 75.0
 
-........................................................................ [ 61%]
-..............................................                           [100%]
+........................................................................ [ 54%]
+.............................................................            [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
@@ -27,17 +27,17 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/__main__.py                        32      3    91%   95-96, 102
 03-development/src/taskq_api/api/__init__.py                     0      0   100%
 03-development/src/taskq_api/api/deps.py                        23      0   100%
-03-development/src/taskq_api/api/health.py                     100     21    79%   73, 84-85, 94, 160-161, 225-238, 286-290, 305-308, 316, 321
+03-development/src/taskq_api/api/health.py                     100     16    84%   73, 84-85, 94, 160-161, 229, 286-290, 305-308, 316, 321
 03-development/src/taskq_api/api/tasks.py                       45      7    84%   100-101, 153, 184-189, 208-209
 03-development/src/taskq_api/app.py                             52      6    88%   97-99, 110, 121, 175
 03-development/src/taskq_api/config.py                          21      4    81%   35-38
-03-development/src/taskq_api/errors.py                          69     12    83%   140-142, 156, 159, 270-282, 321
+03-development/src/taskq_api/errors.py                          69      8    88%   140-142, 159, 271-280
 03-development/src/taskq_api/models/__init__.py                  0      0   100%
 03-development/src/taskq_api/models/orm.py                      13      0   100%
 03-development/src/taskq_api/models/schemas.py                  33      1    97%   44
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
 03-development/src/taskq_api/repository/key_repo.py             18      0   100%
-03-development/src/taskq_api/repository/rate_repo.py            93     14    85%   92, 139-140, 156, 177, 211-212, 215-216, 285-286, 301-312
+03-development/src/taskq_api/repository/rate_repo.py            93     14    85%   93, 139-140, 156, 177, 211-212, 215-216, 285-286, 301-312
 03-development/src/taskq_api/repository/session.py              25      7    72%   67-74
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
@@ -46,5 +46,5 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/runner.py                 194     37    81%   107-110, 212-213, 240-251, 467-469, 483, 508, 561-581, 594-600
 03-development/src/taskq_api/service/tasks.py                   41      1    98%   59
 ------------------------------------------------------------------------------------------
-TOTAL                                                          913    169    81%
-118 passed, 1 warning in 1.77s
+TOTAL                                                          913    160    82%
+133 passed, 1 warning in 1.86s

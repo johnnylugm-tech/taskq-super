@@ -16,6 +16,33 @@ from pathlib import Path
 # the module-level TASKQ_ENV-guarded fixtures (e.g. the plaintext API
 # keys in `taskq_api.repository.key_repo`) load correctly.
 os.environ.setdefault("TASKQ_ENV", "test")
+# Pin TASKQ_RATE_DB_URL at conftest import time (NOT inside a fixture):
+# test modules collect their top-level `from taskq_api.app import app`
+# before any autouse fixture runs, which builds rate_repo's cached
+# engine. Setting the URL in a fixture is too late — the cached engine
+# keeps the sentinel "XXsqlite:///:memory:XX" and every endpoint that
+# flows through check_rate_limit returns 500 ("no such table:
+# rate_buckets"). setdefault keeps an explicit shell override intact.
+os.environ.setdefault(
+    "TASKQ_RATE_DB_URL",
+    # File-based sqlite so each connection in the pool sees the same
+    # schema. In-memory SQLite needs StaticPool (the production path's
+    # sentinel URL uses it) or shared-cache (which pysqlite under
+    # SQLAlchemy's pool still partitions into per-connection DBs for
+    # `begin()` transactions), so an in-memory URL would let the
+    # `_ensure_schema` DDL run on connection A while `try_consume`
+    # SELECTs against connection B's empty DB. A tmp file is the
+    # simplest cross-platform fix that survives the pool's connection
+    # rotation. Wiped at session start so no state leaks between
+    # pytest invocations.
+    "sqlite+pysqlite:////tmp/taskq-rate-test.db",
+)
+# Wipe stale state from a prior pytest invocation.
+try:
+    import pathlib
+    pathlib.Path("/tmp/taskq-rate-test.db").unlink(missing_ok=True)
+except Exception:
+    pass
 
 import hmac
 from typing import Any, Dict, List, Optional

@@ -1,0 +1,10 @@
+{
+  "dimension": "security",
+  "round": 1,
+  "tool_score": 100,
+  "score": 100,
+  "threshold": 80,
+  "tool_outputs": ".sessi-work/round_1/tools/security_raw.json",
+  "findings": [],
+  "gaps": []
+}
