@@ -13,7 +13,7 @@
 Contracts
 ---------
 
-Analyzed 22 files, 17 dependencies.
+Analyzed 22 files, 23 dependencies.
 -----------------------------------
 
 config_and_errors_independence KEPT

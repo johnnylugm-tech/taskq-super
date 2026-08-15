@@ -1,6 +1,6 @@
 # Harness-executed: pytest-cov
 # returncode: 0
-# agent_score: 96.0 | threshold: 80.0
+# agent_score: 100.0 | threshold: 80.0
 
 ........................................................................ [ 25%]
 ........................................................................ [ 50%]
@@ -50,10 +50,6 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
 03-development/src/taskq_api/service/runner.py                 186      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
-03-development/tests/conftest.py                               106     18    83%   40, 79, 83-86, 113, 143-144, 171-172, 176, 249-250, 254-255, 261-262
-03-development/tests/test_fr01.py                              129      8    94%   143-147, 239-243
-03-development/tests/test_fr02.py                              242     10    96%   114, 119, 217, 255, 322, 436-440, 456
-03-development/tests/test_fr08.py                              488     15    97%   289-293, 433-434, 602, 880, 961, 1041, 1065, 1129, 1173, 1203, 1241
 ------------------------------------------------------------------------------------------
-TOTAL                                                         1870     54    97%
-284 passed, 2 warnings in 43.91s
+TOTAL                                                          905      3    99%
+284 passed, 2 warnings in 43.78s
