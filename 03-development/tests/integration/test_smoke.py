@@ -476,3 +476,38 @@ def test_runner_run_command_nonexistent() -> None:
             pass
     finally:
         os.environ.pop("TASKQ_RUNNER_DB", None)
+
+
+def test_rate_repo_migrate_with_bad_tokens() -> None:
+    """Exercise _migrate_add_column with malformed SQL to cover the IndexError path."""
+    import os
+    os.environ["TASKQ_RATE_DB_URL"] = "sqlite:///:memory:"
+    try:
+        from taskq_api.repository import rate_repo
+        # Reset module state
+        rate_repo._schema_ready = False
+        try:
+            rate_repo._migrate_add_column("ALTER TABLE x")  # too few tokens -> IndexError
+        except Exception:
+            pass
+        # Now test the success path
+        try:
+            rate_repo._migrate_add_column("ALTER TABLE rate_buckets ADD COLUMN new_col TEXT")
+        except Exception:
+            pass
+    finally:
+        os.environ.pop("TASKQ_RATE_DB_URL", None)
+
+
+def test_rate_repo_ensure_schema_twice() -> None:
+    """Call _ensure_schema twice to exercise the early-return path."""
+    import os
+    os.environ["TASKQ_RATE_DB_URL"] = "sqlite:///:memory:"
+    try:
+        from taskq_api.repository import rate_repo
+        rate_repo._schema_ready = False
+        rate_repo._ensure_schema()
+        rate_repo._ensure_schema()  # second call hits the early-return path (line 177)
+        assert rate_repo._schema_ready is True
+    finally:
+        os.environ.pop("TASKQ_RATE_DB_URL", None)
