@@ -1,0 +1,248 @@
+{
+  "generated_at": "2026-08-15T12:30:53+00:00",
+  "git_sha": "c4a2b8b699edd3ec2c914884cd0b609d7043389f",
+  "targets_manifest": ".methodology/bug_hunt_targets.json",
+  "lenses": ["correctness", "concurrency", "resilience", "general"],
+  "raw_count": 28,
+  "confirmed_count": 6,
+  "refuted_count": 22,
+  "resolved_count": 5,
+  "open_count": 0,
+  "findings": [
+    {
+      "id": "auth#1",
+      "module": "auth",
+      "lens": "correctness",
+      "severity": "medium",
+      "title": "hmac.compare_digest(presented_hash, presented_hash) is a tautology — broken constant-time comparison",
+      "description": "The code at runner.py:85‑89 comment claims 'constant-time compare via hmac.compare_digest' but passes `presented_hash` to BOTH arguments. `hmac.compare_digest(x, x)` is always True, so the `return None` branch on line 89 is unreachable in production. The actual hash-equality gate is the dict lookup `find_by_hash(presented_hash)` (line 79), not the HMAC compare.",
+      "file": "03-development/src/taskq_api/service/auth.py",
+      "line_start": 85,
+      "line_end": 89,
+      "code_snippet": "    # [FR-01] [FR-03] AC-3.4 — constant-time compare via hmac.compare_digest.\n    # The spy in the test environment records this call to confirm the\n    # verify code path goes through hmac.compare_digest.\n    if not hmac.compare_digest(presented_hash, presented_hash):\n        return None",
+      "reasoning": "Line 88: `hmac.compare_digest(presented_hash, presented_hash)` compares a value to itself. Real SHA-256 hashes are deterministic, so this always returns True. The `if not ...:` is therefore False; `return None` on line 89 never executes in production. The test `test_fr03_hmac_compare_failure_returns_none` passes only because the monkeypatch replaces `compare_digest` with `lambda a,b: False` — without the patch, the branch is dead code. The SAD §6 T-02 declared mitigation ('hmac.compare_digest (constant-time) on lookup') is broken: the actual security invariant is provided by the dict lookup, not by HMAC.",
+      "suggested_fix": "Either (a) remove lines 85-89 since the dict lookup already enforces hash equality, OR (b) make the second argument the stored hash from the registry: `compare_digest(presented_hash, record['_stored_hash'])`. Option (a) is the surgical fix and matches the actual security model.",
+      "confidence": "high",
+      "confirmed": true,
+      "verify_evidence": "auth.py:88 — `not hmac.compare_digest(presented_hash, presented_hash)` is x vs x. tests/test_fr03.py:248-251 monkeypatches the function to return False; the test passes for the wrong reason. The branch is dead code in production.",
+      "resolution": {
+        "status": "resolved",
+        "fix_commit": "ad0ea9c1123616485f8087ad59f5780db5b1d2c8",
+        "repro_test": "03-development/tests/test_bug_hunt_runner_unbalanced_quote.py::test_auth_compare_digest_is_not_self_comparison"
+      }
+    },
+    {
+      "id": "runner#1",
+      "module": "runner",
+      "lens": "resilience",
+      "severity": "high",
+      "title": "shlex.split() raises ValueError outside the try block — unbalanced quotes trigger 500",
+      "description": "_execute_command calls `shlex.split(command)` on line 189, OUTSIDE the try/except block. The try block begins at line 190 and only catches `FileNotFoundError` / generic `Exception` from `asyncio.create_subprocess_exec`. A `ValueError` from `shlex.split` (e.g. unbalanced quote, trailing backslash) propagates uncaught → unhandled exception → 500 to the client.",
+      "file": "03-development/src/taskq_api/service/runner.py",
+      "line_start": 189,
+      "line_end": 210,
+      "code_snippet": "    arglist = shlex.split(command)\n    try:\n        proc = await asyncio.create_subprocess_exec(\n            *arglist,\n            stdout=asyncio.subprocess.PIPE,\n            stderr=asyncio.subprocess.PIPE,\n        )\n    except FileNotFoundError:\n        return {\"status\": \"failed\", \"exit_code\": 127, ...}\n    except Exception:\n        return {\"status\": \"failed\", \"exit_code\": -1, ...}",
+      "reasoning": "Line 189: `arglist = shlex.split(command)` is placed BEFORE the `try:` block at line 190. `shlex.split('echo \"hello')` raises `ValueError: No closing quotation`. The call is OUTSIDE any try/except, so the exception propagates up to `run_command` → `run_task_endpoint` → FastAPI → 500. The input validator `TaskCreate._command_safe` only blocks shell metachars (`;&|` etc.) — it does NOT check for balanced quotes. Trigger: POST /v1/tasks with `command='echo \"unbalanced'` then POST /v1/tasks/{id}/run → 500.",
+      "suggested_fix": "Move `arglist = shlex.split(command)` INSIDE the try block (after line 190), or wrap it explicitly: `try: arglist = shlex.split(command) except ValueError: return {\"status\": \"failed\", \"exit_code\": -1, ...}`. Five-character surgical change.",
+      "confidence": "high",
+      "confirmed": true,
+      "verify_evidence": "runner.py:189 is BEFORE the try block at line 190. No test exercises this path (grep -rn 'shlex' in tests/ shows only legitimate commands). Any shell-injection-prevention-style command with unbalanced quotes triggers a 500.",
+      "resolution": {
+        "status": "resolved",
+        "fix_commit": "ad0ea9c1123616485f8087ad59f5780db5b1d2c8",
+        "repro_test": "03-development/tests/test_bug_hunt_runner_unbalanced_quote.py::test_runner_unbalanced_quote_returns_failed_not_500"
+      }
+    },
+    {
+      "id": "key_repo#1",
+      "module": "key_repo",
+      "lens": "correctness",
+      "severity": "medium",
+      "title": "Plaintext test API keys shipped in production module",
+      "description": "Three ADMIN-EQUIVACENT plaintext keys (`sk-test-read-key`, `sk-test-write-key`, `sk-test-admin-key`) are hardcoded at module load. The docstring calls this 'Test-only', but the module is imported by the verify_key path in production. If deployed unchanged, `sk-test-admin-key` grants full admin scope.",
+      "file": "03-development/src/taskq_api/repository/key_repo.py",
+      "line_start": 23,
+      "line_end": 27,
+      "code_snippet": "_KEYS_PLAINTEXT: Dict[str, dict] = {\n    \"sk-test-read-key\": {\"scopes\": [\"read\"]},\n    \"sk-test-write-key\": {\"scopes\": [\"read\", \"write\"]},\n    \"sk-test-admin-key\": {\"scopes\": [\"read\", \"write\", \"admin\"]},\n}",
+      "reasoning": "Module-level dict literal at lines 23-27 is loaded unconditionally on `from taskq_api.repository import key_repo`. The admission gate at `verify_key` calls `find_by_hash(stored_hash)` which returns records for these test keys. The SHA-256 hashes are pre-computed and stable. The only mitigation is the textual guarantee in the docstring. In production (no DB-backed `api_keys` table deployed), `sk-test-admin-key` is a working admin key.",
+      "suggested_fix": "Wrap the `_KEYS_PLAINTEXT` literal in `if os.environ.get('TASKQ_ENV') == 'test':` so it is empty in production builds. The test fixture conftest already overrides DEFAULT_BURST for tests, so the same pattern fits.",
+      "confidence": "high",
+      "confirmed": true,
+      "verify_evidence": "key_repo.py:23-27 — module-level dict literal. No env guard. The dep `taskq_api.api.deps._enforce_scope` calls `verify_key` → `find_by_hash` which uses this dict. The plaintext is also stored in `key_id` (line 41) so even hashed-key matching returns the plaintext.",
+      "resolution": {
+        "status": "resolved",
+        "fix_commit": "ad0ea9c1123616485f8087ad59f5780db5b1d2c8",
+        "repro_test": "03-development/tests/test_bug_hunt_runner_unbalanced_quote.py::test_key_repo_no_plaintext_keys_in_production"
+      }
+    },
+    {
+      "id": "runner#2",
+      "module": "runner",
+      "lens": "resilience",
+      "severity": "medium",
+      "title": "_upsert opens a fresh SQLite connection on every call (no connection pooling)",
+      "description": "Every `_upsert` call opens a new SQLite connection via `_connect()` (line 81) which calls `sqlite3.connect(_DB_PATH, timeout=10.0)`. For a busy runner with N concurrent runs, this is N independent connections per row lifecycle (= 3N for pending→running→done).",
+      "file": "03-development/src/taskq_api/service/runner.py",
+      "line_start": 79,
+      "line_end": 114,
+      "code_snippet": "def _upsert(row: Dict[str, Any]) -> None:\n    conn = _connect()\n    try:\n        _ensure_schema(conn)\n        conn.execute(\n            \"INSERT INTO task_results ...\", ...\n        )\n        conn.commit()\n    finally:\n        conn.close()",
+      "reasoning": "Each call to `_upsert` (lines 81-114) opens a NEW sqlite3 connection. SQLite is single-writer: if the DB is at `_DB_PATH` (not `:memory:`), concurrent upserts serialise on the connection mutex. For local file mode, file-handle acquisition is on every call. For 1000 runs/sec this would saturate file descriptors. The `_ensure_schema(conn)` call on every upsert is also wasteful — the schema is created once.",
+      "suggested_fix": "Cache the connection in a module-level `_get_conn()` lazy initializer (mirroring `rate_repo._get_engine`). Hoist `_ensure_schema` out of the upsert hot path. ~10 lines change.",
+      "confidence": "medium",
+      "confirmed": true,
+      "verify_evidence": "runner.py:81-114 — `_connect()` called every `_upsert`. No module-level connection cache. The same `_OUTPUT_TAIL_CHARS` constant and `_DB_PATH` env are read at module import (line 41), so the connection pattern is already partially module-aware.",
+      "resolution": {
+        "status": "resolved",
+        "fix_commit": "ad0ea9c1123616485f8087ad59f5780db5b1d2c8",
+        "repro_test": "03-development/tests/test_bug_hunt_runner_unbalanced_quote.py::test_runner_upsert_reuses_connection"
+      }
+    },
+    {
+      "id": "app#1",
+      "module": "app",
+      "lens": "resilience",
+      "severity": "medium",
+      "title": "shutdown_drain marks rows 'interrupted' without cancelling the underlying task",
+      "description": "When the drain budget expires, `shutdown_drain` marks `_runs[task_id][run_id]['status'] = 'interrupted'` for any pending/running row — but it does NOT call `task.cancel()` on the asyncio task. The background task continues until the inner subprocess timeout fires (`task_timeout`). If `task_timeout > drain_timeout`, the subprocess lingers for the gap.",
+      "file": "03-development/src/taskq_api/app.py",
+      "line_start": 65,
+      "line_end": 96,
+      "code_snippet": "    for task_runs in runner._runs.values():\n        for row in task_runs.values():\n            if row.get(\"status\") in _LIVE_STATUSES:\n                row[\"status\"] = \"interrupted\"",
+      "reasoning": "Lines 93-96 only mutate the row dict (`status` field) — no `task.cancel()` is invoked. The `Runner._run_subprocess` runs `asyncio.wait_for(proc.communicate(), timeout=timeout)` and only kills the subprocess on `TimeoutError`. If `task_timeout` is set to 1h and `TASKQ_DRAIN_TIMEOUT` is 30s, the subprocess keeps running for ~59m30s after shutdown. T-08 violation: the runner reads 'interrupted' but the kernel resource remains alive.",
+      "suggested_fix": "Capture the `asyncio.Task` references at `Runner.submit` (already in `self._tasks`) and call `task.cancel()` on over-budget tasks. The cancel will propagate to `_run_subprocess` and the existing `except asyncio.CancelledError` paths can extinguish the subprocess.",
+      "confidence": "medium",
+      "confirmed": true,
+      "verify_evidence": "app.py:93-96 — only mutates `row['status']`. `runner._tasks` (the in-flight task list) is not iterated. The Runner class has `self._tasks: List[asyncio.Task]` (runner.py:359) — shutdown_drain ignores it.",
+      "resolution": {
+        "status": "resolved",
+        "fix_commit": "ad0ea9c1123616485f8087ad59f5780db5b1d2c8",
+        "repro_test": "03-development/tests/test_bug_hunt_runner_unbalanced_quote.py::test_shutdown_drain_cancels_over_budget_tasks"
+      }
+    },
+    {
+      "id": "v3_split_results#1",
+      "module": "v3_split_results",
+      "lens": "resilience",
+      "severity": "low",
+      "title": "Backfill can leave migration in partial state on IntegrityError",
+      "description": "If two tasks ever share a `task_id` (data corruption, manual injection, or bug), the backfill `INSERT INTO task_results (task_id, ...)` fails with IntegrityError, leaving the table created but empty. The downgrade path is safe (`tasks.result_json` is preserved), but the schema is left in a degraded state until the operator intervenes.",
+      "file": "03-development/src/migrations/versions/v3_split_results.py",
+      "line_start": 108,
+      "line_end": 128,
+      "code_snippet": "def _backfill_task_results(bind):\n    source_rows = bind.execute(_SELECT_NON_NULL_RESULTS).fetchall()\n    if not source_rows:\n        return 0\n    payload = [...] \n    bind.execute(_INSERT_RESULT_ROW, payload)\n    return len(payload)",
+      "reasoning": "The schema migration creates `task_results` with `task_id` as PRIMARY KEY (line 72-75). The backfill assumes `tasks.id` is unique. If any duplicate exists, the INSERT raises `IntegrityError`, which is not caught. The upgrade() function does not roll back the CREATE TABLE. The data on `tasks.result_json` is preserved, but the schema is half-applied. T-11 mitigation says 'downgrade reverses the copy' — but it does not reverse the schema half-application.",
+      "suggested_fix": "Either (a) add `ON CONFLICT(task_id) DO NOTHING` to the INSERT, or (b) wrap the entire upgrade() in a try/except that issues `DROP TABLE task_results` on failure. Option (a) is more robust against partial data corruption.",
+      "confidence": "medium",
+      "confirmed": true,
+      "verify_evidence": "v3_split_results.py:108-128 — `_INSERT_RESULT_ROW` has no ON CONFLICT clause. `task_id` is PK at line 73. upgrade() at line 49 has no try/except. Schema is created unconditionally at line 68.",
+      "resolution": {
+        "status": "open"
+      }
+    },
+    {
+      "id": "errors#1",
+      "module": "errors",
+      "lens": "correctness",
+      "severity": "low",
+      "title": "_resolve_exception_envelope uses exc.detail verbatim for StarletteHTTPException",
+      "description": "When `_resolve_exception_envelope` handles a `StarletteHTTPException`, it returns `str(exc.detail)` directly into the problem+json body. No application code currently raises this with sensitive content, but the API allows it.",
+      "file": "03-development/src/taskq_api/errors.py",
+      "line_start": 266,
+      "line_end": 276,
+      "code_snippet": "    if isinstance(exc, StarletteHTTPException):\n        status = int(exc.status_code)\n        title, fallback_detail = _STATUS_ENVELOPES.get(status, (\"Error\", \"error\"))\n        detail = (\n            str(exc.detail)\n            if exc.detail is not None and str(exc.detail)\n            else fallback_detail\n        )\n        return status, title, detail, {}",
+      "reasoning": "Refuted: searches for `raise HTTPException` / `raise StarletteHTTPException` in `03-development/src/` return zero hits. All handlers use `problem()` from `errors.py` (which sets a constant detail). The FastAPI framework only raises StarletteHTTPException(404, 'Not Found') for unmatched routes and 405 for disallowed methods — both constants. The leak vector is theoretical, not reachable in the current code.",
+      "suggested_fix": "Defence-in-depth: drop the `str(exc.detail)` branch and use only the fallback_detail (the constant string from `_STATUS_ENVELOPES`). One-line change. Not required by Gate 3.",
+      "confidence": "high",
+      "confirmed": false,
+      "verify_evidence": "errors.py:266-276 — detail is `str(exc.detail)`. No handler in the codebase raises HTTPException with non-constant detail (grep -rn 'raise HTTPException' src/ returns no results).",
+      "resolution": {
+        "status": "refuted",
+        "refute_evidence": "No `raise HTTPException` or `raise StarletteHTTPException` in 03-development/src/. Every handler uses `problem()` from errors.py. Theoretically reachable but no current code path triggers it."
+      }
+    },
+    {
+      "id": "runner#3",
+      "module": "runner",
+      "lens": "resilience",
+      "severity": "low",
+      "title": "_execute_with_kill is exported but never called by the Runner class",
+      "description": "_execute_with_kill is defined (lines 297-322) and exported in `__all__`, but the Runner class inlines the same timeout logic in `_run_subprocess` (lines 524-541). The function exists only to satisfy tests that import it directly.",
+      "file": "03-development/src/taskq_api/service/runner.py",
+      "line_start": 297,
+      "line_end": 322,
+      "code_snippet": "async def _execute_with_kill(proc, timeout):\n    try:\n        await asyncio.wait_for(proc.communicate(), timeout=timeout)\n    except asyncio.TimeoutError:\n        await _terminate(proc)\n        raise\n    return proc.returncode if proc.returncode is not None else -1",
+      "reasoning": "Refuted: `_execute_with_kill` is a separately testable extraction, mirrored by `Runner._run_subprocess`. Both call sites use `asyncio.wait_for` + `_terminate` on TimeoutError. Tests at test_fr08.py:409-711 and integration/test_extended_coverage.py:351-388 exercise the function directly. This is intentional duplication, not dead code.",
+      "suggested_fix": "No change required. The duplication is intentional and serves test-driven coverage.",
+      "confidence": "high",
+      "confirmed": false,
+      "verify_evidence": "runner.py:297-322 — defined. Tests at test_fr08.py:697 and integration/test_extended_coverage.py:351 call it directly. Documented as a separate component in lines 12-23.",
+      "resolution": {
+        "status": "refuted",
+        "refute_evidence": "Used by tests/test_fr08.py:711 and integration/test_extended_coverage.py:363. Intentional test-facing extraction."
+      }
+    },
+    {
+      "id": "errors#2",
+      "module": "errors",
+      "lens": "correctness",
+      "severity": "low",
+      "title": "_INSTANCE_SCRUB_STATUSES only covers 403, not 404",
+      "description": "The `instance` field is scrubbed for 403 (potential resource-disclosure) but populated for 404. The URL path in `instance` for 404 includes the task_id the client already knows they requested.",
+      "file": "03-development/src/taskq_api/errors.py",
+      "line_start": 65,
+      "line_end": 70,
+      "code_snippet": "_INSTANCE_SCRUB_STATUSES: frozenset[int] = frozenset({403})",
+      "reasoning": "Refuted: the URL path is known to the client by construction (they made the request). The `instance` field just echoes `request.url.path` (line 156). No information disclosure.",
+      "suggested_fix": "Consider adding 404 to the scrub set for symmetry, but no functional bug.",
+      "confidence": "high",
+      "confirmed": false,
+      "verify_evidence": "errors.py:142-156 — `_resolve_instance` returns `str(url.path)`. The path is the URL the client requested. No leak.",
+      "resolution": {
+        "status": "refuted",
+        "refute_evidence": "The URL path is client-supplied. Instance just echoes it. No information disclosure."
+      }
+    },
+    {
+      "id": "rate_repo#1",
+      "module": "rate_repo",
+      "lens": "correctness",
+      "severity": "low",
+      "title": "_migrate_add_column parses SQL to extract column name — fragile",
+      "description": "The migration helper splits the SQL string on whitespace and assumes `tokens[5]` is the column name. If the SQL form changes (e.g. ALTER TABLE schema qualified), the index drifts.",
+      "file": "03-development/src/taskq_api/repository/rate_repo.py",
+      "line_start": 195,
+      "line_end": 216,
+      "code_snippet": "tokens = migration_sql.split()\n    try:\n        col_name = tokens[5]\n    except IndexError:\n        return",
+      "reasoning": "Refuted: the migration list is a controlled module-level constant `_SCHEMA_MIGRATIONS` (line 59-61). The format is fixed and version-controlled. The fragility is a future maintenance smell, not a current bug.",
+      "suggested_fix": "Acceptable trade-off; documented in the docstring. No Gate 3 action.",
+      "confidence": "high",
+      "confirmed": false,
+      "verify_evidence": "rate_repo.py:195-216 — only one migration in the tuple; format is fixed. No future schema changes queued.",
+      "resolution": {
+        "status": "refuted",
+        "refute_evidence": "Single row in _SCHEMA_MIGRATIONS; format controlled by the codebase. Not a current bug."
+      }
+    },
+    {
+      "id": "runner#4",
+      "module": "runner",
+      "lens": "resilience",
+      "severity": "low",
+      "title": "_terminate's `await proc.wait()` could hang if kill fails silently",
+      "description": "If `proc.kill()` succeeds but the process refuses to die (zombie / uninterruptible syscall), `await proc.wait()` waits indefinitely. The whole drain is blocked.",
+      "file": "03-development/src/taskq_api/service/runner.py",
+      "line_start": 162,
+      "line_end": 177,
+      "code_snippet": "async def _terminate(proc):\n    try:\n        proc.kill()\n    except ProcessLookupError:\n        pass\n    try:\n        await proc.wait()\n    except Exception:\n        pass",
+      "reasoning": "Refuted: SIGKILL on POSIX is uncatchable. A subprocess that does not die after SIGKILL is in an uninterruptible-sleep state (D state) — unusual and outside Python's control. The drain budget is the next-line defense. Gate 3 threshold does not warrant a fix.",
+      "suggested_fix": "Optional: wrap `proc.wait()` in `asyncio.wait_for(..., timeout=...)`. Defence-in-depth only.",
+      "confidence": "high",
+      "confirmed": false,
+      "verify_evidence": "SIGKILL is impossible to ignore on POSIX; the OS guarantees death. Hang on `proc.wait()` is a kernel-level issue, not a Python bug.",
+      "resolution": {
+        "status": "refuted",
+        "refute_evidence": "SIGKILL cannot be intercepted. The subprocess is guaranteed to die. The drain budget is the next-line defense."
+      }
+    }
+  ]
+}
