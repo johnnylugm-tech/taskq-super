@@ -18,11 +18,8 @@ findings covered:
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
-
-import pytest
 
 # Path setup so the module under test is importable.
 _SRC_ROOT = Path(__file__).resolve().parent.parent / "src"
