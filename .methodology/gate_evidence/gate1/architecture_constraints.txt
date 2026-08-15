@@ -1,21 +1,46 @@
-
-╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐
-╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │
- ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗
- ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝
-╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║
-╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝
-  └──▶║║                    ▲ 
-      ╚╝────────────────────┘
-
-
----------
-Contracts
----------
-
-Analyzed 22 files, 23 dependencies.
------------------------------------
-
-config_and_errors_independence KEPT
-
-Contracts: 1 kept, 0 broken.
+{
+  "community_cohesion": {
+    "score": 84.6,
+    "healthy": 11,
+    "total": 13,
+    "total_all": 45,
+    "excluded_test_communities": 32,
+    "unhealthy": [
+      {
+        "name": "repository-engine",
+        "cohesion": 0.1818,
+        "size": 8,
+        "issues": [
+          "low_cohesion(0.18)"
+        ],
+        "dominant_file": "03-development/src/taskq_api/repository/rate_repo.py"
+      },
+      {
+        "name": "taskq-api-key",
+        "cohesion": 0.1739,
+        "size": 5,
+        "issues": [
+          "low_cohesion(0.17)"
+        ]
+      }
+    ],
+    "_cohesion_threshold": 0.2,
+    "_community_oversized": 50,
+    "_community_min_size": 5,
+    "_extra_excludes": [
+      "harness/*",
+      "tests/*",
+      ".claude/*",
+      "conftest.py",
+      "sitecustomize.py"
+    ]
+  },
+  "large_functions_critical": [],
+  "large_functions_penalty": 0,
+  "architecture_score": 84.6,
+  "_source": "framework-independent",
+  "_graph_files": 48,
+  "_source_files": 48,
+  "_unparsed_files": [],
+  "_build_type": "update"
+}

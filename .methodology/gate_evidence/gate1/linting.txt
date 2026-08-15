@@ -1,1 +1,5 @@
+03-development/tests/test_nfr07_nfr08_metrics.py:26:8: F401 [*] `pytest` imported but unused
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+
 All checks passed!
