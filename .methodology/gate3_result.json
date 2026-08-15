@@ -249,9 +249,9 @@
   },
   "crg_review_context": {
     "status": "ok",
-    "summary": "Review context for 32 changed file(s):\n  - Risk: high\n  - 154 impacted nodes in 34 files",
+    "summary": "Review context for 43 changed file(s):\n  - Risk: high\n  - 154 impacted nodes in 34 files",
     "risk": "high",
-    "changed_file_count": 32,
+    "changed_file_count": 43,
     "impacted_file_count": 34,
     "key_entities": [
       "/Users/johnny/projects/taskq-super/03-development/tests/test_nfr01_perf.py",
@@ -268,13 +268,13 @@
     ],
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 112805,
+      "saved_tokens": 113829,
       "saved_percent": 100
     }
   },
   "crg_impact_radius": {
     "status": "ok",
-    "summary": "Blast radius for 32 changed file(s):\n  - 5 nodes directly changed\n  - 154 nodes impacted (within 2 hops)\n  - 34 additional files affected",
+    "summary": "Blast radius for 43 changed file(s):\n  - 5 nodes directly changed\n  - 154 nodes impacted (within 2 hops)\n  - 34 additional files affected",
     "risk": "high",
     "impacted_file_count": 34,
     "key_entities": [
@@ -287,7 +287,7 @@
     "truncated": false,
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 112796,
+      "saved_tokens": 113820,
       "saved_percent": 100
     }
   },
