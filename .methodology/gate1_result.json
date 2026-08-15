@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 5,
-  "fr_id": "FR-06",
+  "fr_id": "FR-07",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786821169005\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.027}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.035}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 5,
+      "tests_passed": 28,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\ncollected 5 items\n\n03-development/tests/test_fr06.py .....                                  [100%]\n\n============================== 5 passed in 0.31s ==============================="
+      "tool_evidence": "============================== 28 passed in 2.15s ==============================; coverage totals: covered_lines=68, num_statements=68, percent_covered=100.0; all 7 required FR-07 tests present (test_fr07_upgrade_head_and_downgrade_base_exit_zero, test_fr07_downgrade_base_leaves_no_residual_tables, test_fr07_migrations_run_against_real_sqlite_file, test_fr07_roundtrip_preserves_sample_rows_byte_identical, test_fr07_v3_downgrade_reverses_data_move, test_fr07_migration_files_contain_no_destructive_shortcut, test_fr07_migrations_render_under_alembic_offline_sql_mode)"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "tool_evidence": "Contracts: 1 kept, 0 broken. config_and_errors_independence KEPT. Analyzed 22 files, 23 dependencies."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "bbccb26c82be5f81ce775ff339f20a9e5ee04bde33b8ea394ec1e6a57cb0f255",
-      "bytes": 170,
-      "head": "{\"version\":\"1.1.409\",\"time\":\"1786821169005\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.027}}"
+      "sha256": "c2ebb8c6526a2a49c512181558ab77cbf4592499b7837e16ae640f472bf9301f",
+      "bytes": 135,
+      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.035}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "e200e8a077cad54aa508a9e5b4b35eea0b56e423e69e5a30aa56b981e06bae71",
-      "bytes": 394,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\ncollected 5 items\n\n03-development/tests/test_fr06.py .....                                  [100%]\n\n============================== 5 passed in 0.31s ==============================="
+      "sha256": "082e04c10974ddb08569b894c9667331899f6ccf526152af6c4d111d24435230",
+      "bytes": 570,
+      "head": "============================== 28 passed in 2.15s ==============================; coverage totals: covered_lines=68, num_statements=68, percent_covered=100.0; all 7 required FR-07 tests present (test_fr07_upgrade_head_and_downgrade_base_exit_zero, test_fr07_downgrade_base_leaves_no_residual_tables, test_fr07_migrations_run_against_real_sqlite_file, test_fr07_roundtrip_preserves_sample_rows_byte_identical, test_fr07_v3_downgrade_reverses_data_move, test_fr07_migration_files_contain_no_destructive_shortcut, test_fr07_migrations_render_under_alembic_offline_sql_mode)"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
-      "bytes": 100,
-      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "sha256": "49fa1fbd307f663386faabfe62b340974157d301258528bf55eb0dcf585b9715",
+      "bytes": 101,
+      "head": "Contracts: 1 kept, 0 broken. config_and_errors_independence KEPT. Analyzed 22 files, 23 dependencies."
     }
   },
   "composite_score": 100.0,
