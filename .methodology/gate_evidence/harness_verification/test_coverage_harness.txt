@@ -50,6 +50,9 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
 03-development/src/taskq_api/service/runner.py                 172      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
+03-development/tests/conftest.py                               101     18    82%   33, 62, 72, 76-79, 127-128, 155-156, 160, 233-234, 238-239, 245-246
+03-development/tests/test_fr08.py                              485     13    97%   288-292, 432-433, 601, 948, 1028, 1052, 1116, 1160, 1190
+03-development/tests/test_fr10.py                              219     65    70%   122-123, 287-288, 524-601, 605-615, 618-642, 644-656
 ------------------------------------------------------------------------------------------
-TOTAL                                                          881      0   100%
-273 passed, 2 warnings in 43.71s
+TOTAL                                                         1686     96    94%
+273 passed, 2 warnings in 43.78s
