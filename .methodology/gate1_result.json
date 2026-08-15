@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 5,
-  "fr_id": "FR-05",
+  "fr_id": "FR-06",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786820939767\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.043}}"
+      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786821169005\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.027}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 38,
+      "tests_passed": 5,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "======================== 38 passed, 1 warning in 0.78s =========================\nFR-05 source files: deps.py 100% (23/23), ratelimit.py 100% (23/23). All 6 required FR-05 tests present and passing."
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\ncollected 5 items\n\n03-development/tests/test_fr06.py .....                                  [100%]\n\n============================== 5 passed in 0.31s ==============================="
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
+      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "86b7c4efc37df25896584bd77bd7e62a4dc473b4ca743f4f9c0192f7e2a2337b",
-      "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786820939767\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.043}}"
+      "sha256": "bbccb26c82be5f81ce775ff339f20a9e5ee04bde33b8ea394ec1e6a57cb0f255",
+      "bytes": 170,
+      "head": "{\"version\":\"1.1.409\",\"time\":\"1786821169005\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.027}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "7b28b926ecce292e440535bf4f82db33fd4fef1b1769359c79b36cb2615e5012",
-      "bytes": 197,
-      "head": "======================== 38 passed, 1 warning in 0.78s =========================\nFR-05 source files: deps.py 100% (23/23), ratelimit.py 100% (23/23). All 6 required FR-05 tests present and passing."
+      "sha256": "e200e8a077cad54aa508a9e5b4b35eea0b56e423e69e5a30aa56b981e06bae71",
+      "bytes": 394,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\ncollected 5 items\n\n03-development/tests/test_fr06.py .....                                  [100%]\n\n============================== 5 passed in 0.31s ==============================="
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
-      "bytes": 101,
-      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
+      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
+      "bytes": 100,
+      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
