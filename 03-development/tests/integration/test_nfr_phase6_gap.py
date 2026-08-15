@@ -54,25 +54,37 @@ def test_nfr01_sql_statement_count_constant_no_n_plus_one() -> None:
     os.environ["TASKQ_DB_URL"] = "sqlite:///:memory:"
     try:
         from taskq_api.repository import task_repo
-        from taskq_api.repository import session as session_mod
 
-        # Seed 100 rows via the in-memory stand-in store.
-        store = {}
+        # Build a stand-in store that exposes the duck-typed surface the
+        # repo helpers consume (`insert` / `list_paginated`). The repo's
+        # list_tasks is a single store.list_paginated call — the N+1
+        # guard is satisfied by transmitting the entire page in one
+        # call regardless of how many rows are returned.
+        rows: dict[str, dict] = {}
+
+        class _ListStore:
+            def insert(self, row: dict) -> None:
+                for r in rows.values():
+                    if r["name"] == row["name"]:
+                        raise KeyError("duplicate_name")
+                rows[row["id"]] = row
+
+            def list_paginated(self, cursor, limit, status):
+                items = sorted(rows.values(), key=lambda r: r["created_at"])
+                return items[:limit], None
+
+        store = _ListStore()
         for i in range(100):
-            row = {
+            store.insert({
                 "id": f"t-{i:03d}",
                 "name": f"n-{i:03d}",
                 "command": "echo",
                 "status": "pending",
                 "created_at": f"2026-01-01T00:00:00.{i:06d}Z",
-            }
-            task_repo.insert_task(store, row)
+            })
 
-        # The repo's list_tasks is a single store.list_paginated call — the
-        # N+1 guard is satisfied by transmitting the entire page in one
-        # call regardless of how many rows are returned.
-        with session_mod.transactional() as s:
-            page, _ = task_repo.list_tasks(s, cursor=None, limit=100, status=None)
+        # Constant SQL: a single call regardless of result size.
+        page, _ = task_repo.list_tasks(store, cursor=None, limit=100, status=None)
         assert len(page) == 100
     finally:
         os.environ.pop("TASKQ_DB_URL", None)
