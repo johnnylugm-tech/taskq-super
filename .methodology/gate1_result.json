@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-04",
+  "fr_id": "FR-07",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786808967512\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.038}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 38,
+      "tests_passed": 28,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2\ncollected 38 items\n03-development/tests/test_fr04.py .......                                [ 18%]\n03-development/tests/test_fr03.py ....................                   [ 71%]\n03-development/tests/test_fr05.py ...........                            [100%]\n======================== 38 passed, 1 warning in 0.80s =========================\ncoverage 100.0% (49/49 lines); spec_cov_pct=100% (8/8 required tests present: read/post_403, write/delete_403, write/run_ok, admin/all_endpoints, single-dep dependency assertion)"
+      "tool_evidence": "28 passed in 2.15s; coverage totals: percent_covered=100.0 (covered_lines=68, num_statements=68) for v1_initial.py, v2_tags.py, v3_split_results.py"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Contracts: 1 kept, 0 broken. (config_and_errors_independence KEPT; 22 files, 23 dependencies analyzed)"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "d0003329def44816fc28b21928e79c08b0807824ddc662e6805822594d915c08",
-      "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786808967512\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
+      "sha256": "012b214069e25667d60c9d43dfd8492c31e8d73a4af9162b73ee8c06c710bf95",
+      "bytes": 135,
+      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.038}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "a38d2204b44f8671a2af39005062c46d0f1ef8da32d5fcc8fc4067dbda54bca7",
-      "bytes": 647,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2\ncollected 38 items\n03-development/tests/test_fr04.py .......                                [ 18%]\n03-development/tests/test_fr03.py ....................                   [ 71%]\n03-development/tests/test_fr05.py ...........                            [100%]\n======================== 38 passed, 1 warning in 0.80s =========================\ncoverage 100.0% (49/49 lines); spec_cov_pct=100% (8/8 required tests present: read/post_403, write/delete_403, write/run_ok, admin/all_endpoints, single-dep dependency assertion)"
+      "sha256": "02d3b422d67c2628cc6ce9307d6a915ea32a4d9dfe52737108ddef1d86e0f8c3",
+      "bytes": 147,
+      "head": "28 passed in 2.15s; coverage totals: percent_covered=100.0 (covered_lines=68, num_statements=68) for v1_initial.py, v2_tags.py, v3_split_results.py"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "b4fb91db05ba2ec881be83e3542f5aceb293e3eaf5ee4189b2e97aca67aa15bc",
-      "bytes": 102,
-      "head": "Contracts: 1 kept, 0 broken. (config_and_errors_independence KEPT; 22 files, 23 dependencies analyzed)"
+      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
+      "bytes": 101,
+      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,

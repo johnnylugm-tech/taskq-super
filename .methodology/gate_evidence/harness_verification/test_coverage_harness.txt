@@ -6,7 +6,7 @@
 ........................................................................ [ 48%]
 ........................................................................ [ 72%]
 ........................................................................ [ 96%]
-..........                                                               [100%]
+...........                                                              [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
@@ -27,7 +27,7 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/migrations/versions/__init__.py               0      0   100%
 03-development/src/migrations/versions/v1_initial.py            19      0   100%
 03-development/src/migrations/versions/v2_tags.py               17      0   100%
-03-development/src/migrations/versions/v3_split_results.py      32      3    91%   87-94
+03-development/src/migrations/versions/v3_split_results.py      32      0   100%
 03-development/src/sitecustomize.py                             26      0   100%
 03-development/src/taskq_api/__init__.py                         0      0   100%
 03-development/src/taskq_api/__main__.py                        32      0   100%
@@ -52,5 +52,5 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/runner.py                 186      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
 ------------------------------------------------------------------------------------------
-TOTAL                                                          905      3    99%
-298 passed, 2 warnings in 49.25s
+TOTAL                                                          905      0   100%
+299 passed, 2 warnings in 49.25s
