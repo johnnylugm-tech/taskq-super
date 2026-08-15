@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 5,
-  "fr_id": "FR-02",
+  "fr_id": "FR-03",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!\n"
+      "tool_evidence": "All checks passed!\n---RUFF EXIT ABOVE---"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786819914836\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.028\n    }\n}\n\n"
+      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786820386923\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.037}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 73,
+      "tests_passed": 38,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "73 passed in 45.72s. Coverage totals: covered_lines=239, num_statements=239, percent_covered=100.0. tasks.py: 100% (45/45 lines). runner.py: 100% (194/194 lines). TOTAL 100% 239 statements.\n\n============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iteratio"
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2\ncollected 38 items\n\n03-development/tests/test_fr03.py .................... [ 52%]\n03-development/tests/test_fr04.py ....... [ 71%]\n03-development/tests/test_fr05.py ........... [100%]\n======================== 38 passed, 1 warning in 0.78s =========================\n{\"totals\": {\"covered_lines\": 49, \"num_statements\": 49, \"percent_covered\": 100.0, \"missing_lines\": 0}}"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "\n╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n"
+      "tool_evidence": "Contracts: 1 kept, 0 broken.\n(only `config_and_errors_independence` contract is configured in import-linter; baseline lists 4 SAB constraints but no import-linter contract enforces them)"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
-      "bytes": 18,
-      "head": "All checks passed!"
+      "sha256": "34acab7f76da44d75e9c849d49ee9e2b39983af02918f173624db2d11bcd3b3b",
+      "bytes": 40,
+      "head": "All checks passed!\n---RUFF EXIT ABOVE---"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "a8ed4a0c7105d812ddb66cc848cfd4d54ca4dd8bc442eab6b6716c69e2a62ad5",
-      "bytes": 250,
-      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786819914836\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.028\n    }\n}"
+      "sha256": "cb3feb6452fecdf7db214db48f44b41c2c0bcdc1f8dfca8f889333c52ca43686",
+      "bytes": 170,
+      "head": "{\"version\":\"1.1.409\",\"time\":\"1786820386923\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.037}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "619059aee26dd2daca4a5ced827ab9ee8865883ded3857b6b0df34e10b742409",
-      "bytes": 500,
-      "head": "73 passed in 45.72s. Coverage totals: covered_lines=239, num_statements=239, percent_covered=100.0. tasks.py: 100% (45/45 lines). runner.py: 100% (194/194 lines). TOTAL 100% 239 statements.\n\n============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iteratio"
+      "sha256": "b864c223e21f2bd997e8900f4d2f583e24719fe367b0fb740aeddd5aa23a9d0d",
+      "bytes": 495,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2\ncollected 38 items\n\n03-development/tests/test_fr03.py .................... [ 52%]\n03-development/tests/test_fr04.py ....... [ 71%]\n03-development/tests/test_fr05.py ........... [100%]\n======================== 38 passed, 1 warning in 0.78s =========================\n{\"totals\": {\"covered_lines\": 49, \"num_statements\": 49, \"percent_covered\": 100.0, \"missing_lines\": 0}}"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "865fbd0e176f1e13df6e1b700baab9879820bb15c226dbe3856e39af53fa632b",
-      "bytes": 842,
-      "head": "╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+      "sha256": "ca4034584c49d6404fa239951c6a770815a2f8ea57ef2c51e4811d3db3daff84",
+      "bytes": 186,
+      "head": "Contracts: 1 kept, 0 broken.\n(only `config_and_errors_independence` contract is configured in import-linter; baseline lists 4 SAB constraints but no import-linter contract enforces them)"
     }
   },
   "composite_score": 100.0,
