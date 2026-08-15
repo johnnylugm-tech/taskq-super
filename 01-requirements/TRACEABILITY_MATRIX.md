@@ -46,16 +46,16 @@
 
 | NFR ID | Test Coverage | Status |
 |--------|--------------|--------|
-| NFR-01 | test_fr01.py, test_fr06.py, test_nfr01_perf.py | VERIFIED |
-| NFR-02 | test_fr01.py, test_fr02.py, test_fr03.py, test_fr04.py, test_fr05.py, test_fr06.py, test_fr09.py, test_fr10.py | VERIFIED |
-| NFR-03 | test_fr02.py, test_fr05.py, test_fr06.py, test_fr07.py, test_fr08.py | VERIFIED |
-| NFR-04 | test_fr03.py, test_fr10.py | VERIFIED |
-| NFR-05 | test_fr04.py, test_fr05.py | VERIFIED |
+| NFR-01 | test_fr01.py, test_fr06.py, test_nfr01_perf.py — absent: 03-development/tests/integration/test_nfr_phase6_gap.py::test_nfr01_sql_statement_count_constant_no_n_plus_one (failed) | PARTIAL |
+| NFR-02 | test_nfr_phase6_gap.py, test_fr01.py, test_fr02.py, test_fr03.py, test_fr04.py, test_fr05.py, test_fr06.py, test_fr09.py, test_fr10.py | VERIFIED |
+| NFR-03 | test_nfr_phase6_gap.py, test_fr02.py, test_fr05.py, test_fr06.py, test_fr07.py, test_fr08.py — absent: 03-development/tests/integration/test_nfr_phase6_gap.py::test_nfr03_failing_migration_leaves_previous_revision (failed) | PARTIAL |
+| NFR-04 | test_nfr_phase6_gap.py, test_fr03.py, test_fr10.py — absent: 03-development/tests/integration/test_nfr_phase6_gap.py::test_nfr04_forced_500_body_and_log_are_redacted (failed) | PARTIAL |
+| NFR-05 | test_nfr_phase6_gap.py, test_fr04.py, test_fr05.py | VERIFIED |
 | NFR-06 | test_fr06.py | VERIFIED |
 | NFR-07 | — | PENDING |
 | NFR-08 | — | PENDING |
 | NFR-09 | test_fr07.py, test_fr08.py, test_fr10.py | VERIFIED |
-| NFR-10 | test_fr01.py, test_fr02.py, test_fr03.py, test_fr05.py, test_fr07.py, test_fr08.py, test_fr09.py, test_fr10.py | VERIFIED |
+| NFR-10 | test_nfr_phase6_gap.py, test_fr01.py, test_fr02.py, test_fr03.py, test_fr05.py, test_fr07.py, test_fr08.py, test_fr09.py, test_fr10.py | VERIFIED |
 | NFR-11 | test_fr10.py | VERIFIED |
-| NFR-12 | test_fr05.py, test_fr09.py | VERIFIED |
+| NFR-12 | test_nfr_phase6_gap.py, test_fr05.py, test_fr09.py | VERIFIED |
 | NFR-99 | — | PENDING |

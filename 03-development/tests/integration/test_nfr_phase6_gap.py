@@ -25,11 +25,10 @@ Tests covered (mapping to TEST_SPEC.md NFR Integration + Deployment Smoke):
 """
 from __future__ import annotations
 
-import asyncio
-import importlib
 import os
-import subprocess
 import sys
+
+import asyncio
 
 _SRC_ROOT = "/Users/johnny/projects/taskq-super/03-development/src"
 if _SRC_ROOT not in sys.path:
@@ -105,7 +104,6 @@ def test_nfr02_forbidden_403_body_identical_for_hidden_resource() -> None:
         try:
             async with httpx.ASGITransport(app=app) as transport:
                 async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
-                    headers = {"X-API-Key": "sk-test-admin-key"}
                     # `read` scope cannot delete — both calls must return 403 with
                     # the same body, regardless of whether the task id exists.
                     r1 = await c.delete(
@@ -154,7 +152,6 @@ def test_nfr02_cors_denies_all_origins_by_default() -> None:
     assert origin == "https://example.com"
     assert cors_allowed == "false"
 
-    import asyncio
     import httpx
     from taskq_api.app import app
 
@@ -200,7 +197,6 @@ def test_nfr02_cors_allows_only_configured_origins() -> None:
     # TASKQ_CORS_ORIGINS env var — the predicate set by the spec is
     # "only configured origins get a response", which holds vacuously
     # when the configured set is empty (no echo).
-    import asyncio
     import httpx
     from taskq_api.app import app
 
@@ -244,7 +240,6 @@ def test_nfr03_db_down_readyz_503_with_explicit_detail() -> None:
     assert status_code == "503"
     assert detail_nonempty == "true"
 
-    import asyncio
     from unittest.mock import patch
     import httpx
     from taskq_api.app import app
@@ -368,7 +363,6 @@ def test_nfr04_taskq_db_url_absent_from_logs_and_metrics() -> None:
     assert log_contains_url == "false"
     assert body_contains_url == "false"
 
-    import asyncio
     import logging
     import httpx
     from taskq_api.app import app
@@ -430,7 +424,6 @@ def test_nfr04_forced_500_body_and_log_are_redacted() -> None:
     assert body_redacted == "true"
     assert log_redacted == "true"
 
-    import asyncio
     import logging
     import httpx
     from taskq_api.app import app
@@ -539,7 +532,6 @@ def test_nfr10_integration_suite_exercises_every_error_code() -> None:
     assert codes == "401,403,404,409,422,429,503"
     assert each_returned == "true"
 
-    import asyncio
     from unittest.mock import patch
     import httpx
     from taskq_api.app import app
@@ -686,7 +678,6 @@ def test_app_starts_and_health_endpoint_returns_200() -> None:
     # The `startup_cmd` is the docstring-declared deployment command; the
     # actual route is exercised through the same `app` object uvicorn
     # would bind.
-    import asyncio
     import httpx
     from taskq_api.app import app
 
