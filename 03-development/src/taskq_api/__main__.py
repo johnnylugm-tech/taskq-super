@@ -17,7 +17,7 @@ from taskq_api.service.auth import create_key
 
 # [FR-09] — uvicorn bind defaults; ``taskq_api.app:app`` keeps the
 # development server identical to the production ASGI surface (NFR-10).
-_DEFAULT_HOST: str = "0.0.0.0"
+_DEFAULT_HOST: str = "127.0.0.1"  # nosec B104 — development default; override via TASKQ_HOST for production
 _DEFAULT_PORT: int = 8000
 _DEFAULT_APP_TARGET: str = "taskq_api.app:app"
 
