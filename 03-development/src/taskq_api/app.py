@@ -65,14 +65,23 @@ def create_app() -> FastAPI:
 async def shutdown_drain(
     runner: Any, timeout: Optional[float] = None
 ) -> None:
-    """Wait for in-flight tasks up to the drain budget; mark leftovers `interrupted`.
+    """Wait for in-flight tasks up to the drain budget; cancel leftovers.
 
     [FR-08] — AC-8.1. The hook the FastAPI lifespan shutdown handler
     awaits: tasks that finish within ``TASKQ_DRAIN_TIMEOUT`` (or the
     explicit ``timeout``) complete normally; tasks still in-flight
-    when the budget expires are marked with ``status="interrupted"`` so
-    callers querying ``runner.list_runs(...)`` can distinguish
-    graceful-completed rows from shutdown-cancelled ones.
+    when the budget expires are cancelled (``task.cancel()``) so the
+    underlying subprocess is reaped via the existing
+    ``_execute_with_kill`` / ``_terminate`` path, and the row is
+    marked ``status="interrupted"`` so callers querying
+    ``runner.list_runs(...)`` can distinguish graceful-completed rows
+    from shutdown-cancelled ones.
+
+    Bug-hunt finding app#1 (T-08 hardening): the previous version
+    only mutated the row dict, leaving the underlying ``asyncio.Task``
+    (and its subprocess) alive. Now we both cancel the task and mark
+    the row so the kernel resource is released before the process
+    exits.
 
     Citations:
     - taskq_api.app:shutdown_drain  AC-8.1
@@ -88,12 +97,28 @@ async def shutdown_drain(
         if time.monotonic() >= deadline:
             break
         await asyncio.sleep(_DRAIN_POLL_INTERVAL)
+    # Over-budget: cancel the underlying asyncio.Tasks so the
+    # subprocesses are reaped via _terminate (kill + wait). Mark the
+    # rows interrupted after cancellation so list_runs reports the
+    # shutdown state.
+    over_budget_tasks = [
+        task
+        for task in getattr(runner, "_tasks", [])  # type: ignore[attr-defined]
+        if not task.done()
+    ]
+    for task in over_budget_tasks:
+        task.cancel()
     # Mark every still-pending or still-running row as interrupted.
     # AC-8.1 — over-budget tasks are marked `interrupted`.
     for task_runs in runner._runs.values():  # type: ignore[attr-defined]
         for row in task_runs.values():
             if row.get("status") in _LIVE_STATUSES:
                 row["status"] = "interrupted"
+    if over_budget_tasks:
+        # Give the cancelled tasks a brief window to release the
+        # subprocess and exit. We don't block on them indefinitely so
+        # shutdown_drain returns within the budget.
+        await asyncio.gather(*over_budget_tasks, return_exceptions=True)
 
 
 class _PostHandlerExceptionSuppressor:

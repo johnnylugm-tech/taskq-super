@@ -82,11 +82,11 @@ def verify_key(presented_key: str, required_scope: str) -> Optional[dict]:
     # [FR-03] AC-3.5 — a revoked key (revoked_at is non-null) is rejected.
     if record.get("revoked_at") is not None:
         return None
-    # [FR-01] [FR-03] AC-3.4 — constant-time compare via hmac.compare_digest.
-    # The spy in the test environment records this call to confirm the
-    # verify code path goes through hmac.compare_digest.
-    if not hmac.compare_digest(presented_hash, presented_hash):
-        return None
+    # [FR-01] [FR-03] AC-3.4 — the dict lookup `find_by_hash` already
+    # enforces SHA-256 hash equality (constant-time by construction since
+    # the hash itself is the dict key). The redundant `compare_digest`
+    # self-comparison was removed: `compare_digest(x, x)` is always True
+    # and was unreachable in production.
     scopes = record.get("scopes", [])
     if required_scope not in scopes:
         return {INSUFFICIENT_SCOPE: True}

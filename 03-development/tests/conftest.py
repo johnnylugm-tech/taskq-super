@@ -8,9 +8,16 @@ themselves are missing — not because of bad signatures or missing rows.
 
 from __future__ import annotations
 
-import hmac
+import os
 import sys
 from pathlib import Path
+
+# Mark the test environment BEFORE any module under test is imported so
+# the module-level TASKQ_ENV-guarded fixtures (e.g. the plaintext API
+# keys in `taskq_api.repository.key_repo`) load correctly.
+os.environ.setdefault("TASKQ_ENV", "test")
+
+import hmac
 from typing import Any, Dict, List, Optional
 
 import pytest
@@ -106,6 +113,15 @@ def _mock_hmac_compare_digest(monkeypatch: pytest.MonkeyPatch) -> None:
         return True
 
     monkeypatch.setattr(hmac, "compare_digest", _always_equal)
+
+
+@pytest.fixture(autouse=True)
+def _enable_test_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Mark the test environment so module-level test fixtures (e.g.
+    the plaintext API keys in key_repo) are loaded. The bug-hunt
+    fix to key_repo guards the test-only dict behind TASKQ_ENV == 'test'.
+    """
+    monkeypatch.setenv("TASKQ_ENV", "test")
 
 
 @pytest.fixture(autouse=True)

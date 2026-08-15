@@ -15,16 +15,23 @@ Citations:
 from __future__ import annotations
 
 import hashlib
+import os
 from typing import Dict, Optional
 
 # Test-only key registry. Production would derive these from the
 # `api_keys` table (one row per key, indexed on `key_hash`).
 # Plaintext → scopes mapping; the on-disk index keys are SHA-256 hashes.
-_KEYS_PLAINTEXT: Dict[str, dict] = {
-    "sk-test-read-key": {"scopes": ["read"]},
-    "sk-test-write-key": {"scopes": ["read", "write"]},
-    "sk-test-admin-key": {"scopes": ["read", "write", "admin"]},
-}
+# Guarded by TASKQ_ENV == 'test' so production builds do not ship the
+# plaintext `sk-test-admin-key` (T-02 hardening — bug-hunt key_repo#1).
+_KEYS_PLAINTEXT: Dict[str, dict] = (
+    {
+        "sk-test-read-key": {"scopes": ["read"]},
+        "sk-test-write-key": {"scopes": ["read", "write"]},
+        "sk-test-admin-key": {"scopes": ["read", "write", "admin"]},
+    }
+    if os.environ.get("TASKQ_ENV") == "test"
+    else {}
+)
 
 _HASH_TO_RECORD: Dict[str, dict] = {}
 _SEEDED: bool = False

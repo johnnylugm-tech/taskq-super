@@ -76,42 +76,68 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
+_shared_conn: sqlite3.Connection | None = None
+_shared_conn_db_path: str | None = None
+
+
+def _get_conn() -> sqlite3.Connection:
+    """Return a process-wide shared SQLite connection.
+
+    Bug-hunt finding runner#2 — the previous implementation opened a fresh
+    connection on every `_upsert` call, which serialised through SQLite's
+    single-writer mutex and burdened the file descriptor table. The
+    connection is now cached at module level so the schema is created once
+    and the same handle is reused across upserts.
+
+    The cache is keyed on the current `_DB_PATH` so test fixtures that
+    monkeypatch `_DB_PATH` (e.g. `tests/test_fr08.py::runner_db`) get a
+    fresh connection bound to the new file path.
+    """
+    global _shared_conn, _shared_conn_db_path
+    if _shared_conn is None or _shared_conn_db_path != _DB_PATH:
+        if _shared_conn is not None:
+            try:
+                _shared_conn.close()
+            except Exception:
+                pass
+        _shared_conn = _connect()
+        _shared_conn_db_path = _DB_PATH
+        _ensure_schema(_shared_conn)
+    return _shared_conn
+
+
 def _upsert(row: Dict[str, Any]) -> None:
     """INSERT-or-UPDATE one row in task_results by its primary key id."""
-    conn = _connect()
-    try:
-        _ensure_schema(conn)
-        conn.execute(
-            """
-            INSERT INTO task_results
-                (id, task_id, command, status, exit_code, stdout_tail,
-                 stderr_tail, started_at, finished_at, duration_ms)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(id) DO UPDATE SET
-                status = excluded.status,
-                exit_code = excluded.exit_code,
-                stdout_tail = excluded.stdout_tail,
-                stderr_tail = excluded.stderr_tail,
-                started_at = excluded.started_at,
-                finished_at = excluded.finished_at,
-                duration_ms = excluded.duration_ms
-            """,
-            (
-                row["id"],
-                row["task_id"],
-                row["command"],
-                row["status"],
-                row["exit_code"],
-                row["stdout_tail"],
-                row["stderr_tail"],
-                row.get("started_at"),
-                row.get("finished_at"),
-                row["duration_ms"],
-            ),
-        )
-        conn.commit()
-    finally:
-        conn.close()
+    conn = _get_conn()
+    conn.execute(
+        """
+        INSERT INTO task_results
+            (id, task_id, command, status, exit_code, stdout_tail,
+             stderr_tail, started_at, finished_at, duration_ms)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            status = excluded.status,
+            exit_code = excluded.exit_code,
+            stdout_tail = excluded.stdout_tail,
+            stderr_tail = excluded.stderr_tail,
+            started_at = excluded.started_at,
+            finished_at = excluded.finished_at,
+            duration_ms = excluded.duration_ms
+        """,
+        (
+            row["id"],
+            row["task_id"],
+            row["command"],
+            row["status"],
+            row["exit_code"],
+            row["stdout_tail"],
+            row["stderr_tail"],
+            row.get("started_at"),
+            row.get("finished_at"),
+            row["duration_ms"],
+        ),
+    )
+    conn.commit()
 
 
 def list_runs(task_id: str) -> List[Dict[str, Any]]:
@@ -186,8 +212,8 @@ async def _execute_command(command: str, timeout: float) -> Dict[str, Any]:
     shell metacharacters pass straight through to `execve` (AC-2.2 / T-03:
     the shell-passing flag is forbidden).
     """
-    arglist = shlex.split(command)
     try:
+        arglist = shlex.split(command)
         proc = await asyncio.create_subprocess_exec(
             *arglist,
             stdout=asyncio.subprocess.PIPE,
@@ -198,6 +224,16 @@ async def _execute_command(command: str, timeout: float) -> Dict[str, Any]:
         return {
             "status": "failed",
             "exit_code": 127,
+            "stdout_tail": "",
+            "stderr_tail": "",
+        }
+    except ValueError:
+        # shlex.split raises ValueError on unbalanced quotes / trailing
+        # backslash. Report as a malformed-command failure so the
+        # caller sees a structured "failed" row instead of a 500.
+        return {
+            "status": "failed",
+            "exit_code": -1,
             "stdout_tail": "",
             "stderr_tail": "",
         }
