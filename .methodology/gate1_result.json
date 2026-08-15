@@ -1,8 +1,8 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-06",
-  "overall_score": 100.0,
+  "fr_id": "FR-07",
+  "overall_score": 98.9,
   "quality_complete": true,
   "rounds_used": 1,
   "breakdown": {
@@ -19,10 +19,10 @@
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 5,
+      "tests_passed": 27,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "03-development/tests/test_fr06.py ..... [100%]\n============================== 5 passed in 0.46s ===============================\nspec_cov_pct=100 (0/4 required tests missing)\ncoverage on session.py: 100% (25/25 lines)\nAll 4 required test functions present: test_fr06_no_shell_true_eval_or_exec_in_source, test_fr06_no_fstring_or_concat_sql_composition, test_fr06_one_session_per_request_lifecycle, test_fr06_engine_uses_pool_size_and_pool_pre_ping"
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 27 items\n\ntests/test_fr07.py ...........................                           [100%]\n\n============================== 27 passed in 2.33s ==============================\nName                                          Stmts   Miss  Cover\n-----------------------------------------------------------------\nsrc/migrations/versions/v1_initial.py            19      0   100%\nsrc/migrations/versions/v2_tags.py               17      0   100%\nsrc/migrations/versions/v3_split_results.py      32      3    91%\n-----------------------------------------------------------------\nTOTAL                                            68      3    96%"
     },
     "architecture_constraints": {
       "score": 100.0,
@@ -75,9 +75,9 @@
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "86b4307a58e7f1c00ffd93bdc659eaa7c9d77811ebed0820f1a293106ca04f9a",
-      "bytes": 446,
-      "head": "03-development/tests/test_fr06.py ..... [100%]\n============================== 5 passed in 0.46s ===============================\nspec_cov_pct=100 (0/4 required tests missing)\ncoverage on session.py: 100% (25/25 lines)\nAll 4 required test functions present: test_fr06_no_shell_true_eval_or_exec_in_source, test_fr06_no_fstring_or_concat_sql_composition, test_fr06_one_session_per_request_lifecycle, test_fr06_engine_uses_pool_size_and_pool_pre_ping"
+      "sha256": "b486a1d456323be22336141b6d8f343bf92cde88a16682ad05bcdb740978b12a",
+      "bytes": 1234,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 27 items\n\ntests/test_fr07.py ...........................                           [100%]\n\n============================== 27 passed in 2.33s ==============================\nName                                          Stmts   Miss  Cover\n-----------------------------------------------------------------\nsrc/migrations/versions/v1_initial.py            19      0   100%\nsrc/migrations/versions/v2_tags.py               17      0   100%\nsrc/migrations/versions/v3_split_results.py      32      3    91%\n-----------------------------------------------------------------\nTOTAL                                            68      3    96%"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
