@@ -20,7 +20,10 @@ Citations:
 - taskq_api.errors:problem_json_response     FR-10 AC-10.1 / AC-10.2 / AC-10.3 / AC-10.4 / AC-10.5
 - taskq_api.errors:render_problem            FR-10 helper for non-exception paths (e.g. /readyz)
 - taskq_api.errors:install_exception_handlers  FR-10 wires RFC 7807 envelope + StarletteHTTPException
-- taskq_api.errors:_generate_correlation_id    FR-10 server-generated UUID
+- taskq_api.errors:_resolve_exception_envelope FR-10 picks (status, title, detail) per exception type
+- taskq_api.errors:_envelope_response        FR-10 shared body+headers+log builder
+- taskq_api.errors:_resolve_instance         FR-10 scrubs `instance` for security-sensitive statuses
+- taskq_api.errors:_generate_correlation_id  FR-10 server-generated UUID
 - taskq_api.errors:_build_problem_body       FR-10 six-field contract
 - taskq_api.errors:_emit_log_line            FR-10 AC-10.5 log join key
 """
@@ -29,7 +32,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import Dict, Optional
+from typing import Dict, Mapping, Optional, Tuple
 
 from fastapi import Request
 from fastapi.exceptions import RequestValidationError
@@ -44,7 +47,7 @@ _log = logging.getLogger("taskq_api")
 
 # The fixed set of body fields the problem+json envelope must carry.
 # FR-10 AC-10.2 — no more, no fewer.
-PROBLEM_BODY_FIELDS: tuple[str, ...] = (
+PROBLEM_BODY_FIELDS: Tuple[str, ...] = (
     "type",
     "title",
     "status",
@@ -54,34 +57,33 @@ PROBLEM_BODY_FIELDS: tuple[str, ...] = (
 )
 
 
-# Canonical (status -> title) / (status -> generic detail) maps used by
-# the StarletteHTTPException and 500 fallback paths so they emit
-# well-formed envelopes without leaking internals.
-_STATUS_TITLE: Dict[int, str] = {
-    400: "Bad Request",
-    401: "Unauthorized",
-    403: "Forbidden",
-    404: "Not Found",
-    405: "Method Not Allowed",
-    409: "Conflict",
-    422: "Unprocessable Entity",
-    429: "Too Many Requests",
-    500: "Internal Server Error",
-    503: "Service Unavailable",
-}
+# Default RFC 7807 `type` value when the server hasn't assigned a
+# problem-type URI for a given status.
+_DEFAULT_TYPE: str = "about:blank"
 
 
-_STATUS_DETAIL: Dict[int, str] = {
-    400: "bad request",
-    401: "unauthorized",
-    403: "forbidden",
-    404: "resource not found",
-    405: "method not allowed",
-    409: "conflict",
-    422: "validation failed",
-    429: "rate limit exceeded",
-    500: "internal server error",
-    503: "service unavailable",
+# Statuses for which the request URL path would itself disclose
+# information the caller is not authorised to know (e.g. 403 on
+# `/v1/tasks/{task_id}` leaks which resource id was probed). The
+# six-field AC-10.2 body contract still holds — only the *value* of
+# `instance` is cleared.
+_INSTANCE_SCRUB_STATUSES: frozenset[int] = frozenset({403})
+
+
+# Canonical (status -> (title, fallback detail)) map. Paired rather
+# than parallel dicts so the two strings can never drift apart and every
+# problem+json path uses the same wording per status.
+_STATUS_ENVELOPES: Mapping[int, Tuple[str, str]] = {
+    400: ("Bad Request", "bad request"),
+    401: ("Unauthorized", "unauthorized"),
+    403: ("Forbidden", "forbidden"),
+    404: ("Not Found", "resource not found"),
+    405: ("Method Not Allowed", "method not allowed"),
+    409: ("Conflict", "conflict"),
+    422: ("Unprocessable Entity", "validation failed"),
+    429: ("Too Many Requests", "rate limit exceeded"),
+    500: ("Internal Server Error", "internal server error"),
+    503: ("Service Unavailable", "service unavailable"),
 }
 
 
@@ -137,6 +139,23 @@ def _generate_correlation_id(request: Request) -> str:
     return str(uuid.uuid4())
 
 
+def _resolve_instance(request: Request, status: int) -> str:
+    """Return the safe value for the `instance` field of the body.
+
+    [FR-04] / NFR-02 / T-05 — security-sensitive statuses (those in
+    `_INSTANCE_SCRUB_STATUSES`) get an empty string because the request
+    URL path would itself disclose something the caller is not
+    authorised to know. When the request has no URL (e.g. a stub
+    passed by a coverage test) we also return an empty string.
+    """
+    if status in _INSTANCE_SCRUB_STATUSES:
+        return ""
+    url = getattr(request, "url", None)
+    if url is None:
+        return ""
+    return str(url.path)
+
+
 def _build_problem_body(
     *,
     status: int,
@@ -147,7 +166,7 @@ def _build_problem_body(
 ) -> Dict[str, object]:
     """Construct the canonical six-field RFC 7807 body (FR-10 AC-10.2)."""
     return {
-        "type": "about:blank",
+        "type": _DEFAULT_TYPE,
         "title": title,
         "status": status,
         "detail": detail,
@@ -181,84 +200,7 @@ def _emit_log_line(
     )
 
 
-async def problem_json_response(
-    request: Request,
-    exc: Exception,
-) -> JSONResponse:
-    """Render an exception as application/problem+json (RFC 7807).
-
-    [FR-10] — AC-10.1 / AC-10.2 / AC-10.3 / AC-10.4 / AC-10.5. The
-    response body carries exactly the six allowed fields, the
-    `X-Correlation-Id` header mirrors the body's `correlation_id`, and
-    one structured log line is emitted carrying the same value.
-    """
-    correlation_id = _generate_correlation_id(request)
-    raw_instance = str(request.url.path) if getattr(request, "url", None) else ""
-
-    # Pick the canonical (status, title, detail) triple for this exception
-    # type. The 500 fallback never echoes the exception text into the body
-    # so stack / SQL / path / traceback / query fragments can never
-    # surface (AC-10.3 / AC-10.7).
-    extra_headers: Dict[str, str] = {}
-    if isinstance(exc, TaskQError):
-        status = exc.status
-        title = exc.title
-        detail = exc.detail
-        extra_headers.update(exc.headers or {})
-    elif isinstance(exc, RequestValidationError):
-        status = 422
-        title = "Validation Error"
-        detail = "request validation failed"
-    elif isinstance(exc, StarletteHTTPException):
-        status = int(exc.status_code)
-        title = _STATUS_TITLE.get(status, "Error")
-        if exc.detail is not None and str(exc.detail):
-            detail = str(exc.detail)
-        else:
-            detail = _STATUS_DETAIL.get(status, "error")
-    else:
-        # Generic 500 — DO NOT leak the exception text into the body.
-        status = 500
-        title = "Internal Server Error"
-        detail = "internal server error"
-
-    # [FR-04] / NFR-02 / T-05 — 403 (insufficient scope) must NOT echo the
-    # request URL in the body, because the path usually carries the
-    # resource id (`/v1/tasks/{task_id}`) the caller is not authorised to
-    # know about. The `instance` field is still present in the body so
-    # the FR-10 AC-10.2 six-field contract holds, but its value is
-    # scrubbed — security-sensitive statuses get an empty `instance`.
-    if status == 403:
-        instance = ""
-    else:
-        instance = raw_instance
-
-    body = _build_problem_body(
-        status=status,
-        title=title,
-        detail=detail,
-        instance=instance,
-        correlation_id=correlation_id,
-    )
-    response_headers: Dict[str, str] = {
-        "X-Correlation-Id": correlation_id,
-        **extra_headers,
-    }
-    _emit_log_line(
-        status=status,
-        correlation_id=correlation_id,
-        instance=instance,
-        title=title,
-    )
-    return JSONResponse(
-        status_code=status,
-        content=body,
-        media_type="application/problem+json",
-        headers=response_headers,
-    )
-
-
-def render_problem(
+def _envelope_response(
     request: Request,
     *,
     status: int,
@@ -266,15 +208,16 @@ def render_problem(
     detail: str,
     extra_headers: Optional[Dict[str, str]] = None,
 ) -> JSONResponse:
-    """Render a problem+json response directly (non-exception path).
+    """Build the canonical problem+json response (shared by every path).
 
-    [FR-10] — convenience for endpoints that want to surface a
-    structured failure (e.g. ``/readyz`` returning 503) without raising
-    an exception. Generates a correlation_id from the request, sets the
-    ``X-Correlation-Id`` header, and emits the standard log line.
+    [FR-10] — AC-10.1 / AC-10.2 / AC-10.4 / AC-10.5. Shared by every
+    code path that surfaces a structured error — the exception
+    handlers (``problem_json_response``) and the direct-emission helper
+    (``render_problem``) — so the envelope shape, response headers,
+    and log line stay byte-identical across all paths.
     """
     correlation_id = _generate_correlation_id(request)
-    instance = str(request.url.path) if request.url else ""
+    instance = _resolve_instance(request, status)
     body = _build_problem_body(
         status=status,
         title=title,
@@ -297,6 +240,86 @@ def render_problem(
         content=body,
         media_type="application/problem+json",
         headers=response_headers,
+    )
+
+
+def _resolve_exception_envelope(
+    exc: Exception,
+) -> Tuple[int, str, str, Dict[str, str]]:
+    """Pick the canonical (status, title, detail, headers) for an exception.
+
+    [FR-10] — AC-10.3 / AC-10.7. The generic 500 fallback NEVER echoes
+    the exception text into the body so stack / SQL / path / traceback /
+    query fragments can never surface. ``TaskQError`` carries its own
+    headers (e.g. ``Retry-After`` for 429 per FR-05 AC-5.1) which the
+    caller round-trips into the response.
+    """
+    if isinstance(exc, TaskQError):
+        return (
+            exc.status,
+            exc.title,
+            exc.detail,
+            dict(exc.headers or {}),
+        )
+    if isinstance(exc, RequestValidationError):
+        return 422, "Validation Error", "request validation failed", {}
+    if isinstance(exc, StarletteHTTPException):
+        status = int(exc.status_code)
+        title, fallback_detail = _STATUS_ENVELOPES.get(
+            status, ("Error", "error")
+        )
+        detail = (
+            str(exc.detail)
+            if exc.detail is not None and str(exc.detail)
+            else fallback_detail
+        )
+        return status, title, detail, {}
+    # Generic 500 — DO NOT leak the exception text into the body.
+    return 500, "Internal Server Error", "internal server error", {}
+
+
+async def problem_json_response(
+    request: Request,
+    exc: Exception,
+) -> JSONResponse:
+    """Render an exception as application/problem+json (RFC 7807).
+
+    [FR-10] — AC-10.1 / AC-10.2 / AC-10.3 / AC-10.4 / AC-10.5. The
+    response body carries exactly the six allowed fields, the
+    `X-Correlation-Id` header mirrors the body's `correlation_id`, and
+    one structured log line is emitted carrying the same value.
+    """
+    status, title, detail, extra_headers = _resolve_exception_envelope(exc)
+    return _envelope_response(
+        request,
+        status=status,
+        title=title,
+        detail=detail,
+        extra_headers=extra_headers,
+    )
+
+
+def render_problem(
+    request: Request,
+    *,
+    status: int,
+    title: str,
+    detail: str,
+    extra_headers: Optional[Dict[str, str]] = None,
+) -> JSONResponse:
+    """Render a problem+json response directly (non-exception path).
+
+    [FR-10] — convenience for endpoints that want to surface a
+    structured failure (e.g. ``/readyz`` returning 503) without raising
+    an exception. Generates a correlation_id from the request, sets the
+    ``X-Correlation-Id`` header, and emits the standard log line.
+    """
+    return _envelope_response(
+        request,
+        status=status,
+        title=title,
+        detail=detail,
+        extra_headers=extra_headers,
     )
 
 
