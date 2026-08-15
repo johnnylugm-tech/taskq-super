@@ -1,7 +1,7 @@
 {
   "schema": "harness/traceability/attestation/v1",
-  "git_sha": "817c84c8d45e72802721827b4ed6bca304cd10d9",
-  "content_sha256": "7241fb9a1b4f678c6e65bf0d098078b7b375e87ea423ebc4df1c7d90f92f0cbe",
+  "git_sha": "db3502688c5af3c994e055171d9559ed93164967",
+  "content_sha256": "b40c1d559074a0ccf19e184875d723653e9d44fc1a3ca25406fb51a36415c5a3",
   "tool": "scripts/build_trace_attestation.py",
   "overlay_used": null,
   "overlay_errors": [],
@@ -14,7 +14,7 @@
       "code_coverage": "100.0%",
       "test_coverage": "100.0%",
       "verification_rate": "100.0%",
-      "total_links": 86,
+      "total_links": 88,
       "missing_mappings": {
         "fr_without_srs": [],
         "fr_without_code": [],
@@ -121,9 +121,11 @@
           "03-development/src/taskq_api/errors.py",
           "03-development/src/taskq_api/repository/rate_repo.py",
           "03-development/src/taskq_api/service/ratelimit.py",
+          "03-development/tests/test_fr03.py",
           "03-development/tests/test_fr05.py"
         ],
         "test_files": [
+          "03-development/tests/test_fr03.py",
           "03-development/tests/test_fr05.py"
         ],
         "sad_module": "api/deps.py",
