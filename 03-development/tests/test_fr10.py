@@ -706,3 +706,273 @@ def test_fr10_install_exception_handlers_registers_three_handlers() -> None:
         "install_exception_handlers must register at least one handler "
         "on the FastAPI app"
     )
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridge — exercise the inbound X-Correlation-Id branch
+# (errors.py lines 136-138). When the request carries an inbound
+# X-Correlation-Id header, the handler MUST re-use that value instead of
+# minting a fresh UUID. The TEST_SPEC doesn't enumerate this branch
+# separately, but it is the AC-10.4 contract — the join key path is
+# end-to-end traceable, not just server-generated.
+# ---------------------------------------------------------------------------
+
+
+def test_fr10_inbound_correlation_id_header_is_reused() -> None:
+    """[FR-10 coverage bridge] When a request carries an inbound
+    `X-Correlation-Id` header, the response MUST echo that exact value
+    in both the response header AND the body.
+
+    [FR-10] — AC-10.4 (echo semantics). Exercises the inbound
+    correlation_id branch of `_generate_correlation_id`
+    (errors.py lines 136-138) so the Gate 1 coverage dimension sees
+    the path that handles client-supplied correlation ids.
+    """
+    # NFR-09 — direct integration test through the ASGI surface.
+    # NFR-11 — single test, no nested helpers beyond the helper pair.
+    inbound_id = f"trace-{uuid.uuid4().hex}"
+
+    resp = _request(
+        "GET",
+        "00000000-0000-0000-0000-000000000000",
+        # No API key — this is intentionally a 401 path; the
+        # problem+json handler is what threads the inbound id.
+        headers={"X-Correlation-Id": inbound_id},
+    )
+
+    header_value = (resp.headers.get("X-Correlation-Id") or "").strip()
+    body = _json_body(resp)
+    body_value = str(body.get("correlation_id") or "").strip()
+
+    assert resp.status_code >= 400, (
+        f"trigger must produce a non-2xx response; got {resp.status_code}"
+    )
+    assert header_value == inbound_id, (
+        f"server must echo the inbound X-Correlation-Id; "
+        f"sent={inbound_id!r}; got header={header_value!r}; body={body!r}"
+    )
+    assert body_value == inbound_id, (
+        f"body correlation_id must equal the inbound header; "
+        f"sent={inbound_id!r}; got body={body_value!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridge — exercise _resolve_instance with a stub request
+# that has no URL attribute (errors.py line 155). Some coverage paths
+# pass a stub request (e.g. a MagicMock) directly into the envelope
+# helper instead of spinning up a full ASGI cycle; the no-URL branch
+# must return an empty string so the six-field contract still holds.
+# ---------------------------------------------------------------------------
+
+
+def test_fr10_resolve_instance_returns_empty_when_request_has_no_url() -> None:
+    """[FR-10 coverage bridge] `_resolve_instance(request, status)` MUST
+    return an empty string when the request has no URL attribute, even
+    when the status is NOT in the scrub set.
+
+    [FR-10] — defensive guard so a stub request cannot crash the
+    envelope builder. Exercises errors.py line 155 (the `url is None`
+    branch).
+    """
+    # NFR-09 — direct helper assertion.
+    # NFR-11 — single test, no nested helpers.
+    from taskq_api.errors import _resolve_instance
+
+    class _StubRequest:
+        """Minimal request stub with NO `url` attribute."""
+
+    # 200 is NOT in _INSTANCE_SCRUB_STATUSES, so the only way to get
+    # back an empty string is to hit the `url is None` branch.
+    instance = _resolve_instance(_StubRequest(), 200)
+    assert instance == "", (
+        f"_resolve_instance must return empty string when request has no "
+        f"URL attribute; got {instance!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridge — exercise the shutdown_drain coroutine directly
+# (app.py lines 80-96). Sets up a Runner with a still-running row,
+# then awaits shutdown_drain to verify the helper marks the
+# over-budget row as `interrupted` (AC-8.1).
+# ---------------------------------------------------------------------------
+
+
+def test_fr10_shutdown_drain_marks_in_flight_rows_interrupted() -> None:
+    """[FR-10 coverage bridge] `shutdown_drain(runner, timeout)` waits
+    for in-flight tasks up to the drain budget, then marks any
+    still-pending or still-running rows as `interrupted`.
+
+    [FR-10] — AC-8.1 / FR-08. Exercises the full shutdown_drain
+    body (app.py lines 80-96) by handing it a Runner whose
+    `_in_flight` is already 0 (so the wait loop exits immediately)
+    but whose `_runs` dict contains a live row that must be marked.
+    """
+    # NFR-09 — direct call to the coroutine under test.
+    # NFR-11 — single test, no nested helpers beyond the Runner.
+    from taskq_api.app import shutdown_drain
+    from taskq_api.service.runner import Runner
+
+    runner = Runner()
+    # Pre-populate _runs with a pending row that should be marked
+    # `interrupted` by the drain loop.
+    runner._runs["task-1"] = {
+        "run-1": {
+            "id": "run-1",
+            "status": "pending",
+            "command": "echo hi",
+        },
+        "run-2": {
+            "id": "run-2",
+            "status": "running",
+            "command": "echo hi",
+        },
+        "run-3": {
+            "id": "run-3",
+            "status": "succeeded",  # already settled — must NOT be touched
+            "command": "echo hi",
+        },
+    }
+
+    # in_flight is 0 by default, so the while-loop exits immediately
+    # and the drain moves straight to the row-marking loop.
+    asyncio.run(shutdown_drain(runner, timeout=0.1))
+
+    assert runner._runs["task-1"]["run-1"]["status"] == "interrupted", (
+        f"pending row must be marked 'interrupted'; "
+        f"got {runner._runs['task-1']['run-1']['status']!r}"
+    )
+    assert runner._runs["task-1"]["run-2"]["status"] == "interrupted", (
+        f"running row must be marked 'interrupted'; "
+        f"got {runner._runs['task-1']['run-2']['status']!r}"
+    )
+    assert runner._runs["task-1"]["run-3"]["status"] == "succeeded", (
+        f"already-settled row must NOT be mutated; "
+        f"got {runner._runs['task-1']['run-3']['status']!r}"
+    )
+
+
+def test_fr10_shutdown_drain_waits_for_in_flight_to_drain() -> None:
+    """[FR-10 coverage bridge] When `runner.in_flight > 0` at the
+    start of `shutdown_drain`, the wait loop MUST poll until
+    `in_flight` reaches zero (or the budget expires) before
+    marking rows `interrupted`.
+
+    [FR-10] — AC-8.1 / FR-08. Exercises the wait-loop body
+    (app.py lines 88-90): the `time.monotonic() >= deadline` check
+    AND the `await asyncio.sleep(_DRAIN_POLL_INTERVAL)` pause.
+    """
+    # NFR-09 — direct call to the coroutine under test that exercises
+    # the wait-loop branch.
+    # NFR-11 — single test, no nested helpers beyond the Runner.
+    from taskq_api.app import shutdown_drain
+    from taskq_api.service.runner import Runner
+
+    runner = Runner()
+    # Seed _in_flight so the while-loop body is entered.
+    runner._in_flight = 1
+    # Pre-populate a pending row so the row-marking loop has work.
+    runner._runs["task-drain"] = {
+        "run-drain": {
+            "id": "run-drain",
+            "status": "pending",
+            "command": "echo hi",
+        },
+    }
+
+    async def _drive() -> None:
+        # Simulate a task that finishes after one poll interval.
+        await asyncio.sleep(0.1)
+        runner._in_flight = 0
+
+    async def _main() -> None:
+        await asyncio.gather(
+            _drive(),
+            shutdown_drain(runner, timeout=2.0),
+        )
+
+    asyncio.run(_main())
+
+    # The pending row was still live when the loop exited, so it
+    # MUST be marked `interrupted` (over-budget or not, the row
+    # was `pending` at exit-time).
+    assert runner._runs["task-drain"]["run-drain"]["status"] == "interrupted", (
+        f"row must be marked 'interrupted' after drain; "
+        f"got {runner._runs['task-drain']['run-drain']['status']!r}"
+    )
+
+
+def test_fr10_shutdown_drain_breaks_when_deadline_expired() -> None:
+    """[FR-10 coverage bridge] When `runner.in_flight > 0` AND the
+    drain budget has already expired, the wait loop MUST break
+    out immediately (deadline-exceeded branch).
+
+    [FR-10] — AC-8.1 / FR-08. Exercises app.py line 89 (`break`)
+    by handing `shutdown_drain` a zero-second timeout while a
+    task is still in-flight.
+    """
+    # NFR-09 — direct call to the coroutine under test that exercises
+    # the deadline-exceeded branch.
+    # NFR-11 — single test, no nested helpers beyond the Runner.
+    from taskq_api.app import shutdown_drain
+    from taskq_api.service.runner import Runner
+
+    runner = Runner()
+    # Seed _in_flight so the while-loop condition is True.
+    runner._in_flight = 1
+    # Pre-populate a pending row so the row-marking loop has work.
+    runner._runs["task-broke"] = {
+        "run-broke": {
+            "id": "run-broke",
+            "status": "running",
+            "command": "echo hi",
+        },
+    }
+
+    # timeout=0.0 means the deadline is `time.monotonic() + 0.0`,
+    # which is in the past by the time the loop body runs.
+    asyncio.run(shutdown_drain(runner, timeout=0.0))
+
+    # The row was still live when the loop broke, so it MUST be
+    # marked `interrupted` (over-budget path).
+    assert runner._runs["task-broke"]["run-broke"]["status"] == "interrupted", (
+        f"row must be marked 'interrupted' after deadline-exceeded drain; "
+        f"got {runner._runs['task-broke']['run-broke']['status']!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridge — exercise the _PostHandlerExceptionSuppressor's
+# __getattr__ recursion guard (app.py line 150). When `_inner` is
+# missing (e.g. someone explicitly deleted it), the proxy must raise
+# AttributeError rather than recursing into the inner lookup.
+# ---------------------------------------------------------------------------
+
+
+def test_fr10_post_handler_suppressor_inner_attr_raises_attribute_error() -> None:
+    """[FR-10 coverage bridge] The `_PostHandlerExceptionSuppressor`
+    proxy's `__getattr__` MUST raise AttributeError when the requested
+    attribute is `_inner` itself — this prevents infinite recursion
+    if the wrapped app is somehow missing.
+
+    [FR-10] — defensive guard for the ASGI wrapper. Exercises
+    app.py line 150 (the `if name == "_inner": raise AttributeError`
+    branch).
+    """
+    # NFR-09 — direct attribute-access assertion.
+    # NFR-11 — single test, no nested helpers.
+    from fastapi import FastAPI
+
+    from taskq_api.app import _PostHandlerExceptionSuppressor
+
+    inner = FastAPI()
+    suppressor = _PostHandlerExceptionSuppressor(inner)
+    # Force the `__getattr__` path to fire by deleting the cached
+    # `_inner` attribute (the `__init__` set it, but we delete it to
+    # simulate the defensive branch).
+    # Use object.__delattr__ to bypass our own __setattr__ if present.
+    object.__delattr__(suppressor, "_inner")
+
+    with pytest.raises(AttributeError):
+        _ = suppressor._inner
