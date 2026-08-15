@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 5,
-  "fr_id": "FR-01",
+  "fr_id": "FR-02",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786819162813\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.043}}"
+      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786819914836\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.028\n    }\n}\n\n"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 40,
+      "tests_passed": 73,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "40 passed in 8.75s. Coverage totals: covered_lines=86, num_statements=86, percent_covered=100.0. Both FR-01 source files (taskq_api/api/tasks.py, taskq_api/service/tasks.py) report 100% statement coverage."
+      "tool_evidence": "73 passed in 45.72s. Coverage totals: covered_lines=239, num_statements=239, percent_covered=100.0. tasks.py: 100% (45/45 lines). runner.py: 100% (194/194 lines). TOTAL 100% 239 statements.\n\n============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iteratio"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Contracts: 1 kept, 0 broken. config_and_errors_independence KEPT. Analyzed 22 files, 23 dependencies."
+      "tool_evidence": "\n╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "4dd6b6f41bdf84ca81e45ff88a978aa3a3b5bf407adde44468abe6722e689c70",
-      "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786819162813\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.043}}"
+      "sha256": "a8ed4a0c7105d812ddb66cc848cfd4d54ca4dd8bc442eab6b6716c69e2a62ad5",
+      "bytes": 250,
+      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786819914836\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.028\n    }\n}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "8ead3b7aedf00429c2c2190c124a120374bd5441b9d138570cf3d196ff2b4607",
-      "bytes": 205,
-      "head": "40 passed in 8.75s. Coverage totals: covered_lines=86, num_statements=86, percent_covered=100.0. Both FR-01 source files (taskq_api/api/tasks.py, taskq_api/service/tasks.py) report 100% statement coverage."
+      "sha256": "619059aee26dd2daca4a5ced827ab9ee8865883ded3857b6b0df34e10b742409",
+      "bytes": 500,
+      "head": "73 passed in 45.72s. Coverage totals: covered_lines=239, num_statements=239, percent_covered=100.0. tasks.py: 100% (45/45 lines). runner.py: 100% (194/194 lines). TOTAL 100% 239 statements.\n\n============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iteratio"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "49fa1fbd307f663386faabfe62b340974157d301258528bf55eb0dcf585b9715",
-      "bytes": 101,
-      "head": "Contracts: 1 kept, 0 broken. config_and_errors_independence KEPT. Analyzed 22 files, 23 dependencies."
+      "sha256": "865fbd0e176f1e13df6e1b700baab9879820bb15c226dbe3856e39af53fa632b",
+      "bytes": 842,
+      "head": "╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
