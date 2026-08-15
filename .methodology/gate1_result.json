@@ -9,12 +9,12 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003 → All checks passed! (exit 0)"
+      "tool_evidence": "All checks passed!\n"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0\n    }\n}"
+      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786796294915\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.089}}"
     },
     "test_coverage": {
       "score": 100.0,
@@ -22,12 +22,12 @@
       "tests_passed": 62,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "pytest test_fr08.py test_fr02.py test_fr10.py → 62 passed, 0 failed in 40.06s. Coverage on FR-08 source files (runner.py + app.py): 100% (219/219 statements). Spec coverage: 5/5 required tests present and passing (100%). score = min(100, 100) = 100."
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nconfigfile: pyproject.toml\ncollected 62 items\n\n03-development/tests/test_fr08.py ................................       [ 51%]\n03-development/tests/test_fr02.py ................                       [ 77%]\n03-development/tests/test_fr10.py ...........                       [100%]\n\n============================= 62 passed in 40.07s =============================="
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "PYTHONPATH=03-development/src lint-imports → Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken. (exit 0)"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken.\n"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "49bf5ad45cbda978bbaef010d26ceb8e15a401ef6e9d32aa939cad143a75b9df",
-      "bytes": 99,
-      "head": "ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003 → All checks passed! (exit 0)"
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
+      "head": "All checks passed!"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "31fb5f34d831f1406a40bde4837d77a43c58e53b03f70a156b97a9ed6ce091d2",
-      "bytes": 193,
-      "head": "{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0\n    }\n}"
+      "sha256": "223ef8661820e424b0883c08b61ab1a459b96530af440de36f8c3c6ca8bf2577",
+      "bytes": 170,
+      "head": "{\"version\":\"1.1.409\",\"time\":\"1786796294915\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.089}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "cf08b58ed46e85f09de89dad37bb178e0a7221a659ca9161bd8e4e7c84e9d8fa",
-      "bytes": 251,
-      "head": "pytest test_fr08.py test_fr02.py test_fr10.py → 62 passed, 0 failed in 40.06s. Coverage on FR-08 source files (runner.py + app.py): 100% (219/219 statements). Spec coverage: 5/5 required tests present and passing (100%). score = min(100, 100) = 100."
+      "sha256": "a0f79ab1aa62f320f8c900fa09c43aa2f3782ede94aa586cf777d779c4be87a3",
+      "bytes": 506,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nconfigfile: pyproject.toml\ncollected 62 items\n\n03-development/tests/test_fr08.py ................................       [ 51%]\n03-development/tests/test_fr02.py ................                       [ 77%]\n03-development/tests/test_fr10.py ...........                       [100%]\n\n============================= 62 passed in 40.07s =============================="
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "45981ac70d2655edf66dd4cfe0644b523338d5c084899f299bf9f8c60a9e8fc7",
-      "bytes": 157,
-      "head": "PYTHONPATH=03-development/src lint-imports → Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken. (exit 0)"
+      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
+      "bytes": 100,
+      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
