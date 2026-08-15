@@ -5,6 +5,12 @@ PYTHON ?= /Users/johnny/projects/taskq-super/.venv/bin/python
 
 .PHONY: verify-system
 verify-system:
+	@echo "make verify-system: running test suite"
 	@cd /Users/johnny/projects/taskq-super && \
-		PYTHONPATH=03-development/src $(PYTHON) -m pytest 03-development/tests -q --tb=no --no-header \
-		&& PYTHONPATH=03-development/src $(PYTHON) -m taskq_api --help >/dev/null
+		PYTHONPATH=03-development/src $(PYTHON) -m pytest 03-development/tests -q --tb=no --no-header
+	@echo "make verify-system: pytest exit=$?"
+	@echo "make verify-system: running CLI smoke test"
+	@cd /Users/johnny/projects/taskq-super && \
+		PYTHONPATH=03-development/src $(PYTHON) -m taskq_api --help >/dev/null
+	@echo "make verify-system: cli smoke exit=$?"
+	@echo "make verify-system: PASS"
