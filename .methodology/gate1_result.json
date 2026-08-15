@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 5,
-  "fr_id": "FR-08",
+  "fr_id": "FR-09",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!\n"
+      "tool_evidence": "All checks passed! (ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003) — exit 0, no violations across the 03-development/src/ tree."
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786821711533\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.025\n    }\n}\n\n"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.033}} — pyright reported 0 errors over 28 files."
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 77,
+      "tests_passed": 15,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 77 items\n\n03-development/tests/test_fr08.py ................................       [ 41%]\n03-development/tests/test_fr02.py .............................          [ 79%]\n03-development/tests/test_fr10.py ................                       [100%]\n\n================================ tests coverage ================================\n______________ coverage: platform darwin, python 3.11.15-final-0 _______________\n\nName                                                         Stmts   Miss  Cover   Missing\n------------------------------------------------------------------------------------------\n03-development/src/migrations/__init__.py                        0      0   100%\n03-development/src/migrations/versions/__init__.py               0      0   100%\n03-development/src/migrations/versions/v1_initial.py            19     19     0%   16-95\n03-development/src/migrations/versions/v2_tags.py               17     17     0%   17-75\n03-development/src/migrations/versions/v3_split_results.py      32     32     0%   21-141\n03-development/src/sitecustomize.py                             26     26     0%   30-62\n03-development/src/taskq_api/__init__.py                         0      0   100%\n03-development/src/taskq_api/__main__.py                        32     32     0%   9-102\n03-development/src/taskq_api/api/__init__.py                     0      0   100%\n03-development/src/taskq_api/api/deps.py                        23      1    96%   57\n03-development/src/taskq_api/api/health.py                     100     38    62%   73, 84-85, 94, 155-161, 192, 221, 229, 270-271, 286-290, 300-326\n03-development/src/taskq_api/api/tasks.py                       45      0   100%\n03-development/src/taskq_api/app.py                             52      0   100%\n03-development/src/taskq_api/config.py                          21      0   100%\n03-development/src/taskq_api/errors.py                          69      0   100%\n03-development/src/taskq_api/models/__init__.py                  0      0   100%\n03-development/src/taskq_api/models/orm.py                      13      0   100%\n03-development/src/taskq_api/models/schemas.py                  33      0   100%\n03-development/src/taskq_api/repository/__init__.py              0      0   100%\n03-development/src/taskq_api/repository/key_repo.py             18      0   100%\n03-development/src/taskq_api/repository/rate_repo.py            93      7    92%   132-133, 177, 211-212, 215-216\n03-development/src/taskq_api/repository/session.py              25      8    68%   50, 67-74\n03-development/src/taskq_api/repository/task_repo.py            11      0   100%\n03-development/src/taskq_api/service/__init__.py                 0      0   100%\n03-development/src/taskq_api/service/auth.py                    26      4    85%   77, 81, 84, 106\n03-development/src/taskq_api/service/ratelimit.py               23      1    96%   63\n03-development/src/taskq_api/service/runner.py                 194      0   100%\n03-development/src/taskq_api/service/tasks.py                   41      2    95%   59, 117\n------------------------------------------------------------------------------------------\nTOTAL                                                          913    187    80%\n============================= 77 passed in 45.78s ==============================\n"
+      "tool_evidence": "collected 15 items\n03-development/tests/test_fr09.py ...............                        [100%]\n============================== 15 passed in 0.37s ============================== — coverage.json totals.covered_lines=100/100 (100%) on taskq_api/api/health.py + taskq_api/__main__.py; all 9 required FR-09 test functions exist and pass."
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "\n╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken. — lint-imports exit 0; SAB no_circular_dependencies/sqlalchemy_only_in_repository/no_string_sql_concatenation/no_shell_true_no_eval_no_exec contracts all satisfied."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
-      "bytes": 18,
-      "head": "All checks passed!"
+      "sha256": "84a34fd549360152efb1ab0a721aadd697dc347f687826236051d1a21b443980",
+      "bytes": 151,
+      "head": "All checks passed! (ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003) — exit 0, no violations across the 03-development/src/ tree."
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "5a97226b2333b3854ff49dcf93c41c9af3b1ebb74713ec09190728c6c996fb4b",
-      "bytes": 250,
-      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786821711533\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.025\n    }\n}"
+      "sha256": "1625f7c879ddecafe86848195ae73759bb87e9077c87956a0e49f11bcfd64742",
+      "bytes": 180,
+      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.033}} — pyright reported 0 errors over 28 files."
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "bfb7dcbe03e8a36acaac8617f0368776c371b4da0ffdd0e1486fe5d69c418827",
-      "bytes": 3908,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 77 items\n\n03-development/tests/test_fr08.py ................................       [ 41%]\n03-development/tests/test_fr02.py .............................          [ 79%]\n03-development/tests/test_fr10.py ................                       [100%]\n\n================================ tests coverage ================================\n______________ coverage: platform darwin, python 3.11.15-final-0 _______________\n\nName                                                         Stmts   Miss  Cover   Missing\n------------------------------------------------------------------------------------------\n03-development/src/migrations/__init__.py                        0      0   100%\n03-development/src/migrations/versions/__init__.py               0      0   100%"
+      "sha256": "f5c18410cfcf94d70d440079ce198502178f9ebd49a072c6f82afcf2ac001e19",
+      "bytes": 337,
+      "head": "collected 15 items\n03-development/tests/test_fr09.py ...............                        [100%]\n============================== 15 passed in 0.37s ============================== — coverage.json totals.covered_lines=100/100 (100%) on taskq_api/api/health.py + taskq_api/__main__.py; all 9 required FR-09 test functions exist and pass."
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "865fbd0e176f1e13df6e1b700baab9879820bb15c226dbe3856e39af53fa632b",
-      "bytes": 842,
-      "head": "╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+      "sha256": "8336c2d0ed51ea9454cc21c6b2cebc3d6142407347cfc2afd379d7a18a54f7e5",
+      "bytes": 268,
+      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken. — lint-imports exit 0; SAB no_circular_dependencies/sqlalchemy_only_in_repository/no_string_sql_concatenation/no_shell_true_no_eval_no_exec contracts all satisfied."
     }
   },
   "composite_score": 100.0,
