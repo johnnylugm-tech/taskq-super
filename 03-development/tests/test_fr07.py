@@ -1035,6 +1035,46 @@ def test_fr07_inproc_v3_is_offline_mode_detects_mock_connection() -> None:
         engine.dispose()
 
 
+def test_fr07_inproc_v3_upgrade_rolls_back_on_backfill_failure(
+    in_memory_engine: Engine,
+    monkeypatch: "pytest.MonkeyPatch",
+) -> None:
+    """In-process: upgrade() rolls back the CREATE when backfill raises.
+
+    Covers lines 87-94 of v3_split_results.py — the ``except Exception:``
+    branch that drops ``task_results`` and re-raises so alembic surfaces
+    the failure. Without this test the all-or-nothing transactional
+    guarantee is exercised only when a real backfill error happens in
+    production, leaving the rollback branch unverified.
+    """
+    calls: List[str] = []
+
+    def _exploding_backfill(bind):  # type: ignore[no-untyped-def]
+        calls.append("backfill")
+        raise RuntimeError("synthetic backfill failure")
+
+    monkeypatch.setattr(
+        v3_split_results, "_backfill_task_results", _exploding_backfill
+    )
+
+    with _migration_ctx(in_memory_engine):
+        with pytest.raises(RuntimeError, match="synthetic backfill failure"):
+            v3_split_results.upgrade()
+
+    # Backfill was attempted (so we entered the try block).
+    assert calls == ["backfill"], (
+        f"Backfill must have been attempted exactly once; got calls={calls}"
+    )
+
+    # The CREATE TABLE for task_results must have been rolled back via
+    # op.drop_table inside the except branch — the FR-07 contract is
+    # "no half-migrated schema".
+    tables = set(inspect(in_memory_engine).get_table_names())
+    assert "task_results" not in tables, (
+        f"task_results must be dropped after backfill failure; got={sorted(tables)}"
+    )
+
+
 def test_fr07_inproc_v3_sql_fragments_are_well_formed() -> None:
     """v3 module-level SQL fragments expose typed SQLAlchemy text objects.
 
