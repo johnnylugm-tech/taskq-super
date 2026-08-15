@@ -1,8 +1,8 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-07",
-  "overall_score": 98.9,
+  "fr_id": "FR-05",
+  "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
   "breakdown": {
@@ -19,72 +19,15 @@
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 27,
+      "tests_passed": 38,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr07.py\ncollected 27 items\n03-development/tests/test_fr07.py ...........................  [100%]\n27 passed in 2.25s\n\n$ python3 -m coverage json --include=<FR-07 migration files> -o -\nv1_initial.py       : 19/19 stmts 100%\nv2_tags.py          : 17/17 stmts 100%\nv3_split_results.py : 29/32 stmts 90.625% missing_lines=[87,93,94]\nTOTALS: 65/68 stmts percent_covered=95.58823529411765\nscore = min(95.59 coverage_pct, 100 spec_cov_pct) = 95.59"
+      "tool_evidence": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr05.py 03-development/tests/test_fr03.py 03-development/tests/test_fr04.py\ncollected 38 items\n03-development/tests/test_fr05.py ...........                            [ 28%]\n03-development/tests/test_fr03.py ....................                   [ 81%]\n03-development/tests/test_fr04.py .......                                [100%]\n==================== 38 passed, 1 warning in 0.81s ====================\ncoverage: deps.py 23/23=100%; ratelimit.py 23/23=100%; TOTAL 100.0%\nscore = min(100 coverage_pct, 100 spec_cov_pct) = 100"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "$ PYTHONPATH=src lint-imports\nCould not find package 'taskq_api' in your Python path.\n(harness default assumes ./src; this project roots sources at ./03-development/src)\n\n$ PYTHONPATH=03-development/src lint-imports   # path corrected per .importlinter root_packages=taskq_api\nAnalyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken.\n(exit 0, 0 contracts broken -> 100)"
-    }
-  },
-  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
-  "enforcer_surface": {
-    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
-    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
-    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
-  },
-  "evidence_digest": {
-    "mutation_testing::setup.cfg": {
-      "source": "setup.cfg (score-altering exclusions)",
-      "kind": "file",
-      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
-      "bytes": 882,
-      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
-    },
-    "test_coverage::pyproject.toml": {
-      "source": "pyproject.toml (score-altering exclusions)",
-      "kind": "file",
-      "sha256": "2896aa603461decb11c60c6b256571422191cfe7c4163f76b21942f072ffc99b",
-      "bytes": 829,
-      "head": "[tool.pytest.ini_options]\n# Project-level pytest configuration.\n# This file is at the project root so pytest picks it up from anywhere\n# in the tree (e.g. mutmut's runner that uses `python3 -m pytest ...`).\nasyncio_mode = \"auto\"\nmarkers = [\n    \"asyncio: Mark async test functions for pytest-asyncio (STRICT mode fallback).\",\n]\nfilterwarnings = [\n    \"ignore::DeprecationWarning\",\n    \"ignore::UserWarning\",\n]\n\n[tool.mypy]\n# advance-phase runs `mypy . --ignore-missing-imports --exclude ^harness/`.\n# This block tells mypy to skip the tests/ tree too — pytest test files\n# are not part of the production surface that gate 2's type-safety\n# dimension (pyright errorCount=0 over 28 src files) measured. Tests\n# are still checked by ruff and pytest.\nexclude = [\"^harness/\", \"^03-development/tests/\"]"
-    },
-    "test_coverage::setup.cfg": {
-      "source": "setup.cfg (score-altering exclusions)",
-      "kind": "file",
-      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
-      "bytes": 882,
-      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
-    },
-    "linting": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "3dede9ece629914be46b6677ffa213361426de3ad5bf8eb2c8c8aba2b2d37484",
-      "bytes": 122,
-      "head": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit 0, 0 violations)"
-    },
-    "type_safety": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "24e3423a339b871a327025105f83611f698a8dd49407a8e0514be2b3d3bf5b07",
-      "bytes": 308,
-      "head": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.04\n    }\n}\n(errorCount=0 -> 100 - 0*5 = 100)"
-    },
-    "test_coverage": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "add1faacdea23d484cebdbbadd09eb449fae5a1c121b177b682785d9885525bc",
-      "bytes": 501,
-      "head": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr07.py\ncollected 27 items\n03-development/tests/test_fr07.py ...........................  [100%]\n27 passed in 2.25s\n\n$ python3 -m coverage json --include=<FR-07 migration files> -o -\nv1_initial.py       : 19/19 stmts 100%\nv2_tags.py          : 17/17 stmts 100%\nv3_split_results.py : 29/32 stmts 90.625% missing_lines=[87,93,94]\nTOTALS: 65/68 stmts percent_covered=95.58823529411765\nscore = min(95.59 coverage_pct, 100 spec_cov_pct) = 95.59"
-    },
-    "architecture_constraints": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "2a92dc2fe645e03ceb3f36ad33b46b560fecd7962d02d3f1715ceb3d52b4800b",
-      "bytes": 413,
-      "head": "$ PYTHONPATH=src lint-imports\nCould not find package 'taskq_api' in your Python path.\n(harness default assumes ./src; this project roots sources at ./03-development/src)\n\n$ PYTHONPATH=03-development/src lint-imports   # path corrected per .importlinter root_packages=taskq_api\nAnalyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken.\n(exit 0, 0 contracts broken -> 100)"
+      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\nAnalyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken.\n(exit 0, 0 contracts broken -> 100)"
     }
   },
   "composite_score": 100.0,
