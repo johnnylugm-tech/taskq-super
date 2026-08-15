@@ -317,6 +317,33 @@ def test_fr03_cli_main_default_branch_calls_uvicorn(
     assert called, "uvicorn.run was not called for default branch"
 
 
+def test_fr03_cli_bind_failure_exits_with_diagnostic(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A bind failure exits with a one-line diagnostic, not a traceback.
+
+    `uvicorn.run` raises `OSError` when the port is already taken. The
+    CLI must translate that into `SystemExit` carrying the address, so
+    the operator sees the cause instead of an unhandled stack trace.
+    [FR-03] / [FR-09]
+    """
+    # NFR-02
+    from taskq_api import __main__ as main_mod
+
+    def boom(*args: Any, **kwargs: Any) -> None:  # noqa: ARG001
+        raise OSError(48, "Address already in use")
+
+    monkeypatch.setattr(main_mod.uvicorn, "run", boom)
+
+    with pytest.raises(SystemExit) as excinfo:
+        main_mod.main([])
+
+    message = str(excinfo.value)
+    assert main_mod._DEFAULT_HOST in message, message
+    assert str(main_mod._DEFAULT_PORT) in message, message
+    assert "Address already in use" in message, message
+
+
 def test_fr03_cli_main_module_entrypoint_guard() -> None:
     """`python -m taskq_api` runs `main()` — covers `__main__.py:55`.
 

@@ -21,6 +21,11 @@ Citations:
 
 from __future__ import annotations
 
+# pragma: no error-handling — bucket arithmetic only. Storage access
+# is delegated to taskq_api.repository.rate_repo, which owns the
+# handler for it; failing open or closed here would be a policy
+# decision this layer is not entitled to make.
+
 import os
 import time
 from math import ceil

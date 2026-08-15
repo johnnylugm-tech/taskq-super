@@ -55,6 +55,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import logging
 import os
 import re
 import subprocess
@@ -679,9 +680,11 @@ def test_fr08_coverage_terminate_handles_missing_process() -> None:
     asyncio.run(_drive())
 
 
-def test_fr08_coverage_terminate_swallows_wait_exception() -> None:
-    """`runner._terminate` swallows a `proc.wait()` that raises so the
-    run row can still settle to `timeout`."""
+def test_fr08_coverage_terminate_swallows_wait_exception(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`runner._terminate` absorbs a `proc.wait()` that raises so the
+    run row can still settle to `timeout`, and logs the reap failure."""
     runner_module = sys.modules["taskq_api.service.runner"]
 
     class _FakeProc:
@@ -691,7 +694,17 @@ def test_fr08_coverage_terminate_swallows_wait_exception() -> None:
         async def wait(self) -> int:
             raise RuntimeError("synthetic wait failure")
 
-    asyncio.run(runner_module._terminate(_FakeProc()))  # type: ignore[arg-type]
+    with caplog.at_level(logging.DEBUG, logger="taskq_api"):
+        asyncio.run(runner_module._terminate(_FakeProc()))  # type: ignore[arg-type]
+
+    assert any(
+        r.name == "taskq_api"
+        and r.getMessage().startswith("terminate: process reap failed")
+        for r in caplog.records
+    ), (
+        "the swallowed reap failure must be recorded on the 'taskq_api' "
+        f"logger; captured={[(r.name, r.getMessage()) for r in caplog.records]}"
+    )
 
 
 def test_fr08_coverage_execute_with_kill_happy_return() -> None:

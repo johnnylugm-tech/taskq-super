@@ -34,6 +34,7 @@ Shape notes (both are forced by tooling, not preference):
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import re
 import shlex
@@ -592,13 +593,16 @@ def test_unit_runner_execute_command_timeout_transitions_to_timeout() -> None:
     asyncio.run(_run())
 
 
-def test_unit_runner_terminate_swallows_wait_exception() -> None:
-    """`runner._terminate` swallows a `proc.wait()` that raises.
+def test_unit_runner_terminate_swallows_wait_exception(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`runner._terminate` absorbs a `proc.wait()` that raises, but records it.
 
-    Covers runner.py lines 167-170 (the `try await proc.wait() / except
-    Exception: pass` arm). On the asyncio.TimeoutError path the helper must
-    still settle the run row to `timeout` even if the underlying wait
-    misbehaves.
+    Covers the `try await proc.wait() / except Exception` arm. On the
+    asyncio.TimeoutError path the helper must still settle the run row to
+    `timeout` even if the underlying wait misbehaves — and the reap
+    failure must be observable on the `taskq_api` logger rather than
+    disappear.
     """
     from taskq_api.service import runner as runner_mod
 
@@ -609,7 +613,22 @@ def test_unit_runner_terminate_swallows_wait_exception() -> None:
         async def wait(self) -> int:
             raise RuntimeError("synthetic wait failure")
 
-    asyncio.run(runner_mod._terminate(_FakeProc()))  # type: ignore[arg-type]
+    with caplog.at_level(logging.DEBUG, logger="taskq_api"):
+        asyncio.run(runner_mod._terminate(_FakeProc()))  # type: ignore[arg-type]
+
+    reap_lines = [
+        r.getMessage()
+        for r in caplog.records
+        if r.name == "taskq_api"
+        and r.getMessage().startswith("terminate: process reap failed")
+    ]
+    assert reap_lines, (
+        "_terminate must log the swallowed reap failure on the 'taskq_api' "
+        f"logger; captured={[(r.name, r.getMessage()) for r in caplog.records]}"
+    )
+    assert "synthetic wait failure" in reap_lines[0], (
+        f"the logged line must carry the underlying error; got={reap_lines[0]!r}"
+    )
 
 
 def test_unit_runner_execute_command_unexpected_exception_returns_failed() -> None:

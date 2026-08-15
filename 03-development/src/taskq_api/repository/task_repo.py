@@ -14,6 +14,10 @@ Citations:
 
 from __future__ import annotations
 
+# pragma: no error-handling — pure pass-through to the injected store.
+# Store failures (e.g. KeyError('duplicate_name')) are part of the
+# published contract and must reach the caller unmodified.
+
 from typing import List, Optional
 
 

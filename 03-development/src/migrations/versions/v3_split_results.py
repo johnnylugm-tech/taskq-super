@@ -64,6 +64,10 @@ def upgrade() -> None:
     SELECT are still emitted into the offline SQL payload, which is
     sufficient evidence the migration performs a real data move
     (AC-7.7 — non-empty offline SQL render).
+
+    A back-fill failure rolls the `task_results` CREATE back before
+    propagating, so the revision stays all-or-nothing even on a backend
+    whose DDL is not transactional.
     """
     op.create_table(
         "task_results",
@@ -78,7 +82,16 @@ def upgrade() -> None:
 
     bind = op.get_bind()
     if not _is_offline_mode(bind):
-        _backfill_task_results(bind)
+        try:
+            _backfill_task_results(bind)
+        except Exception:
+            # The table was created but the data move failed. On a backend
+            # without transactional DDL (MySQL) the CREATE TABLE above
+            # survives the rollback, leaving `task_results` present but
+            # empty — a half-migrated schema that the v3 contract forbids.
+            # Undo the CREATE, then let the failure reach alembic.
+            op.drop_table("task_results")
+            raise
 
 
 def downgrade() -> None:

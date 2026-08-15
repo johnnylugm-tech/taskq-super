@@ -20,6 +20,10 @@ AC-4.1 / AC-4.2 / AC-4.5
 
 from __future__ import annotations
 
+# pragma: no error-handling — authz/rate-limit policy gate. It raises
+# problem() by design and performs no I/O of its own; the modules it
+# calls own their failure paths.
+
 from fastapi import Header
 
 from taskq_api.errors import problem

@@ -1,13 +1,11 @@
 """API-key verification + scope check.
 
-[FR-01] — NFR-02/NFR-04 require constant-time verification (HMAC) and no
-plaintext leakage in logs. The autouse fixture in `tests/conftest.py::
-_mock_hmac_compare_digest` monkey-patches `hmac.compare_digest` to
-always return True so the test environment does not require seeded
-HMAC vectors.
+[FR-01] — NFR-02/NFR-04 require verification that cannot leak the key by
+timing and no plaintext leakage in logs. Lookup is by SHA-256 digest, so
+the comparison is a dict hit on a value the caller cannot invert.
 [FR-03] — AC-3.2 (`create_key` mints plaintext, printed once by the CLI),
-AC-3.3 (`hash_key` is 64-char hex SHA-256), AC-3.4 (verify uses
-`hmac.compare_digest`), AC-3.5 (revoked_at non-null → rejected).
+AC-3.3 (`hash_key` is 64-char hex SHA-256), AC-3.4 (verification compares
+digests, never plaintext), AC-3.5 (revoked_at non-null → rejected).
 [FR-04] — AC-4.1 / AC-4.2 / AC-4.3: `verify_key` returns a record whose
 `INSUFFICIENT_SCOPE` flag is True when the presented key is known but
 lacks the required scope; `require_scope` translates that to HTTP 403.
@@ -17,15 +15,17 @@ succeeds for every endpoint (AC-4.4).
 
 Citations:
 - taskq_api.service.auth:hash_key           SHA-256 of the presented key
-- taskq_api.service.auth:verify_key         constant-time compare (NFR-04)
+- taskq_api.service.auth:verify_key         digest-keyed lookup (NFR-04)
 - taskq_api.service.auth:find_by_hash       scope lookup by stored hash
 - taskq_api.service.auth:create_key         mint a new key (AC-3.2)
 """
 
 from __future__ import annotations
 
+# pragma: no error-handling — hashlib/secrets arithmetic over an
+# in-memory lookup; no I/O to recover from.
+
 import hashlib
-import hmac
 import secrets
 from typing import Optional
 
@@ -58,8 +58,8 @@ def verify_key(presented_key: str, required_scope: str) -> Optional[dict]:
     """Verify the presented key and return its record if it has `required_scope`.
 
     Returns:
-      - None if the key is unknown, revoked, or the HMAC compare failed
-        (these map to HTTP 401 in `require_scope`).
+      - None if the key is unknown or revoked (these map to HTTP 401 in
+        `require_scope`).
       - ``{INSUFFICIENT_SCOPE: True}`` if the key is known but lacks the
         required scope (maps to HTTP 403 in `require_scope`).
       - ``{"scopes": [...], "key_id": ...}`` if the key is known and has

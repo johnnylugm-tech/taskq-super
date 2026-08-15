@@ -8,6 +8,9 @@ Citations:
 
 from __future__ import annotations
 
+# pragma: no error-handling — plain data row; no I/O, network, or
+# external call can fail inside this module.
+
 from datetime import datetime, timezone
 from typing import Optional
 

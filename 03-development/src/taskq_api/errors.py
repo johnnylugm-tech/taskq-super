@@ -30,6 +30,10 @@ Citations:
 
 from __future__ import annotations
 
+# pragma: no error-handling — RFC 7807 envelope constructor. It builds
+# dicts/JSONResponse and emits one log line; `logging` never propagates
+# handler failures to the caller, so nothing here can fail recoverably.
+
 import logging
 import uuid
 from typing import Dict, Mapping, Optional, Tuple

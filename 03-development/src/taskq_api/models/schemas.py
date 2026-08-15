@@ -9,6 +9,10 @@ Citations:
 
 from __future__ import annotations
 
+# pragma: no error-handling — Pydantic models. The validators raise
+# ValueError on purpose (Pydantic turns it into HTTP 422); catching
+# anything here would break that contract.
+
 import re
 from typing import Optional
 

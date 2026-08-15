@@ -13,10 +13,9 @@ findings covered:
 
 from __future__ import annotations
 
-import asyncio
 import os
+import sqlite3
 import sys
-import time
 from pathlib import Path
 
 import pytest
@@ -168,7 +167,6 @@ def test_runner_upsert_reuses_connection() -> None:
     # and there's no `_shared_conn` attribute. After fix, the module exposes
     # a cached connection (the simplest signal is a single AttributeError
     # when trying to call _connect per call).
-    import sqlite3
     rows = runner_mod.list_runs("t1")
     assert len(rows) >= 2, f"expected at least 2 rows, got {len(rows)}"
 
@@ -192,4 +190,61 @@ def test_shutdown_drain_cancels_over_budget_tasks() -> None:
     assert "task.cancel()" in src, (
         "shutdown_drain still only mutates row['status'] without cancelling "
         "the underlying task. Add task.cancel() to fix the T-08 orphan."
+    )
+
+
+def test_get_conn_reconnects_when_stale_handle_fails_to_close(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """runner#2 follow-up — a stale handle whose close() raises must not
+    block the reconnect. `_get_conn` rebinds on `_DB_PATH` change and
+    closes the previous handle; sqlite can refuse that close (e.g. an
+    unfinalised statement), and the caller must still get a usable
+    connection to the new path.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    class _UnclosableConn:
+        def close(self) -> None:
+            raise sqlite3.ProgrammingError("stale handle refuses to close")
+
+    db_path = str(tmp_path / "reconnect.db")
+    monkeypatch.setattr(runner_mod, "_shared_conn", _UnclosableConn())
+    monkeypatch.setattr(runner_mod, "_shared_conn_db_path", str(tmp_path / "old.db"))
+    monkeypatch.setattr(runner_mod, "_DB_PATH", db_path)
+
+    conn = runner_mod._get_conn()
+
+    assert isinstance(conn, sqlite3.Connection), (
+        "close() failure on the stale handle must not abort the reconnect"
+    )
+    # The new handle is bound to the new path and has the schema applied.
+    assert conn.execute("SELECT COUNT(*) FROM task_results").fetchone() == (0,)
+    assert [r[2] for r in conn.execute("PRAGMA database_list")] == [db_path]
+
+
+async def test_run_with_limit_skips_run_interrupted_while_queued() -> None:
+    """app#1 follow-up — `shutdown_drain` can mark a queued run
+    ``interrupted`` before it ever acquires a concurrency slot. When the
+    slot finally frees, the runner must drop the run instead of starting
+    the command that shutdown was meant to prevent.
+    """
+    from taskq_api.service.runner import Runner
+
+    runner = Runner()
+    task_id = "bughunt-interrupted-while-queued"
+    # submit() schedules the coroutine but does not yield to the loop, so
+    # the row can be marked before _run_with_limit ever starts.
+    await runner.submit(task_id, "echo must-not-run")
+    (row,) = runner.list_runs(task_id)
+    row["status"] = "interrupted"
+
+    await runner.drain(timeout=5.0)
+
+    assert row["status"] == "interrupted", (
+        "an interrupted run must stay interrupted, not be overwritten by a "
+        "started/finished status"
+    )
+    assert row["finished_at"] is None, (
+        f"the command was executed despite the interrupt: {row!r}"
     )

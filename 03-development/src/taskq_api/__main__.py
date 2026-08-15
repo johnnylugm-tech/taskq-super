@@ -80,12 +80,22 @@ def _run_uvicorn() -> None:
 
     [FR-09] — keeping the entry-point identical to production means the
     dev server hits exactly the same ASGI surface (NFR-10).
+
+    A bind failure (port already in use, address not assignable) is the
+    one routine failure of this command. It is reported as a one-line
+    CLI diagnostic and a non-zero exit rather than a traceback, which
+    would suggest a defect in the server rather than an occupied port.
     """
-    uvicorn.run(
-        _DEFAULT_APP_TARGET,
-        host=_DEFAULT_HOST,
-        port=_DEFAULT_PORT,
-    )
+    try:
+        uvicorn.run(
+            _DEFAULT_APP_TARGET,
+            host=_DEFAULT_HOST,
+            port=_DEFAULT_PORT,
+        )
+    except OSError as exc:
+        raise SystemExit(
+            f"taskq_api: cannot bind {_DEFAULT_HOST}:{_DEFAULT_PORT}: {exc}"
+        ) from exc
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ Citations:
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import shlex
 import sqlite3
@@ -33,6 +34,11 @@ import time
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
+
+# Shared with taskq_api.errors / taskq_api.app so a run's diagnostics land
+# in the same stream as the request-outcome lines.
+_log = logging.getLogger("taskq_api")
 
 
 # Cross-process shared store. Both the parent test process and the
@@ -96,9 +102,11 @@ def _get_conn() -> sqlite3.Connection:
     global _shared_conn, _shared_conn_db_path
     if _shared_conn is None or _shared_conn_db_path != _DB_PATH:
         if _shared_conn is not None:
+            # A stale handle is being discarded; a close() failure has no
+            # recovery action and must not mask the reconnect below.
             try:
                 _shared_conn.close()
-            except Exception:
+            except sqlite3.Error:
                 pass
         _shared_conn = _connect()
         _shared_conn_db_path = _DB_PATH
@@ -190,8 +198,10 @@ async def _terminate(proc: asyncio.subprocess.Process) -> None:
 
     AC-2.5 / NP-15 — kill then await wait so no orphan pid remains after a
     timeout. Both calls are best-effort: `ProcessLookupError` (already
-    exited) and any reap failure are swallowed so the run can still settle
-    to `timeout`.
+    exited) means there is nothing left to reap, and a reap failure must
+    not stop the run settling to `timeout`. A reap failure is recorded on
+    the `taskq_api` logger rather than discarded, so an unreapable child
+    is still diagnosable after the fact.
     """
     try:
         proc.kill()
@@ -199,8 +209,8 @@ async def _terminate(proc: asyncio.subprocess.Process) -> None:
         pass
     try:
         await proc.wait()
-    except Exception:  # nosec
-        pass
+    except Exception as exc:  # nosec
+        _log.debug("terminate: process reap failed: %r", exc)
 
 
 async def _execute_command(command: str, timeout: float) -> Dict[str, Any]:

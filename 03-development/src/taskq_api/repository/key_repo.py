@@ -14,6 +14,9 @@ Citations:
 
 from __future__ import annotations
 
+# pragma: no error-handling — in-memory dict registry seeded from a
+# literal; no I/O, so there is no failure to recover from.
+
 import hashlib
 import os
 from typing import Dict, Optional
