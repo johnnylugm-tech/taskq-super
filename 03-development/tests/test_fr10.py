@@ -974,3 +974,120 @@ def test_fr10_post_handler_suppressor_inner_attr_raises_attribute_error() -> Non
 
     with pytest.raises(AttributeError):
         _ = suppressor._inner
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridge — exercise the over-budget cancellation path
+# (app.py lines 109-110 and 117-121). The three drain tests above all
+# leave `runner._tasks` empty, so `over_budget_tasks` is always `[]`:
+# the `task.cancel()` loop body and the trailing `asyncio.gather(...)`
+# reap never execute. This test seeds `_tasks` with a genuinely
+# still-running asyncio.Task so both lines run.
+# ---------------------------------------------------------------------------
+
+
+def test_fr10_shutdown_drain_cancels_over_budget_tasks() -> None:
+    """[FR-10 coverage bridge] When the drain budget expires with
+    asyncio.Tasks still running, `shutdown_drain` MUST cancel each
+    unfinished task and then await them so the underlying subprocess
+    is reaped before the process exits.
+
+    [FR-10] — AC-8.1 / FR-08, bug-hunt finding app#1. Exercises
+    app.py line 110 (`task.cancel()`) and line 121 (the
+    `asyncio.gather(*over_budget_tasks, return_exceptions=True)`
+    reap). A task that has ALREADY settled is also seeded to pin the
+    `if not task.done()` filter's false branch — a settled task must
+    NOT be cancelled, since cancelling a finished task is a no-op that
+    would mask a real regression in the filter.
+    """
+    # NFR-09 — direct call to the coroutine under test.
+    # NFR-11 — single test, no nested helpers beyond the Runner.
+    from taskq_api.app import shutdown_drain
+    from taskq_api.service.runner import Runner
+
+    async def _main() -> tuple:
+        runner = Runner()
+        # Seed _in_flight so the while-loop condition is True; the
+        # zero-second budget then breaks out on the deadline check,
+        # landing us in the over-budget cancellation path.
+        runner._in_flight = 1
+        runner._runs["task-cancel"] = {
+            "run-cancel": {
+                "id": "run-cancel",
+                "status": "running",
+                "command": "echo hi",
+            },
+        }
+
+        # A long sleep stands in for an in-flight subprocess wait: it
+        # is guaranteed to still be unfinished when the budget expires.
+        live_task = asyncio.create_task(asyncio.sleep(30))
+        # A task that is already done by the time drain runs.
+        settled_task = asyncio.create_task(asyncio.sleep(0))
+        await settled_task
+        runner._tasks = [live_task, settled_task]
+
+        await shutdown_drain(runner, timeout=0.0)
+        return live_task, settled_task, runner
+
+    live_task, settled_task, runner = asyncio.run(_main())
+
+    assert live_task.cancelled(), (
+        "still-running task must be cancelled once the drain budget "
+        f"expires; got cancelled={live_task.cancelled()!r} "
+        f"done={live_task.done()!r}"
+    )
+    assert not settled_task.cancelled(), (
+        "already-settled task must NOT be cancelled by the drain "
+        f"(the `not task.done()` filter must exclude it); got "
+        f"cancelled={settled_task.cancelled()!r}"
+    )
+    assert runner._runs["task-cancel"]["run-cancel"]["status"] == (
+        "interrupted"
+    ), (
+        "over-budget row must be marked 'interrupted'; got "
+        f"{runner._runs['task-cancel']['run-cancel']['status']!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Coverage bridge — exercise the whitespace-only inbound correlation id
+# branch (errors.py line 141 -> 143). The echo test above supplies a
+# non-blank header, so the `if cleaned:` guard is never observed False:
+# a header that is a string but strips to empty must fall through to a
+# freshly minted UUID rather than returning a blank join key.
+# ---------------------------------------------------------------------------
+
+
+def test_fr10_blank_inbound_correlation_id_mints_fresh_uuid() -> None:
+    """[FR-10 coverage bridge] When the inbound `X-Correlation-Id`
+    header is present but blank (whitespace only), the server MUST
+    mint a fresh UUID rather than echoing the blank value.
+
+    [FR-10] — AC-10.4. A blank correlation_id would be a useless join
+    key between the client trace and the server audit log, and the
+    six-field contract requires a non-empty value. Exercises the
+    `if cleaned:` false branch of `_generate_correlation_id`
+    (errors.py line 141 -> 143).
+    """
+    # NFR-09 — direct helper assertion.
+    # NFR-11 — single test, no nested helpers.
+    from taskq_api.errors import _generate_correlation_id
+
+    class _StubRequest:
+        """Request stub carrying a blank inbound correlation id."""
+
+        headers = {"X-Correlation-Id": "   "}
+
+    correlation_id = _generate_correlation_id(_StubRequest())
+
+    assert correlation_id.strip(), (
+        "blank inbound correlation id must not be echoed back as a "
+        f"blank join key; got {correlation_id!r}"
+    )
+    # A freshly minted value must parse as a UUID.
+    parsed = uuid.UUID(correlation_id)
+    assert str(parsed) == correlation_id, (
+        f"minted correlation id must be a canonical UUID string; "
+        f"got {correlation_id!r}"
+    )
