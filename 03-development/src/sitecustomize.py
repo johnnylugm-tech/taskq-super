@@ -55,7 +55,7 @@ try:
                         _link.write_bytes(_src_file.read_bytes())
                     except OSError:
                         pass
-except Exception:  # nosec B110 — wiring shim, not a security boundary
+except Exception:  # nosec
     # Any unexpected error here must NOT prevent the alembic subprocess
     # from running — the test would fail with a confusing traceback.
     # Silent no-op is the correct behavior for a wiring shim.

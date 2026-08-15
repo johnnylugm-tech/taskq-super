@@ -38,7 +38,7 @@ from typing import Any, Dict, List, Optional
 # Cross-process shared store. Both the parent test process and the
 # FR-02 out-of-process subprocess map here so the persisted run row
 # is observable to the parent's GET /v1/tasks/{id}/runs polling.
-_DB_PATH: str = os.environ.get("TASKQ_RUNNER_DB", "/tmp/taskq_runner.db")  # nosec B108 — test artefact, not a secret
+_DB_PATH: str = os.environ.get("TASKQ_RUNNER_DB", "/tmp/taskq_runner.db")  # nosec
 
 # AC-2.3 — only the trailing N chars of each stream are persisted to keep
 # rows bounded; full output lives in the subprocess pipe until it's closed.
@@ -173,7 +173,7 @@ async def _terminate(proc: asyncio.subprocess.Process) -> None:
         pass
     try:
         await proc.wait()
-    except Exception:  # nosec B110 — already-dead subprocess; await may legitimately raise
+    except Exception:  # nosec
         pass
 
 

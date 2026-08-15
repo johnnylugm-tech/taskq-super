@@ -1,0 +1,7 @@
+[bandit]
+# Quiet mode: no plugin output to stderr (the harness's json.loads cannot
+# parse trailing [main] INFO lines after the JSON object — see harness/
+# tool_runners.py line 258). The JSON report still appears on stdout.
+quiet = true
+output_format = json
+skips = []
