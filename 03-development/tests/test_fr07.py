@@ -1184,8 +1184,6 @@ def test_fr07_sitecustomize_skips_already_linked_and_non_py(tmp_path: Path) -> N
 
     # Pre-populate dst_versions with a non-py file and a __init__.py
     # AND an already-existing symlink target (to trigger the "if exists" continue).
-    src_root = Path(__file__).resolve().parent.parent / "src"
-    src_versions = src_root / "migrations" / "versions"
     # Pre-create a file that already exists at the destination
     pre_existing = dst_versions / "v1_initial.py"
     pre_existing.write_text("# already linked")
@@ -1217,7 +1215,6 @@ def test_fr07_sitecustomize_swallows_top_level_exception(tmp_path: Path, monkeyp
     try:
         # Monkeypatch Path.is_dir to raise so the bare except is reached
         import pathlib
-        original_is_dir = pathlib.Path.is_dir
 
         def _raising_is_dir(self):
             raise RuntimeError("synthetic")
@@ -1248,8 +1245,6 @@ def test_fr07_sitecustomize_falls_back_to_copy_on_symlink_failure(
     os.environ[_PROJECT_HOME_VAR] = str(taskq_home)
     try:
         # Patch os.symlink to raise OSError so the except block runs
-        original_symlink = _os.symlink
-
         def _failing_symlink(src, dst, *args, **kwargs):
             raise OSError("symlink not supported")
 
@@ -1262,8 +1257,6 @@ def test_fr07_sitecustomize_falls_back_to_copy_on_symlink_failure(
         importlib.reload(sc_mod)
 
         # The copy fallback should have written the file (lines 54-56)
-        # Look for any .py file written into dst_versions
-        py_files = [p for p in dst_versions.iterdir() if p.suffix == ".py"]
         # At least one file should have been written via the copy fallback
         # (or the inner except may swallow if read_bytes fails, but we
         # didn't patch that). Just verify the test ran without exceptions.
@@ -1304,7 +1297,6 @@ def test_fr07_sitecustomize_swallows_copy_failure(
         # Patch Path.write_bytes to raise OSError so the inner except
         # at lines 56-57 catches it.
         import pathlib
-        original_write_bytes = pathlib.Path.write_bytes
 
         def _failing_write_bytes(self, data):
             raise OSError("write_bytes failed")
