@@ -29,13 +29,14 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Sequence
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from taskq_api.api.deps import require_scope
+from taskq_api.errors import render_problem
 from taskq_api.repository import rate_repo, session as session_mod
 from taskq_api.repository import task_repo
 
@@ -192,20 +193,26 @@ async def healthz() -> dict:
 
 
 @readyz_router.get("/readyz")
-async def readyz() -> JSONResponse:
+async def readyz(request: Request) -> JSONResponse:
     """Return HTTP 200 only when DB is reachable AND migration is at head.
 
     [FR-09] — AC-9.2 / AC-9.3 / AC-9.4 / AC-9.6. Both gates must pass;
-    a single failure returns HTTP 503 with a body that names every
-    failed condition so the caller can tell database failure apart
-    from migration-behind failure (AC-9.2 vs AC-9.3). Deploying newer
-    code without running the migration therefore "fails closed":
+    a single failure returns HTTP 503 with a problem+json body that
+    names every failed condition so the caller can tell database failure
+    apart from migration-behind failure (AC-9.2 vs AC-9.3). Deploying
+    newer code without running the migration therefore "fails closed":
     ``/readyz`` reports 503 until the operator runs ``alembic upgrade
     head`` (AC-9.6).
 
+    [FR-10] — AC-10.1 / AC-10.6: the 503 response carries
+    ``Content-Type: application/problem+json`` with the canonical six
+    fields and the ``X-Correlation-Id`` join-key header. The 200 path
+    stays on the legacy ``application/json`` shape so the FR-09
+    `body_status == "ok"` assertion continues to hold.
+
     Citations:
     - taskq_api.api.health:readyz  per FR-09 / AC-3.6 / AC-9.2 / AC-9.3
-    / AC-9.4 / AC-9.6
+    / AC-9.4 / AC-9.6 / FR-10 AC-10.1 / AC-10.6
     """
     # [FR-09]
     db_ok = check_db_reachable()
@@ -223,22 +230,16 @@ async def readyz() -> JSONResponse:
             "migration not at head "
             f"(current={ALEMBIC_CURRENT}, head={ALEMBIC_HEAD})"
         )
-    body: dict[str, Any] = {
-        "status": "fail",
-        "detail": "; ".join(failed),
-        "checks": {
-            "db_reachable": db_ok,
-            "migration_at_head": migration_ok,
-        },
-        "alembic": {
-            "current": ALEMBIC_CURRENT,
-            "head": ALEMBIC_HEAD,
-        },
-    }
-    return JSONResponse(
-        status_code=503,
-        content=body,
-        media_type="application/json",
+    # [FR-10] — render the 503 response as problem+json so the AC-10.6
+    # envelope contract is satisfied (every non-2xx response is
+    # application/problem+json). The `detail` field carries the rich
+    # failure breakdown so the FR-09 `detail_mentions_db` /
+    # `detail_mentions_migration` assertions still pass.
+    return render_problem(
+        request,
+        status=503,
+        title="Service Unavailable",
+        detail="; ".join(failed),
     )
 
 

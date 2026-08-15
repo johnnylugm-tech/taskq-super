@@ -24,6 +24,9 @@ environment variable before this module is imported.
 
 Citations:
 - taskq_api.repository.rate_repo:try_consume    AC-5.5 (FOR UPDATE row lock)
+/ FR-10 AC-10.6 (bucket-cap-change reset)
+- taskq_api.repository.rate_repo:_ensure_schema  FR-10 cross-version schema migration
+- taskq_api.repository.rate_repo:_migrate_add_column  FR-10 idempotent ADD COLUMN
 - taskq_api.repository.rate_repo:reset_for_test  test-fixture isolation
 """
 
@@ -42,24 +45,36 @@ _SCHEMA_DDL: str = (
     "CREATE TABLE IF NOT EXISTS rate_buckets ("
     "  token TEXT PRIMARY KEY,"
     "  tokens REAL NOT NULL,"
-    "  last_refill REAL NOT NULL"
+    "  last_refill REAL NOT NULL,"
+    "  burst INTEGER NOT NULL DEFAULT 0"
     ")"
 )
 
+# Migrations — applied idempotently inside `_ensure_schema` when an
+# older `rate_buckets` table is encountered. Adding a column to a
+# table alembic does not own is acceptable here because the schema
+# itself is created lazily (`CREATE TABLE IF NOT EXISTS`); new columns
+# are guarded by `PRAGMA table_info` so pre-existing deployments are
+# upgraded in place without losing row data.
+_SCHEMA_MIGRATIONS: tuple[str, ...] = (
+    "ALTER TABLE rate_buckets ADD COLUMN burst INTEGER NOT NULL DEFAULT 0",
+)
+
 _SELECT_FOR_UPDATE_SQL: str = (
-    "SELECT tokens, last_refill FROM rate_buckets "
+    "SELECT tokens, last_refill, burst FROM rate_buckets "
     "WHERE token = :token FOR UPDATE"
 )
 
 _SELECT_SQLITE: str = (
-    "SELECT tokens, last_refill FROM rate_buckets WHERE token = :token"
+    "SELECT tokens, last_refill, burst FROM rate_buckets WHERE token = :token"
 )
 
 _UPSERT_SQL: str = (
-    "INSERT INTO rate_buckets(token, tokens, last_refill) "
-    "VALUES(:token, :tokens, :last_refill) "
+    "INSERT INTO rate_buckets(token, tokens, last_refill, burst) "
+    "VALUES(:token, :tokens, :last_refill, :burst) "
     "ON CONFLICT(token) DO UPDATE SET "
-    "tokens = excluded.tokens, last_refill = excluded.last_refill"
+    "tokens = excluded.tokens, last_refill = excluded.last_refill, "
+    "burst = excluded.burst"
 )
 
 
@@ -146,7 +161,14 @@ _schema_ready: bool = False
 
 
 def _ensure_schema() -> None:
-    """Create ``rate_buckets`` once, idempotently."""
+    """Create ``rate_buckets`` once, idempotently.
+
+    [FR-05] — AC-5.5. The table is created lazily on first
+    ``try_consume`` call. New columns (added by later code revisions)
+    are applied through ``_SCHEMA_MIGRATIONS`` after a ``PRAGMA
+    table_info`` check so pre-existing in-process schemas are upgraded
+    in place without dropping any rows.
+    """
     global _schema_ready
     if _schema_ready:
         return
@@ -155,7 +177,43 @@ def _ensure_schema() -> None:
             return
         with _get_engine().begin() as conn:
             conn.execute(text(_SCHEMA_DDL))
+            existing_cols = {
+                row[1]
+                for row in conn.execute(
+                    text("PRAGMA table_info(rate_buckets)")
+                ).fetchall()
+            }
+            for migration_sql in _SCHEMA_MIGRATIONS:
+                # Each migration is parameterised by the column it
+                # would add; we extract it from the trailing `ADD COLUMN
+                # <name>` clause via a cheap split so the migration list
+                # stays declarative.
+                _migrate_add_column(conn, existing_cols, migration_sql)
         _schema_ready = True
+
+
+def _migrate_add_column(
+    conn, existing_cols: set[str], migration_sql: str
+) -> None:
+    """Apply one ``ALTER TABLE … ADD COLUMN`` migration if the column is absent.
+
+    Splits the column name off the tail of ``migration_sql`` so the
+    migration list above remains declarative; callers stay out of the
+    ``PRAGMA`` / ``ALTER`` boilerplate.
+    """
+    # Migration DDL is always of the form
+    #   ALTER TABLE <table> ADD COLUMN <col> <type> [DEFAULT <expr>]
+    # The column name is the fourth whitespace-separated token (0:ALTER
+    # 1:TABLE 2:<table> 3:ADD 4:COLUMN 5:<col>).
+    tokens = migration_sql.split()
+    try:
+        col_name = tokens[5]
+    except IndexError:
+        return
+    if col_name in existing_cols:
+        return
+    conn.execute(text(migration_sql))
+    existing_cols.add(col_name)
 
 
 def reset_for_test() -> None:
@@ -195,6 +253,15 @@ def try_consume(
     - ``(False, refilled)``  — bucket was over budget; ``refilled`` is
       the level after continuous refill (``0 <= refilled < 1``) used
       to compute ``Retry-After``.
+
+    Bucket-cap-change reset (FR-10 cross-phase compatibility): the row
+    carries the ``burst`` value it was last consumed under. When the
+    caller supplies a different ``burst`` (e.g. tests that temporarily
+    lower the cap to drain it, then restore the production cap) the
+    stored bucket state is invalidated and the bucket is refilled to
+    the new cap. This keeps the rate limiter self-consistent across
+    configuration changes without leaking previous-bucket state into a
+    new (larger) cap.
     """
     _ensure_schema()
     with _get_engine().begin() as conn:
@@ -205,21 +272,40 @@ def try_consume(
         if row is None:
             tokens: float = float(burst)
             last_refill: float = now
+            stored_burst: int = int(burst)
         else:
             tokens = float(row[0])
             last_refill = float(row[1])
+            # [FR-10] — read the burst the row was last consumed under.
+            stored_burst = int(row[2]) if len(row) > 2 else int(burst)
+        # [FR-10] — when the bucket cap changes, the stored bucket is
+        # stale; reset to the new cap so the rate limiter cannot leak
+        # the previous configuration's bucket into the new one.
+        if int(burst) != stored_burst:
+            tokens = float(burst)
+            last_refill = now
         elapsed = max(0.0, now - last_refill)
         refilled = min(float(burst), tokens + elapsed * per_sec)
         if refilled >= 1.0:
             tokens_after = refilled - 1.0
             conn.execute(
                 text(_UPSERT_SQL),
-                {"token": token, "tokens": tokens_after, "last_refill": now},
+                {
+                    "token": token,
+                    "tokens": tokens_after,
+                    "last_refill": now,
+                    "burst": int(burst),
+                },
             )
             return True, tokens_after
         conn.execute(
             text(_UPSERT_SQL),
-            {"token": token, "tokens": refilled, "last_refill": now},
+            {
+                "token": token,
+                "tokens": refilled,
+                "last_refill": now,
+                "burst": int(burst),
+            },
         )
         # [FR-09] AC-9.5 — record the rejection so /v1/metrics can report it.
         _record_rejection()

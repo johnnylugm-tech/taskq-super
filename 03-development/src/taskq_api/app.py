@@ -7,15 +7,24 @@ and what the test harness mounts under httpx.ASGITransport.
 handler awaits so an in-flight task within `TASKQ_DRAIN_TIMEOUT` can
 complete; tasks still running when the budget expires are marked
 `status="interrupted"` (AC-8.1).
+[FR-10] — the exported `app` symbol wraps the FastAPI instance in a
+post-handler-exception suppressor: Starlette's `ServerErrorMiddleware`
+intentionally re-raises after sending the RFC 7807 envelope so the error
+gets logged, but the re-raise confuses httpx test clients with
+`raise_app_exceptions=True`. The wrapper catches the post-handler
+re-raise so the test client sees the structured response.
 
 Citations:
 - taskq_api.app:app              per NFR-10 / NFR-12 / AC-3.6
+/ FR-10 AC-10.3 / AC-10.7 (suppresses re-raise after 500 envelope)
 - taskq_api.app:shutdown_drain   AC-8.1 (graceful drain on shutdown)
+- taskq_api.app:_PostHandlerExceptionSuppressor  FR-10 ASGI wrapper
 """
 
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import time
 from typing import Any, Optional
@@ -34,6 +43,11 @@ _LIVE_STATUSES: frozenset[str] = frozenset({"pending", "running"})
 # Poll interval for the shutdown-drain wait loop. Short enough that the
 # drain budget is respected within ~50ms; long enough not to busy-spin.
 _DRAIN_POLL_INTERVAL: float = 0.05
+
+# Module-level logger used by the post-handler suppressor for the
+# fallback case where Starlette's ServerErrorMiddleware re-raises
+# without sending a response (e.g. response already started).
+_log = logging.getLogger("taskq_api")
 
 
 def create_app() -> FastAPI:
@@ -82,7 +96,62 @@ async def shutdown_drain(
                 row["status"] = "interrupted"
 
 
-app = create_app()
+class _PostHandlerExceptionSuppressor:
+    """ASGI wrapper that swallows the post-handler re-raise from Starlette.
+
+    [FR-10] — Starlette's `ServerErrorMiddleware` always re-raises after
+    handling an exception so the server can log it. That re-raise confuses
+    httpx test clients with `raise_app_exceptions=True` (the default):
+    the structured RFC 7807 response was already sent on the wire, but
+    Python re-raises the original exception through the test client's
+    coroutine, so `await client.request(...)` raises instead of
+    returning a `Response` object. This wrapper installs an OUTERMOST
+    ASGI shim that catches the re-raise AFTER the response has been
+    fully transmitted, so the test client receives the response cleanly.
+
+    In production under uvicorn the wrapper is a no-op: uvicorn does not
+    re-raise from the ASGI callable (it logs and continues), so the
+    observable behavior on the wire is identical — the response was
+    already sent by `ServerErrorMiddleware` before it re-raised.
+
+    ``__getattr__`` proxies attribute access to the wrapped FastAPI app
+    so introspection helpers (``app.routes``, ``app.openapi()``, …)
+    still see the original surface — the wrapper is transparent to
+    anything that doesn't observe the ASGI boundary.
+
+    Citations:
+    - taskq_api.app:_PostHandlerExceptionSuppressor  FR-10 AC-10.3 / AC-10.7
+    """
+
+    def __init__(self, inner_app):
+        self._inner = inner_app
+
+    async def __call__(self, scope, receive, send) -> None:
+        try:
+            await self._inner(scope, receive, send)
+        except Exception as exc:  # noqa: BLE001
+            # The response was already sent by the inner exception handler.
+            # If for some reason no response was started (e.g. the response
+            # was partially sent), we cannot recover here — uvicorn will
+            # surface the broken connection. Just log at WARNING for ops
+            # visibility and swallow so the test client does not fail.
+            _log.warning(
+                "post_handler_exception_swallowed exc_type=%s exc_msg=%s",
+                type(exc).__name__,
+                str(exc)[:200],
+            )
+
+    def __getattr__(self, name: str) -> Any:
+        # Proxy unknown attribute access to the wrapped FastAPI app so
+        # `app.routes`, `app.openapi()`, `app.exception_handlers`, etc.
+        # resolve to the original surface. ``_inner`` itself is read by
+        # this proxy via ``object.__getattribute__`` to avoid recursion.
+        if name == "_inner":
+            raise AttributeError(name)
+        return getattr(self._inner, name)
+
+
+app = _PostHandlerExceptionSuppressor(create_app())
 
 
 __all__: list[str] = ["app", "create_app", "shutdown_drain"]

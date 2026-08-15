@@ -128,12 +128,37 @@ def _mock_db_session(
     except Exception:
         return  # source not yet implemented — fixture is a no-op
     # Patch `transactional` so handlers that ask for a session get the in-memory store
+    patched = lambda: _NullContextManager(task_store)
     monkeypatch.setattr(
         session_mod,
         "transactional",
-        lambda: _NullContextManager(task_store),
+        patched,
         raising=False,
     )
+    # Also patch any other module that captured an earlier
+    # `taskq_api.repository.session` reference at import time. Tests like
+    # FR-06 delete `taskq_api.repository.*` from `sys.modules` and force a
+    # re-import, which creates a fresh module object — but the bound
+    # `session_mod` reference inside already-loaded callers (e.g.
+    # `taskq_api.service.tasks`) still points at the original (orphaned)
+    # module object. Without patching those bound references too, the
+    # next request would resolve `transactional` on the original module
+    # and get the real SQLAlchemy Session — which has no
+    # `.insert()`/`.list_paginated()`/`.delete()` surface the in-memory
+    # stand-in exposes.
+    for _mod_name in (
+        "taskq_api.service.tasks",
+        "taskq_api.api.tasks",
+        "taskq_api.api.health",
+    ):
+        try:
+            _mod = __import__(_mod_name, fromlist=["session_mod"])
+        except Exception:
+            continue
+        bound = getattr(_mod, "session_mod", None)
+        if bound is None or bound is session_mod:
+            continue
+        monkeypatch.setattr(bound, "transactional", patched, raising=False)
 
 
 class _NullContextManager:

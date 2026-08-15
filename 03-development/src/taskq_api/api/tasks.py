@@ -38,6 +38,17 @@ from taskq_api.service.tasks import InvalidLimit
 
 router = APIRouter(prefix="/v1/tasks", tags=["tasks"])
 
+# Module-level re-exports of the service-layer functions so the FR-10
+# fault-injection tests can `monkeypatch.setattr(taskq_api.api.tasks,
+# "create_task", _raise)`. The endpoint handlers below resolve these
+# names through the module's globals, so the patch reaches the request
+# handler without touching the service module.
+# [FR-10] — AC-10.3 / AC-10.7 (forced 500 envelope).
+create_task = tasks_service.create_task
+get_task = tasks_service.get_task
+list_tasks = tasks_service.list_tasks
+delete_task = tasks_service.delete_task
+
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_task_endpoint(
@@ -55,7 +66,7 @@ async def create_task_endpoint(
     / AC-4.1 / AC-4.4 / AC-4.5
     """
     # [FR-01]
-    return tasks_service.create_task(name=body.name, command=body.command)
+    return create_task(name=body.name, command=body.command)
 
 
 @router.get("")
@@ -79,7 +90,7 @@ async def list_tasks_endpoint(
     effective_limit = settings.default_list_limit if limit is None else limit
 
     try:
-        page, next_cursor = tasks_service.list_tasks(
+        page, next_cursor = list_tasks(
             limit=effective_limit,
             cursor=cursor,
             status=status_filter,
@@ -115,7 +126,7 @@ async def get_task_endpoint(
     - taskq_api.api.tasks:get_task_endpoint  AC-1.4 / AC-1.5 / AC-4.4 / AC-4.5
     """
     # [FR-01]
-    return tasks_service.get_task(task_id)
+    return get_task(task_id)
 
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -138,7 +149,7 @@ async def delete_task_endpoint(
     / AC-4.2 / AC-4.4 / AC-4.5
     """
     # [FR-01]
-    tasks_service.delete_task(task_id)
+    delete_task(task_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -169,7 +180,7 @@ async def run_task_endpoint(
     / AC-4.3 / AC-4.4 / AC-4.5
     """
     # [FR-02]
-    task = tasks_service.get_task(task_id)
+    task = get_task(task_id)
     row = await runner_service.run_command(
         task_id,
         task["command"],
@@ -193,7 +204,7 @@ async def list_runs_endpoint(
     """
     # [FR-02]
     # 404 if the task itself doesn't exist (consistent with GET /v1/tasks/{id}).
-    tasks_service.get_task(task_id)
+    get_task(task_id)
     items = runner_service.list_runs(task_id)
     return {"items": items}
 
@@ -206,4 +217,8 @@ __all__: list[str] = [
     "delete_task_endpoint",
     "run_task_endpoint",
     "list_runs_endpoint",
+    "create_task",
+    "get_task",
+    "list_tasks",
+    "delete_task",
 ]
