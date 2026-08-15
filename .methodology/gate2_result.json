@@ -195,9 +195,9 @@
   },
   "crg_review_context": {
     "status": "ok",
-    "summary": "Review context for 14 changed file(s):\n  - Risk: high\n  - 257 impacted nodes in 31 files",
+    "summary": "Review context for 51 changed file(s):\n  - Risk: high\n  - 257 impacted nodes in 31 files",
     "risk": "high",
-    "changed_file_count": 14,
+    "changed_file_count": 51,
     "impacted_file_count": 31,
     "key_entities": [
       "/Users/johnny/projects/taskq-super/03-development/tests/integration/test_smoke.py",
@@ -214,13 +214,13 @@
     ],
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 62717,
+      "saved_tokens": 140169,
       "saved_percent": 100
     }
   },
   "crg_impact_radius": {
     "status": "ok",
-    "summary": "Blast radius for 14 changed file(s):\n  - 96 nodes directly changed\n  - 257 nodes impacted (within 2 hops)\n  - 31 additional files affected",
+    "summary": "Blast radius for 51 changed file(s):\n  - 96 nodes directly changed\n  - 257 nodes impacted (within 2 hops)\n  - 31 additional files affected",
     "risk": "high",
     "impacted_file_count": 31,
     "key_entities": [
@@ -233,7 +233,7 @@
     "truncated": false,
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 62711,
+      "saved_tokens": 140163,
       "saved_percent": 100
     }
   },

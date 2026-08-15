@@ -18,7 +18,7 @@ make verify-system: running test suite
   <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-273 passed, 2 warnings in 44.76s
+273 passed, 2 warnings in 44.78s
 make verify-system: pytest exit=
 make verify-system: running CLI smoke test
 make verify-system: cli smoke exit=
