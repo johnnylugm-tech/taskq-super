@@ -1,0 +1,269 @@
+........................................................................ [  0%]
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+..................F..................................................... [ 29%]
+........................................................................ [ 30%]
+...................sss.................................................. [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+..................................................F....F................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 72%]
+........................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+...F.................................................................... [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+...........................................................              [100%]
+=================================== FAILURES ===================================
+____________ test_the_recorded_owner_is_from_the_shared_vocabulary _____________
+
+    def test_the_recorded_owner_is_from_the_shared_vocabulary():
+        """One set of words for ownership, not one per writer."""
+        from core.fault_owner import ALL_OWNERS
+    
+        for package in _SCANNED:
+            for path in sorted((REPO / package).rglob("*.py")):
+                try:
+                    tree = ast.parse(path.read_text(encoding="utf-8"))
+                except SyntaxError:  # pragma: no cover
+                    continue
+                for node in ast.walk(tree):
+                    if not isinstance(node, ast.Call):
+                        continue
+                    if getattr(node.func, "id", None) != "record_degradation":
+                        continue
+                    for kw in node.keywords:
+                        if kw.arg != "owner":
+                            continue
+                        # `Owner.HARNESS` (an attribute of the vocabulary class)
+                        # or a bare string that must be one of its values.
+                        if isinstance(kw.value, ast.Attribute):
+                            assert kw.value.attr in {
+                                "HARNESS", "PROJECT", "INFRA", "UNKNOWN", "NONE",
+                            }, f"{path}:{node.lineno}: unknown Owner.{kw.value.attr}"
+                        elif isinstance(kw.value, ast.Constant):
+>                           assert kw.value.value in ALL_OWNERS, (
+                                f"{path}:{node.lineno}: owner={kw.value.value!r} is "
+                                f"not one of {sorted(ALL_OWNERS)}"
+                            )
+E                           AssertionError: /Users/johnny/projects/taskq-super/harness/harness/env_repair.py:406: owner='ssot_scaffold' is not one of ['harness', 'infra', 'none', 'project', 'unknown']
+E                           assert 'ssot_scaffold' in frozenset({'harness', 'infra', 'none', 'project', 'unknown'})
+E                            +  where 'ssot_scaffold' = <ast.Constant object at 0x10ebe9510>.value
+E                            +    where <ast.Constant object at 0x10ebe9510> = <ast.keyword object at 0x10ebe8e80>.value
+
+/Users/johnny/projects/taskq-super/harness/tests/test_degradation_owner.py:108: AssertionError
+_______________ test_no_phase_dir_path_arithmetic_outside_layout _______________
+
+    def test_no_phase_dir_path_arithmetic_outside_layout():
+        offenders = []
+        for rel, path in _framework_sources():
+            if rel in _ALLOWED_PATH_FILES:
+                continue
+            for lineno, line in enumerate(
+                path.read_text(encoding="utf-8", errors="replace").splitlines(), 1
+            ):
+                if _PHASE_DIR_DIVISION.search(line):
+                    offenders.append(f"{rel}:{lineno}: {line.strip()}")
+>       assert not offenders, (
+            "Hand-built phase-directory paths found — use ProjectLayout "
+            "(core/utils/project_layout.py) instead:\n  " + "\n  ".join(offenders)
+        )
+E       AssertionError: Hand-built phase-directory paths found — use ProjectLayout (core/utils/project_layout.py) instead:
+E           harness/ssot_manifest.py:332: sad_path = root / "02-architecture" / "SAD.md"
+E           harness/ssot_manifest.py:334: srs_path = root / "01-requirements" / "SRS.md"
+E       assert not ['harness/ssot_manifest.py:332: sad_path = root / "02-architecture" / "SAD.md"', 'harness/ssot_manifest.py:334: srs_path = root / "01-requirements" / "SRS.md"']
+
+/Users/johnny/projects/taskq-super/harness/tests/test_no_hardcoded_paths.py:80: AssertionError
+_______ test_framework_string_constants_carry_no_foreign_project_tokens ________
+
+    def test_framework_string_constants_carry_no_foreign_project_tokens():
+        offenders = []
+        for rel, path in _framework_sources():
+            try:
+                tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                continue
+            for lineno, value in _string_constants_excluding_docstrings(tree):
+                if FOREIGN_PROJECT_TOKENS.search(value):
+                    snippet = value.strip().splitlines()[0][:80] if value.strip() else repr(value)
+                    offenders.append(f"{rel}:{lineno}: {snippet}")
+>       assert not offenders, (
+            "Foreign-project tokens inside framework string constants (the "
+            "76b849c prompt-leak shape) — use generic names:\n  "
+            + "\n  ".join(offenders)
+        )
+E       AssertionError: Foreign-project tokens inside framework string constants (the 76b849c prompt-leak shape) — use generic names:
+E           harness/ssot_manifest.py:393: # taskq-api — auto-scaffolded from SSOT
+E       assert not ['harness/ssot_manifest.py:393: # taskq-api — auto-scaffolded from SSOT']
+
+/Users/johnny/projects/taskq-super/harness/tests/test_no_hardcoded_paths.py:317: AssertionError
+____________ TestRealRegistry.test_real_registry_all_guards_collect ____________
+
+self = <tests.test_verify_regression_guards.TestRealRegistry object at 0x10e4dedd0>
+
+    def test_real_registry_all_guards_collect(self):
+        result = _run(REAL_REGISTRY, REPO_ROOT)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: [regression-guards] MISSING: tests/test_env_repair.py::test_ssot_scaffold_writes_a_requirements_skeleton
+E             guards: SPEC.md / SAD.md / SRS.md are SSOTs the user already confirmed in P0/P1/P2. When a project lacks a manifest but the SSOT names its dependencies, the framework should transcribe the SSOT into a requirements.txt skeleton (executing the user's confirmed decisions), not BLOCK. Round 47 站5b forbids inference from imports / pip freeze — transcription of user-declared SSOT is not inference.
+E             fixed_in: R51-站1 (harness/env_repair.py::install_project_dependencies SSOT scaffold fallback + harness/harness/ssot_manifest.py scaffold_project_manifest_from_ssot)
+E         [regression-guards] MISSING: tests/test_env_repair.py::test_ssot_scaffold_does_not_overwrite_user_manifest
+E             guards: if the project author has already written a requirements.txt, SSOT scaffold must NOT overwrite it — the user's authored content is authoritative for their tree
+E             fixed_in: R51-站1 (scaffold_project_manifest_from_ssot is idempotent: skips when manifest exists, returns warning)
+E         [regression-guards] MISSING: tests/test_env_repair.py::test_ssot_scaffold_does_not_infer_versions
+E             guards: the scaffolded requirements.txt must NOT pin versions — version pinning is the project author's decision (SAD.md §4.7). Writing versions would be the framework's inference (Round 47 站5b spirit)
+E             fixed_in: R51-站1 (scaffold writes dep names only; comment block directs author to pip-compile)
+E         [regression-guards] MISSING: tests/test_env_repair.py::test_ssot_scaffold_records_to_degradation_ledger
+E             guards: auto-installing from a scaffolded manifest is a louder signal than repair — the framework is transcribing user SSOT into a project deliverable. The ledger entry makes it auditable (who scaffolded, which SSOTs, which tokens were filtered)
+E             fixed_in: R51-站1 (env_repair._record_scaffold with owner='ssot_scaffold')
+E         [regression-guards] MISSING: tests/test_env_repair.py::test_ssot_scaffold_falls_back_to_block_when_ssot_missing
+E             guards: the BLOCK behavior of Round 47 站5b remains the ultimate guard: if no manifest AND no SSOT exists (or SSOT yields no deps), the framework still BLOCKs and names itself. The scaffold is a fallback, not a replacement
+E             fixed_in: R51-站1 (BLOCK message updated: 'no dependency manifest AND no SSOT to scaffold from')
+E         
+E         [regression-guards] FAIL: 5/569 guard test(s) missing. A guard may only be removed together with its registry entry, in the same reviewed commit.
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/Users/johnny/projects/taskq-super/.venv/bin/python', '/Users/johnny/projects/taskq-super/harn...t(s) missing. A guard may only be removed together with its registry entry, in the same reviewed commit.\n", stderr='').returncode
+
+/Users/johnny/projects/taskq-super/harness/tests/test_verify_regression_guards.py:142: AssertionError
+=============================== warnings summary ===============================
+03-development/tests/integration/test_smoke.py::test_api_health_healthz
+  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
+    result = testfunction(**testargs)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard
+  <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.15-final-0 _______________
+
+Name                                                         Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------------------
+03-development/src/migrations/__init__.py                        0      0   100%
+03-development/src/migrations/versions/__init__.py               0      0   100%
+03-development/src/migrations/versions/v1_initial.py            19      0   100%
+03-development/src/migrations/versions/v2_tags.py               17      0   100%
+03-development/src/migrations/versions/v3_split_results.py      28      0   100%
+03-development/src/sitecustomize.py                             26      0   100%
+03-development/src/taskq_api/__init__.py                         0      0   100%
+03-development/src/taskq_api/__main__.py                        29      0   100%
+03-development/src/taskq_api/api/__init__.py                     0      0   100%
+03-development/src/taskq_api/api/deps.py                        23      0   100%
+03-development/src/taskq_api/api/health.py                     100      0   100%
+03-development/src/taskq_api/api/tasks.py                       45      0   100%
+03-development/src/taskq_api/app.py                             47      0   100%
+03-development/src/taskq_api/config.py                          21      0   100%
+03-development/src/taskq_api/errors.py                          69      0   100%
+03-development/src/taskq_api/models/__init__.py                  0      0   100%
+03-development/src/taskq_api/models/orm.py                      13      0   100%
+03-development/src/taskq_api/models/schemas.py                  33      0   100%
+03-development/src/taskq_api/repository/__init__.py              0      0   100%
+03-development/src/taskq_api/repository/key_repo.py             17      0   100%
+03-development/src/taskq_api/repository/rate_repo.py            93      0   100%
+03-development/src/taskq_api/repository/session.py              25      0   100%
+03-development/src/taskq_api/repository/task_repo.py            11      0   100%
+03-development/src/taskq_api/service/__init__.py                 0      0   100%
+03-development/src/taskq_api/service/auth.py                    29      0   100%
+03-development/src/taskq_api/service/ratelimit.py               23      0   100%
+03-development/src/taskq_api/service/runner.py                 172      0   100%
+03-development/src/taskq_api/service/tasks.py                   41      0   100%
+------------------------------------------------------------------------------------------
+TOTAL                                                          881      0   100%
+=========================== short test summary info ============================
+FAILED harness/tests/test_degradation_owner.py::test_the_recorded_owner_is_from_the_shared_vocabulary
+FAILED harness/tests/test_no_hardcoded_paths.py::test_no_phase_dir_path_arithmetic_outside_layout
+FAILED harness/tests/test_no_hardcoded_paths.py::test_framework_string_constants_carry_no_foreign_project_tokens
+FAILED harness/tests/test_verify_regression_guards.py::TestRealRegistry::test_real_registry_all_guards_collect
+4 failed, 7540 passed, 3 skipped, 2 warnings in 282.33s (0:04:42)

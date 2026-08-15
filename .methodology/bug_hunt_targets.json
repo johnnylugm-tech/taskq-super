@@ -1,0 +1,2805 @@
+{
+  "generated_at": "2026-08-15T12:30:53.498916+00:00",
+  "git_sha": "c4a2b8b699edd3ec2c914884cd0b609d7043389f",
+  "language": "python",
+  "high_risk": [
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "name": "key_repo",
+      "reasons": [
+        "mutation_survivors:23"
+      ]
+    },
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "name": "rate_repo",
+      "reasons": [
+        "mutation_survivors:84"
+      ]
+    },
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "name": "session",
+      "reasons": [
+        "mutation_survivors:12"
+      ]
+    },
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "name": "auth",
+      "reasons": [
+        "mutation_survivors:18"
+      ]
+    },
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "name": "ratelimit",
+      "reasons": [
+        "mutation_survivors:23"
+      ]
+    },
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "name": "runner",
+      "reasons": [
+        "mutation_survivors:220"
+      ]
+    },
+    {
+      "path": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "name": "tasks",
+      "reasons": [
+        "mutation_survivors:35"
+      ]
+    },
+    {
+      "path": "03-development/src/migrations/versions/v3_split_results.py",
+      "name": "v3_split_results",
+      "reasons": [
+        "threat_model:T-11 tampering"
+      ]
+    },
+    {
+      "path": "03-development/src/taskq_api/api/deps.py",
+      "name": "deps",
+      "reasons": [
+        "threat_model:T-05 information_disclosure"
+      ]
+    },
+    {
+      "path": "03-development/src/taskq_api/errors.py",
+      "name": "errors",
+      "reasons": [
+        "threat_model:T-06 information_disclosure",
+        "threat_model:T-07 information_disclosure",
+        "threat_model:T-10 repudiation"
+      ]
+    },
+    {
+      "path": "03-development/src/taskq_api/repository/rate_repo.py",
+      "name": "rate_repo",
+      "reasons": [
+        "threat_model:T-04 denial_of_service"
+      ]
+    },
+    {
+      "path": "03-development/src/taskq_api/repository/session.py",
+      "name": "session",
+      "reasons": [
+        "threat_model:T-01 tampering"
+      ]
+    },
+    {
+      "path": "03-development/src/taskq_api/service/auth.py",
+      "name": "auth",
+      "reasons": [
+        "threat_model:T-02 spoofing"
+      ]
+    },
+    {
+      "path": "03-development/src/taskq_api/service/runner.py",
+      "name": "runner",
+      "reasons": [
+        "threat_model:T-03 elevation_of_privilege",
+        "threat_model:T-08 denial_of_service",
+        "threat_model:T-09 denial_of_service"
+      ]
+    },
+    {
+      "path": "migrations.versions.v3_split_results",
+      "name": "migrations.versions",
+      "reasons": [
+        "declared"
+      ]
+    },
+    {
+      "path": "taskq_api.repository.session",
+      "name": "taskq_api.repository",
+      "reasons": [
+        "declared"
+      ]
+    },
+    {
+      "path": "taskq_api.service.auth",
+      "name": "taskq_api.service",
+      "reasons": [
+        "declared"
+      ]
+    },
+    {
+      "path": "taskq_api.service.runner",
+      "name": "taskq_api.service",
+      "reasons": [
+        "declared"
+      ]
+    }
+  ],
+  "standard": [
+    {
+      "path": "03-development/src/migrations/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/migrations/versions/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/migrations/versions/v1_initial.py",
+      "name": "v1_initial"
+    },
+    {
+      "path": "03-development/src/migrations/versions/v2_tags.py",
+      "name": "v2_tags"
+    },
+    {
+      "path": "03-development/src/sitecustomize.py",
+      "name": "sitecustomize"
+    },
+    {
+      "path": "03-development/src/taskq_api/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/taskq_api/__main__.py",
+      "name": "__main__"
+    },
+    {
+      "path": "03-development/src/taskq_api/api/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/taskq_api/api/health.py",
+      "name": "health"
+    },
+    {
+      "path": "03-development/src/taskq_api/api/tasks.py",
+      "name": "tasks"
+    },
+    {
+      "path": "03-development/src/taskq_api/app.py",
+      "name": "app"
+    },
+    {
+      "path": "03-development/src/taskq_api/config.py",
+      "name": "config"
+    },
+    {
+      "path": "03-development/src/taskq_api/models/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/taskq_api/models/orm.py",
+      "name": "orm"
+    },
+    {
+      "path": "03-development/src/taskq_api/models/schemas.py",
+      "name": "schemas"
+    },
+    {
+      "path": "03-development/src/taskq_api/repository/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/taskq_api/repository/key_repo.py",
+      "name": "key_repo"
+    },
+    {
+      "path": "03-development/src/taskq_api/repository/task_repo.py",
+      "name": "task_repo"
+    },
+    {
+      "path": "03-development/src/taskq_api/service/__init__.py",
+      "name": "__init__"
+    },
+    {
+      "path": "03-development/src/taskq_api/service/ratelimit.py",
+      "name": "ratelimit"
+    },
+    {
+      "path": "03-development/src/taskq_api/service/tasks.py",
+      "name": "tasks"
+    }
+  ],
+  "mutation_survivors": [
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "8",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "10",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "11",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "12",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "108",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "109",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "110",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "111",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "112",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "113",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "114",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "115",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "116",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "117",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "118",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "119",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "120",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "121",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "122",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "123",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "124",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "125",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "126",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "127",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "128",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "129",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/key_repo.py",
+      "line": null,
+      "mutant_id": "130",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "16",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "17",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "18",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "19",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "20",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "21",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "22",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "23",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "24",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "25",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "26",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "27",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "28",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "29",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "30",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "31",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "32",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "33",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "34",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "35",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "36",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "37",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "38",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "39",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "40",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "41",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "42",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "43",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "44",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "45",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "46",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "47",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "48",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "49",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "50",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "51",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "52",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "53",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "54",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "55",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "56",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "57",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "58",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "59",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "60",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "61",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "62",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "63",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "64",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "65",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "66",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "67",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "68",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "69",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "70",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "71",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "72",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "73",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "74",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "75",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "76",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "77",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "78",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "79",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "80",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "81",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "82",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "83",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "84",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "85",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "86",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "87",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "88",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "89",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "90",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "91",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "92",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "93",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "94",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
+      "line": null,
+      "mutant_id": "95",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "96",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "97",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "98",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "99",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "100",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "101",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "102",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "103",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "104",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "105",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "106",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/session.py",
+      "line": null,
+      "mutant_id": "107",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "131",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "132",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "133",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "134",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "135",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "136",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "137",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "138",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "139",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "140",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "141",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "142",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "143",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "144",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "145",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "146",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "147",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/auth.py",
+      "line": null,
+      "mutant_id": "148",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "404",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "405",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "406",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "407",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "408",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "409",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "410",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "411",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "412",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "413",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "414",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "415",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "416",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "417",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "418",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "419",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "420",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "421",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "422",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "423",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "424",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "425",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/ratelimit.py",
+      "line": null,
+      "mutant_id": "426",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "149",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "150",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "151",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "152",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "153",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "154",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "155",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "156",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "157",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "158",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "159",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "160",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "161",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "162",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "163",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "164",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "165",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "166",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "167",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "168",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "169",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "170",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "171",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "172",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "173",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "174",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "175",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "176",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "177",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "178",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "179",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "180",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "181",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "182",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "183",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "184",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "185",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "186",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "187",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "188",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "189",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "190",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "191",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "192",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "193",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "194",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "195",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "196",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "197",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "198",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "199",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "200",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "201",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "202",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "203",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "204",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "205",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "206",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "207",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "208",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "209",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "210",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "211",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "212",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "213",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "214",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "215",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "216",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "217",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "218",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "219",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "220",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "221",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "222",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "223",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "224",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "225",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "226",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "227",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "228",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "229",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "230",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "231",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "232",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "233",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "234",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "235",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "236",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "237",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "238",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "239",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "240",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "241",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "242",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "243",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "244",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "245",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "246",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "247",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "248",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "249",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "250",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "251",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "252",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "253",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "254",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "255",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "256",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "257",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "258",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "259",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "260",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "261",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "262",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "263",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "264",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "265",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "266",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "267",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "268",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "269",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "270",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "271",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "272",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "273",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "274",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "275",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "276",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "277",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "278",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "279",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "280",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "281",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "282",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "283",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "284",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "285",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "286",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "287",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "288",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "289",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "290",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "291",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "292",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "293",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "294",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "295",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "296",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "297",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "298",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "299",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "300",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "301",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "302",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "303",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "304",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "305",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "306",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "307",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "308",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "309",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "310",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "311",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "312",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "313",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "314",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "315",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "316",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "317",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "318",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "319",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "320",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "321",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "322",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "323",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "324",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "325",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "326",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "327",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "328",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "329",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "330",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "331",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "332",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "333",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "334",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "335",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "336",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "337",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "338",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "339",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "340",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "341",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "342",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "343",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "344",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "345",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "346",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "347",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "348",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "349",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "350",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "351",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "352",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "353",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "354",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "355",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "356",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "357",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "358",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "359",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "360",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "361",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "362",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "363",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "364",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "365",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "366",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "367",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/runner.py",
+      "line": null,
+      "mutant_id": "368",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "369",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "370",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "371",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "372",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "373",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "374",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "375",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "376",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "377",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "378",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "379",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "380",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "381",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "382",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "383",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "384",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "385",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "386",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "387",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "388",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "389",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "390",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "391",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "392",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "393",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "394",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "395",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "396",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "397",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "398",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "399",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "400",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "401",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "402",
+      "mutator": null
+    },
+    {
+      "file": "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/service/tasks.py",
+      "line": null,
+      "mutant_id": "403",
+      "mutator": null
+    }
+  ],
+  "integration_coverage": {
+    "gate": 2,
+    "score": 84.0
+  },
+  "threat_model": [
+    {
+      "threat_id": "T-01",
+      "category": "tampering",
+      "description": "SQL injection via string-concatenated SQL or unparameterised queries",
+      "owner_module": "taskq_api.repository.session",
+      "boundary": "TB-03"
+    },
+    {
+      "threat_id": "T-02",
+      "category": "spoofing",
+      "description": "API key brute-force / replay against the X-API-Key header",
+      "owner_module": "taskq_api.service.auth",
+      "boundary": "TB-01"
+    },
+    {
+      "threat_id": "T-03",
+      "category": "elevation_of_privilege",
+      "description": "Subprocess command injection via shell metacharacters",
+      "owner_module": "taskq_api.service.runner",
+      "boundary": "TB-04"
+    },
+    {
+      "threat_id": "T-04",
+      "category": "denial_of_service",
+      "description": "Rate-limit race condition allowing over-admission",
+      "owner_module": "taskq_api.repository.rate_repo",
+      "boundary": "TB-02"
+    },
+    {
+      "threat_id": "T-05",
+      "category": "information_disclosure",
+      "description": "403 response reveals whether a resource exists",
+      "owner_module": "taskq_api.api.deps",
+      "boundary": "TB-01"
+    },
+    {
+      "threat_id": "T-06",
+      "category": "information_disclosure",
+      "description": "Error body leaks stack trace, SQL, or file path",
+      "owner_module": "taskq_api.errors",
+      "boundary": "TB-05"
+    },
+    {
+      "threat_id": "T-07",
+      "category": "information_disclosure",
+      "description": "Plaintext API key or DB password leaks into logs / metrics",
+      "owner_module": "taskq_api.errors",
+      "boundary": "TB-03"
+    },
+    {
+      "threat_id": "T-08",
+      "category": "denial_of_service",
+      "description": "Child subprocess becomes orphan on timeout",
+      "owner_module": "taskq_api.service.runner",
+      "boundary": "TB-04"
+    },
+    {
+      "threat_id": "T-09",
+      "category": "denial_of_service",
+      "description": "asyncio.CancelledError swallowed on shutdown causes graceful drain to hang",
+      "owner_module": "taskq_api.service.runner",
+      "boundary": "TB-02"
+    },
+    {
+      "threat_id": "T-10",
+      "category": "repudiation",
+      "description": "Client actions cannot be correlated across logs and responses",
+      "owner_module": "taskq_api.errors",
+      "boundary": "TB-01"
+    },
+    {
+      "threat_id": "T-11",
+      "category": "tampering",
+      "description": "v3 migration data loss on downgrade path",
+      "owner_module": "migrations.versions.v3_split_results",
+      "boundary": "TB-03"
+    }
+  ],
+  "sources": {
+    "declared": 4,
+    "crg_hubs": 0,
+    "mutation_survivors": 415,
+    "integration_coverage": true,
+    "threat_model": 11
+  }
+}
