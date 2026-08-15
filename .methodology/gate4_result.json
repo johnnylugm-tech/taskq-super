@@ -284,9 +284,9 @@
   },
   "crg_review_context": {
     "status": "ok",
-    "summary": "Review context for 23 changed file(s):\n  - Risk: high\n  - 326 impacted nodes in 33 files",
+    "summary": "Review context for 57 changed file(s):\n  - Risk: high\n  - 326 impacted nodes in 33 files",
     "risk": "high",
-    "changed_file_count": 23,
+    "changed_file_count": 57,
     "impacted_file_count": 33,
     "key_entities": [
       "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/repository/rate_repo.py",
@@ -303,13 +303,13 @@
     ],
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 112487,
+      "saved_tokens": 133101,
       "saved_percent": 100
     }
   },
   "crg_impact_radius": {
     "status": "ok",
-    "summary": "Blast radius for 23 changed file(s):\n  - 130 nodes directly changed\n  - 326 nodes impacted (within 2 hops)\n  - 33 additional files affected",
+    "summary": "Blast radius for 57 changed file(s):\n  - 130 nodes directly changed\n  - 326 nodes impacted (within 2 hops)\n  - 33 additional files affected",
     "risk": "high",
     "impacted_file_count": 33,
     "key_entities": [
@@ -322,7 +322,7 @@
     "truncated": false,
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 112483,
+      "saved_tokens": 133097,
       "saved_percent": 100
     }
   },
