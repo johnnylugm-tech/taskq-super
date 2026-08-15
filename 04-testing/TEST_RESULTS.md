@@ -1,7 +1,7 @@
 # Test Results
 
 > Phase: **2 — Architecture** | Per-FR Delta (P4)
-> Generated: 2026-08-15 | Source: real `pytest -q --cov=03-development/src` execution
+> Generated: 2026-08-16 | Source: real `pytest -q --cov=03-development/src` execution
 > Raw output: `04-testing/coverage_raw.txt`
 
 ## 1. Execution Summary
@@ -11,23 +11,23 @@
 | Test runner | `pytest` (pytest-q, pytest-cov) |
 | Working dir | `/Users/johnny/projects/taskq-super` |
 | Python | `.venv/bin/python` (3.11.15) |
-| Wall time | **282.33 s (4 min 42 s)** |
-| Total tests collected | **7,547** (7540 passed + 4 failed + 3 skipped) |
-| **Passed** | **7,540** |
+| Wall time | **281.16 s (4 min 41 s)** |
+| Total tests collected | **7,570** (7563 passed + 4 failed + 3 skipped) |
+| **Passed** | **7,563** |
 | **Failed** | **4** |
 | Skipped | 3 |
 | Warnings | 2 (coroutine `healthz` never awaited in smoke test; `taskq_api.__main__` import-order warning) |
-| Coverage (target `03-development/src`) | **881 stmts / 0 missed → 100%** |
+| Coverage (target `03-development/src`) | **905 stmts / 0 missed → 100%** |
 
 Source of truth:
 
 ```
-4 failed, 7540 passed, 3 skipped, 2 warnings in 282.33s (0:04:42)
+4 failed, 7563 passed, 3 skipped, 2 warnings in 281.16s (0:04:41)
 ```
 
 ## 2. Result by Outcome
 
-### 2.1 Passed — 7,540
+### 2.1 Passed — 7,563
 
 All product-side tests under `03-development/tests/` (unit, integration, per-FR suites
 `test_fr01`..`test_fr10`, contract tests, plus the bulk of the harness guard suite) are green.
@@ -87,4 +87,3 @@ cd /Users/johnny/projects/taskq-super
   | tee 04-testing/coverage_raw.txt
 .venv/bin/python -m coverage report --format=total
 ```
-

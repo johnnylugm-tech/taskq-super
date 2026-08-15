@@ -1,7 +1,7 @@
 # Coverage Report
 
 > Phase: **2 — Architecture** | Per-FR Delta (P4)
-> Generated: 2026-08-15 | Source: real `pytest --cov=03-development/src --cov-report=term-missing -q` execution
+> Generated: 2026-08-16 | Source: real `pytest --cov=03-development/src --cov-report=term-missing -q` execution
 > Raw output: `04-testing/coverage_raw.txt`
 
 ## 1. Overall Coverage
@@ -9,7 +9,7 @@
 | Metric | Value |
 | --- | --- |
 | Target module tree | `03-development/src` |
-| Total statements | **881** |
+| Total statements | **905** |
 | Missed statements | **0** |
 | **Line coverage** | **100%** |
 | Gate-3 threshold | ≥ 80% → **PASS** (margin: +20 pp) |
@@ -29,32 +29,32 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/migrations/versions/__init__.py               0      0   100%
 03-development/src/migrations/versions/v1_initial.py            19      0   100%
 03-development/src/migrations/versions/v2_tags.py               17      0   100%
-03-development/src/migrations/versions/v3_split_results.py      28      0   100%
+03-development/src/migrations/versions/v3_split_results.py      32      0   100%
 03-development/src/sitecustomize.py                             26      0   100%
 03-development/src/taskq_api/__init__.py                         0      0   100%
-03-development/src/taskq_api/__main__.py                        29      0   100%
+03-development/src/taskq_api/__main__.py                        32      0   100%
 03-development/src/taskq_api/api/__init__.py                     0      0   100%
 03-development/src/taskq_api/api/deps.py                        23      0   100%
 03-development/src/taskq_api/api/health.py                     100      0   100%
 03-development/src/taskq_api/api/tasks.py                       45      0   100%
-03-development/src/taskq_api/app.py                             47      0   100%
+03-development/src/taskq_api/app.py                             52      0   100%
 03-development/src/taskq_api/config.py                          21      0   100%
 03-development/src/taskq_api/errors.py                          69      0   100%
 03-development/src/taskq_api/models/__init__.py                  0      0   100%
 03-development/src/taskq_api/models/orm.py                      13      0   100%
 03-development/src/taskq_api/models/schemas.py                  33      0   100%
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
-03-development/src/taskq_api/repository/key_repo.py             17      0   100%
+03-development/src/taskq_api/repository/key_repo.py             18      0   100%
 03-development/src/taskq_api/repository/rate_repo.py            93      0   100%
 03-development/src/taskq_api/repository/session.py              25      0   100%
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
-03-development/src/taskq_api/service/auth.py                    29      0   100%
+03-development/src/taskq_api/service/auth.py                    26      0   100%
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
-03-development/src/taskq_api/service/runner.py                 172      0   100%
+03-development/src/taskq_api/service/runner.py                 186      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
 ------------------------------------------------------------------------------------------
-TOTAL                                                          881      0   100%
+TOTAL                                                          905      0   100%
 ```
 
 ## 2. Per-Module Breakdown
@@ -67,23 +67,23 @@ TOTAL                                                          881      0   100%
 | `api/tasks.py` | 45 | 0 | **100%** |
 | `api/deps.py` | 23 | 0 | **100%** |
 | `api/__init__.py` | 0 | 0 | 100% (init only) |
-| `app.py` | 47 | 0 | **100%** |
-| `__main__.py` | 29 | 0 | **100%** |
+| `app.py` | 52 | 0 | **100%** |
+| `__main__.py` | 32 | 0 | **100%** |
 | `config.py` | 21 | 0 | **100%** |
 
-Sub-total: 265 stmts · 0 missed.
+Sub-total: 273 stmts · 0 missed.
 
 ### 2.2 Service layer (`taskq_api/service/*`)
 
 | Module | Stmts | Miss | Cover |
 | --- | --- | --- | --- |
-| `service/runner.py` | 172 | 0 | **100%** |
+| `service/runner.py` | 186 | 0 | **100%** |
 | `service/tasks.py` | 41 | 0 | **100%** |
-| `service/auth.py` | 29 | 0 | **100%** |
+| `service/auth.py` | 26 | 0 | **100%** |
 | `service/ratelimit.py` | 23 | 0 | **100%** |
 | `service/__init__.py` | 0 | 0 | 100% (init only) |
 
-Sub-total: 265 stmts · 0 missed. The 172-statement `runner.py` (the largest single
+Sub-total: 276 stmts · 0 missed. The 186-statement `runner.py` (the largest single
 module in the product) is fully exercised by the runner integration suite.
 
 ### 2.3 Repository / persistence (`taskq_api/repository/*`)
@@ -91,12 +91,12 @@ module in the product) is fully exercised by the runner integration suite.
 | Module | Stmts | Miss | Cover |
 | --- | --- | --- | --- |
 | `repository/rate_repo.py` | 93 | 0 | **100%** |
-| `repository/task_repo.py` | 11 | 0 | **100%** |
-| `repository/key_repo.py` | 17 | 0 | **100%** |
 | `repository/session.py` | 25 | 0 | **100%** |
+| `repository/key_repo.py` | 18 | 0 | **100%** |
+| `repository/task_repo.py` | 11 | 0 | **100%** |
 | `repository/__init__.py` | 0 | 0 | 100% (init only) |
 
-Sub-total: 146 stmts · 0 missed.
+Sub-total: 147 stmts · 0 missed.
 
 ### 2.4 Schemas, models, errors, migrations
 
@@ -106,20 +106,20 @@ Sub-total: 146 stmts · 0 missed.
 | `models/schemas.py` | 33 | 0 | **100%** |
 | `models/orm.py` | 13 | 0 | **100%** |
 | `models/__init__.py` | 0 | 0 | 100% (init only) |
-| `migrations/versions/v3_split_results.py` | 28 | 0 | **100%** |
+| `migrations/versions/v3_split_results.py` | 32 | 0 | **100%** |
+| `sitecustomize.py` | 26 | 0 | **100%** |
 | `migrations/versions/v1_initial.py` | 19 | 0 | **100%** |
 | `migrations/versions/v2_tags.py` | 17 | 0 | **100%** |
 | `migrations/versions/__init__.py` | 0 | 0 | 100% (init only) |
 | `migrations/__init__.py` | 0 | 0 | 100% (init only) |
-| `sitecustomize.py` | 26 | 0 | **100%** |
 
-Sub-total: 205 stmts · 0 missed.
+Sub-total: 209 stmts · 0 missed.
 
 ## 3. Uncovered Lines
 
 **None.** Every statement under `03-development/src` is exercised by the test
 suite (`Missing` column is empty for every row, including the 100-statement
-`api/health.py` and the 172-statement `service/runner.py`).
+`api/health.py` and the 186-statement `service/runner.py`).
 
 ## 4. Gate-3 Threshold Check
 
