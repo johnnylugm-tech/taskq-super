@@ -38,6 +38,7 @@ import logging
 import os
 import re
 import shlex
+import sqlite3
 import subprocess
 import sys
 import time
@@ -661,6 +662,303 @@ def test_unit_runner_execute_command_unexpected_exception_returns_failed() -> No
     asyncio.run(_run())
 
 
+def test_unit_runner_get_conn_handles_db_path_change_with_close_error() -> None:
+    """`_get_conn` discards a stale connection and absorbs a close() failure.
+
+    Covers runner.py lines 107-110 (the `try _shared_conn.close() / except
+    sqlite3.Error: pass` arm). When ``_DB_PATH`` changes between calls,
+    the cached connection is discarded and rebuilt. The mask is exercised
+    by forcing ``close()`` to raise ``sqlite3.Error`` so the except arm
+    is reached without the failure masking the reconnect.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    class _CloseRaisingConn:
+        """duck-typed stand-in whose close() raises sqlite3.Error."""
+
+        def close(self) -> None:
+            raise sqlite3.Error("synthetic close failure")
+
+    original_path = runner_mod._DB_PATH
+    runner_mod._shared_conn = None
+    runner_mod._shared_conn_db_path = None
+    runner_mod._DB_PATH = "/tmp/taskq_runner_test_a.db"
+    try:
+        conn1 = runner_mod._get_conn()
+        # Swap path; the next call must discard conn1 and rebuild.
+        runner_mod._DB_PATH = "/tmp/taskq_runner_test_b.db"
+        # Replace the cached connection with a stand-in whose close() raises.
+        runner_mod._shared_conn = _CloseRaisingConn()  # type: ignore[assignment]
+        conn2 = runner_mod._get_conn()
+        assert conn2 is not conn1
+    finally:
+        runner_mod._DB_PATH = original_path
+        runner_mod._shared_conn = None
+        runner_mod._shared_conn_db_path = None
+
+
+def test_unit_runner_execute_command_malformed_command_returns_failed() -> None:
+    """`_execute_command` returns `failed`/`exit_code=-1` on shlex.split ValueError.
+
+    Covers runner.py line 244 (the `except ValueError` arm in
+    `_execute_command`). Unbalanced quotes / trailing backslash raise
+    ``ValueError`` from ``shlex.split``; the runner must surface a
+    structured `failed` row instead of a 500.
+    """
+
+    async def _run() -> None:
+        from taskq_api.service import runner as runner_mod
+
+        # Unbalanced single quote: shlex.split raises ValueError.
+        outcome = await runner_mod._execute_command("echo 'unclosed", timeout=2.0)
+        assert outcome["status"] == "failed", outcome
+        assert outcome["exit_code"] == -1, outcome
+        assert outcome["stdout_tail"] == "", outcome
+        assert outcome["stderr_tail"] == "", outcome
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_runner_class_init_and_properties() -> None:
+    """`Runner.__init__` populates cap, drain, in_flight and exposes them.
+
+    Covers runner.py lines 394-405 (Runner.__init__ body), 412
+    (max_concurrent property), 417 (drain_timeout property), 422
+    (in_flight property). The env-read happens at __init__ time so the
+    values reflect what monkeypatch.setenv set before the constructor.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    runner = runner_mod.Runner()
+    expected_cap = int(
+        os.environ.get("TASKQ_MAX_CONCURRENT", str(runner_mod.MAX_CONCURRENT))
+    )
+    expected_drain = float(
+        os.environ.get("TASKQ_DRAIN_TIMEOUT", str(runner_mod.DRAIN_TIMEOUT))
+    )
+    assert runner.max_concurrent == expected_cap, runner.max_concurrent
+    assert runner.drain_timeout == expected_drain, runner.drain_timeout
+    assert runner.in_flight == 0, runner.in_flight
+
+
+def test_unit_runner_run_body_passes_through() -> None:
+    """`Runner._run_body` awaits the body coroutine and returns its result.
+
+    Covers runner.py line 483 (the `return await body()` body). The
+    wrapper intentionally has no try/except so CancelledError propagates
+    (AC-8.5 / NFR-03 / T-09).
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        result = await runner._run_body(lambda: asyncio.sleep(0))
+        assert result is None
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_submit_list_runs_drain() -> None:
+    """`Runner.submit` + `list_runs` + `drain` complete a run end-to-end.
+
+    Covers runner.py lines 439-448 (Runner.submit), 452-454
+    (Runner.list_runs), 464-471 (Runner.drain), 503-511 (the
+    `_run_with_limit` semaphore gate + normal branch), 529-536
+    (`_execute_assigned` lifecycle), 554-590 (`_run_subprocess` happy
+    path). The `sleep 0`-equivalent `true` command transitions the row
+    to `done` and exits with 0.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        await runner.submit("test-task-id", "true")
+        await runner.drain(timeout=5.0)
+        runs = runner.list_runs("test-task-id")
+        assert len(runs) == 1, runs
+        assert runs[0]["status"] == "done", runs[0]
+        assert runs[0]["exit_code"] == 0, runs[0]
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_runner_drain_with_no_tasks() -> None:
+    """`Runner.drain` is a no-op when no tasks are in-flight.
+
+    Covers runner.py lines 464-471 idempotent path (the early-exit when
+    `_in_flight == 0` and `_tasks` is empty). The drain must return
+    without raising even on an empty runner.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        await runner.drain(timeout=0.1)
+        assert runner.in_flight == 0
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_runner_drain_exits_when_deadline_expires() -> None:
+    """`Runner.drain` exits the inner sleep loop when the deadline expires.
+
+    Covers runner.py lines 467-469 (the `break`/`await asyncio.sleep(0.05)`
+    inner-loop body). When `_in_flight` is still non-zero past the
+    deadline, the loop breaks out and drain proceeds to gather the
+    pending tasks. The test submits a long-running command and drains
+    with a tiny timeout so the deadline branch is hit.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        await runner.submit("test-task-id", "sleep 5")
+        # Wait for the background body to acquire the semaphore and
+        # increment `_in_flight` so the while-loop body is exercised.
+        for _ in range(100):
+            if runner.in_flight > 0:
+                break
+            await asyncio.sleep(0.01)
+        assert runner.in_flight > 0, "body did not start in time"
+        # Tiny timeout — the deadline expires while in_flight > 0.
+        await runner.drain(timeout=0.05)
+        # Cleanup: cancel the still-running task and re-collect.
+        for task in runner._tasks:
+            if not task.done():
+                task.cancel()
+        await asyncio.gather(*runner._tasks, return_exceptions=True)
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_runner_handler_subprocess_fail_to_exec() -> None:
+    """`Runner._run_subprocess` records `failed`/exit_code=127 on ENOENT.
+
+    Covers runner.py lines 561-568 (the `except FileNotFoundError` arm
+    in `_run_subprocess`). The runner must surface a conventional
+    exit code rather than letting the exception propagate.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        await runner.submit("test-task-id", "/nonexistent/missing-binary")
+        await runner.drain(timeout=5.0)
+        runs = runner.list_runs("test-task-id")
+        assert len(runs) == 1, runs
+        assert runs[0]["status"] == "failed", runs[0]
+        assert runs[0]["exit_code"] == 127, runs[0]
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_runner_subprocess_kill_on_timeout() -> None:
+    """`Runner._run_subprocess` kills + reaps on timeout.
+
+    Covers runner.py lines 581-587 (the `except asyncio.TimeoutError`
+    arm in `_run_subprocess`). The child is killed via `_terminate`
+    before the row settles to `timeout`/`exit_code=-1`.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        await runner.submit("test-task-id", "sleep 5", timeout=0.2)
+        await runner.drain(timeout=5.0)
+        runs = runner.list_runs("test-task-id")
+        assert len(runs) == 1, runs
+        assert runs[0]["status"] == "timeout", runs[0]
+        assert runs[0]["exit_code"] == -1, runs[0]
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_runner_interrupted_branch_returns_early() -> None:
+    """`Runner._run_with_limit` short-circuits when row.status == "interrupted".
+
+    Covers runner.py lines 507-508 (the `if row.get("status") ==
+    "interrupted": return` arm). The body is gated by the semaphore,
+    so we replace the semaphore with a controlled one. The test
+    pre-marks the row as interrupted, then releases the semaphore;
+    the body sees `interrupted` and returns without invoking
+    `_execute_assigned`.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        runner = runner_mod.Runner()
+        # Replace the semaphore with a deferred one so the body blocks
+        # until we explicitly release it.
+        sem = asyncio.Semaphore(0)
+        runner._semaphore = sem
+        # Submit a "long" command that the body would otherwise run.
+        await runner.submit("test-task-id", "sleep 5")
+        # Mark the row as interrupted before the body proceeds.
+        runs = runner.list_runs("test-task-id")
+        assert len(runs) == 1, runs
+        runs[0]["status"] = "interrupted"
+        # Release the semaphore so the body can acquire + check the row.
+        sem.release()
+        # Drain — the body should return early.
+        await runner.drain(timeout=5.0)
+        # The row remains `interrupted` (no execute happened).
+        final_runs = runner.list_runs("test-task-id")
+        assert final_runs[0]["status"] == "interrupted", final_runs[0]
+        # In-flight counter must have been incremented then decremented
+        # by the body (or never incremented if the early-return path
+        # fired before _execute_assigned). It is 0 either way because
+        # the body returned from the try/finally.
+        assert runner.in_flight == 0, runner.in_flight
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_execute_with_kill_passes_through_on_completion() -> None:
+    """`_execute_with_kill` returns the process returncode on success.
+
+    Covers runner.py lines 362-368 happy path (the body of
+    `_execute_with_kill` after `wait_for` resolves). The function
+    returns `proc.returncode` when the process completes within the
+    timeout.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        proc = await asyncio.create_subprocess_exec(
+            "true",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        rc = await runner_mod._execute_with_kill(proc, timeout=2.0)
+        assert rc == 0, rc
+
+    asyncio.run(_run())
+
+
+def test_unit_runner_execute_with_kill_raises_on_timeout() -> None:
+    """`_execute_with_kill` kills + reaps on timeout, then re-raises.
+
+    Covers runner.py lines 364-367 (the `except asyncio.TimeoutError`
+    arm in `_execute_with_kill`). The child is killed and reaped via
+    `_terminate`, then the TimeoutError is re-raised so the caller
+    still observes the timeout event.
+    """
+    from taskq_api.service import runner as runner_mod
+
+    async def _run() -> None:
+        proc = await asyncio.create_subprocess_exec(
+            "sleep", "5",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        with pytest.raises(asyncio.TimeoutError):
+            await runner_mod._execute_with_kill(proc, timeout=0.2)
+        # After kill+wait, the child should have been reaped.
+        assert proc.returncode is not None, proc.returncode
+
+    asyncio.run(_run())
+
+
 __all__: list[str] = [
     "test_fr02_run_task_returns_202_with_run_id",
     "test_fr02_run_task_uses_shlex_split_no_shell",
@@ -678,6 +976,18 @@ __all__: list[str] = [
     "test_unit_runner_execute_command_timeout_transitions_to_timeout",
     "test_unit_runner_terminate_swallows_wait_exception",
     "test_unit_runner_execute_command_unexpected_exception_returns_failed",
+    "test_unit_runner_get_conn_handles_db_path_change_with_close_error",
+    "test_unit_runner_execute_command_malformed_command_returns_failed",
+    "test_unit_runner_runner_class_init_and_properties",
+    "test_unit_runner_run_body_passes_through",
+    "test_unit_runner_submit_list_runs_drain",
+    "test_unit_runner_runner_drain_with_no_tasks",
+    "test_unit_runner_runner_drain_exits_when_deadline_expires",
+    "test_unit_runner_runner_handler_subprocess_fail_to_exec",
+    "test_unit_runner_runner_subprocess_kill_on_timeout",
+    "test_unit_runner_runner_interrupted_branch_returns_early",
+    "test_unit_runner_execute_with_kill_passes_through_on_completion",
+    "test_unit_runner_execute_with_kill_raises_on_timeout",
 ]
 
 
