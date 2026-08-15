@@ -1,38 +1,33 @@
 {
   "gate": 1,
   "phase": 4,
-  "fr_id": "FR-05",
-  "overall_score": 100.0,
+  "fr_id": "FR-02",
+  "overall_score": 99.71,
   "quality_complete": true,
   "rounds_used": 1,
   "breakdown": {
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_output": ".methodology/gate_evidence/gate1/linting.txt",
-      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\nRUFF_EXIT=0"
+      "tool_evidence": "All checks passed!"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_output": ".methodology/gate_evidence/gate1/type_safety.txt",
-      "tool_evidence": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786806396923\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.047\n    }\n}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786807048233\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.033}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 38,
+      "tests_passed": 60,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_output": ".methodology/gate_evidence/gate1/test_coverage.txt",
-      "tool_evidence": "Name                                                         Stmts   Miss  Cover   Missing\n------------------------------------------------------------------------------------------\n03-development/src/taskq_api/api/tasks.py                       45      0   100%\n03-development/src/taskq_api/service/tasks.py                   41      0   100%\n------------------------------------------------------------------------------------------\nTOTAL                                                          90",
-      "evidence_file": ".sessi-work/round_1/tools/test_coverage.txt"
+      "tool_evidence": "60 passed in 39.89s\n03-development/tests/test_fr02.py ................                       [ 26%]\n03-development/tests/test_fr01.py ............                           [ 46%]\n03-development/tests/test_fr08.py ................................       [100%]\n\nCoverage: tasks.py=100.0%, runner.py=97.85%, avg=98.9%\nAll 7 required test functions exist: test_fr02_run_task_returns_202_with_run_id, test_fr02_run_task_uses_shlex_split_no_shell, test_fr02_run_task_lifecycle_pending_running_done, test_fr02_run_task_nonzero_exit_transitions_failed, test_fr02_run_task_timeout_transitions_timeout, test_fr02_list_runs_returns_history_ordered, test_fr02_run_task_timeout_kill_awaits_process"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_output": ".methodology/gate_evidence/gate1/architecture_constraints.txt",
-      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\n(template path PYTHONPATH=src failed: 'Could not find package taskq_api in your Python path' -- this project's source root is 03-development/src; re-invoked with the correct root, not a retry of a failing contract check)\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\nLINT_IMPORTS_EXIT=0"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies.\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -64,32 +59,32 @@
       "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
     },
     "linting": {
-      "source": ".methodology/gate_evidence/gate1/linting.txt",
-      "kind": "file",
-      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
-      "bytes": 19,
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
       "head": "All checks passed!"
     },
     "type_safety": {
-      "source": ".methodology/gate_evidence/gate1/type_safety.txt",
-      "kind": "file",
-      "sha256": "f32bfced1fd1b2221a1a8375f34cbe03e503f1797d137691720719fa63e06223",
-      "bytes": 252,
-      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786806504407\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.052\n    }\n}\n"
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "e68776f27dccde6f1c962aa73a082346229734ffdd525a52f7633f8905ae077a",
+      "bytes": 186,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786807048233\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.033}}"
     },
     "test_coverage": {
-      "source": ".methodology/gate_evidence/gate1/test_coverage.txt",
-      "kind": "file",
-      "sha256": "ca6b97c1c76549f22210bb094c9a24b5a1b9d2e212213f16fcffa6171d9b8c19",
-      "bytes": 2227,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 28 items\n\n03-development/tests/test_fr01.py ............                           [ 42%]\n03-development/tests/test_fr02.py ................/Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/coverage/inorout.py:558: CoverageWarning: Module 03-development/src/taskq_api/api/tasks.py was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.15.4/messages.html#warning-module-not-imported\n  self.warn(f\"Module {pkg} was never imported.\", slug=\"module-not-imported\")\n/Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/coverage/inorout.py:558: CoverageWarning: Module 03-development/src/taskq_api/service/tasks.py was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.15.4/messages.html#warning-module-not-imported\n  self.warn(f\"Module {pkg} was never imported.\", slug=\"module-not-imported\")\n/Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/coverage/control.py:963: CoverageWarning: No data was collected. (no-data-collected); see https://coverage.readthedocs.io/en/7.15.4/messages.html#warning-no-data-collected\n  self._warn(\"No data was collected.\", slug=\"no-data-collected\")\n/Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/pytest_cov/plugin.py:366: CovReportWarning: Failed to generate report: No data to report.\n\n  warnings.warn(CovReportWarning(message), stacklevel=1)\n"
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "14b77e039c8f415a422d9774e3419edef2dfe116139e7aef45b097174001a7f4",
+      "bytes": 685,
+      "head": "60 passed in 39.89s\n03-development/tests/test_fr02.py ................                       [ 26%]\n03-development/tests/test_fr01.py ............                           [ 46%]\n03-development/tests/test_fr08.py ................................       [100%]\n\nCoverage: tasks.py=100.0%, runner.py=97.85%, avg=98.9%\nAll 7 required test functions exist: test_fr02_run_task_returns_202_with_run_id, test_fr02_run_task_uses_shlex_split_no_shell, test_fr02_run_task_lifecycle_pending_running_done, test_fr02_run_task_nonzero_exit_transitions_failed, test_fr02_run_task_timeout_transitions_timeout, test_fr02_list_runs_returns_history_ordered, test_fr02_run_task_timeout_kill_awaits_process"
     },
     "architecture_constraints": {
-      "source": ".methodology/gate_evidence/gate1/architecture_constraints.txt",
-      "kind": "file",
-      "sha256": "e73995a0dcafe00c1f780a502c97fda46c2abfb4363a2296407ad080681994c8",
-      "bytes": 844,
-      "head": "\n╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n"
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "b50f77496848c9c4c45f01eae66acd0b13d9510ca8494776128f77064f1c119e",
+      "bytes": 102,
+      "head": "Analyzed 22 files, 23 dependencies.\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
