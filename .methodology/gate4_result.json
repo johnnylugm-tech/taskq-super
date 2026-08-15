@@ -284,9 +284,9 @@
   },
   "crg_review_context": {
     "status": "ok",
-    "summary": "Review context for 19 changed file(s):\n  - Risk: low\n  - 0 impacted nodes in 0 files",
+    "summary": "Review context for 18 changed file(s):\n  - Risk: low\n  - 0 impacted nodes in 0 files",
     "risk": "low",
-    "changed_file_count": 19,
+    "changed_file_count": 18,
     "impacted_file_count": 0,
     "key_entities": [],
     "test_gaps": 0,
@@ -297,20 +297,20 @@
     ],
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 90585,
+      "saved_tokens": 89859,
       "saved_percent": 100
     }
   },
   "crg_impact_radius": {
     "status": "ok",
-    "summary": "Blast radius for 19 changed file(s):\n  - 0 nodes directly changed\n  - 0 nodes impacted (within 2 hops)\n  - 0 additional files affected",
+    "summary": "Blast radius for 18 changed file(s):\n  - 0 nodes directly changed\n  - 0 nodes impacted (within 2 hops)\n  - 0 additional files affected",
     "risk": "low",
     "impacted_file_count": 0,
     "key_entities": [],
     "truncated": false,
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 90598,
+      "saved_tokens": 89872,
       "saved_percent": 100
     }
   },
