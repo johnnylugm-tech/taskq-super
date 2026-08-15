@@ -1174,29 +1174,24 @@ def test_fr08_coverage_rate_repo_url_branch_and_lock_early_return() -> None:
 
 
 def test_fr08_coverage_rate_repo_non_sqlite_dialect_branch() -> None:
-    """[FR-05 surface] Cover rate_repo.py line 113 (the
-    ``return _SELECT_FOR_UPDATE_SQL`` branch) by monkey-patching the
-    engine's dialect name to a non-sqlite value. Same sentinel contract
-    as ``test_fr08_coverage_rate_repo_non_sqlite_branch`` — with
-    ``TASKQ_RATE_DB_URL`` unset, ``_get_engine`` raises before the
-    dialect branch is reachable."""
-    import importlib
-
-    import pytest as _pytest
-    from sqlalchemy.exc import NoSuchModuleError
+    """[FR-05 surface] Cover rate_repo.py line 156 (the
+    ``return _SELECT_FOR_UPDATE_SQL`` branch) by monkey-patching
+    ``_get_engine`` to return an engine whose dialect name is
+    ``"postgresql"``."""
     from taskq_api.repository import rate_repo as rate_repo_mod
 
-    saved = rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
+    class _FakeDialect:
+        name = "postgresql"
+
+    class _FakeEngine:
+        dialect = _FakeDialect()
+
+    saved_engine = rate_repo_mod._engine
+    rate_repo_mod._engine = _FakeEngine()  # noqa: SLF001
     try:
-        importlib.reload(rate_repo_mod)
-        with _pytest.raises(NoSuchModuleError):
-            rate_repo_mod._get_engine()  # noqa: SLF001
+        assert rate_repo_mod._select_sql() == rate_repo_mod._SELECT_FOR_UPDATE_SQL  # noqa: SLF001
     finally:
-        if saved is None:
-            rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
-        else:
-            rate_repo_mod.os.environ["TASKQ_RATE_DB_URL"] = saved
-        importlib.reload(rate_repo_mod)
+        rate_repo_mod._engine = saved_engine  # noqa: SLF001
 
 
 @pytest.mark.asyncio
