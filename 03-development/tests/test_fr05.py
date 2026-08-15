@@ -44,7 +44,6 @@ import asyncio
 import concurrent.futures
 import json
 import os
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -55,9 +54,7 @@ import pytest
 
 # Imports of the modules under test. Not wrapped in try/except: a missing
 # module must surface as a pytest Collection Error, which is the valid RED.
-from taskq_api.api import deps as deps_module
 from taskq_api.app import app
-from taskq_api.service import auth as auth_module
 from taskq_api.service import ratelimit as ratelimit_module
 from taskq_api.service.ratelimit import (
     DEFAULT_BURST,
@@ -202,11 +199,9 @@ def test_fr05_burst_requests_then_429_with_retry_after(
     # body runs and raise problem(429, ..., Retry-After=<int>) when the
     # bucket is empty.
     statuses: List[int] = []
-    last_response: Optional[httpx.Response] = None
     for _ in range(burst):
         resp = _request("GET", "/v1/tasks", api_key=write_api_key)
         statuses.append(resp.status_code)
-        last_response = resp
 
     over_burst = _request("GET", "/v1/tasks", api_key=write_api_key)
     status_code = str(over_burst.status_code)
@@ -272,7 +267,7 @@ def test_fr05_retry_after_is_positive_integer_seconds(
 
     # Drain the bucket.
     for _ in range(burst_capacity):
-        drain = _request("GET", "/v1/tasks", api_key=write_api_key)
+        _request("GET", "/v1/tasks", api_key=write_api_key)
         # The drain requests may return 200 (under-budget) or 429 (if
         # some earlier request already filled the bucket). We only care
         # that the over-budget response carries Retry-After.
@@ -535,7 +530,6 @@ def test_unit_check_rate_limit_inproc_subprocess_branch(
     """
     # NP-03
     # NP-13
-    burst = DEFAULT_BURST
     helper_src = (
         "import sys, json\n"
         f"sys.path.insert(0, {str(_src_root())!r})\n"

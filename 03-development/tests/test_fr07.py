@@ -283,9 +283,22 @@ def alembic_home(tmp_path: Path) -> Path:
         "    ${downgrades if downgrades else 'pass'}\n"
     )
 
-    # migrations/versions/ — empty (GREEN adds the three revisions here)
+    # migrations/versions/ — populated from the project's source migrations.
+    # The RED tests that drive `alembic upgrade head` via the subprocess
+    # path need real revision files to create the `tasks` table; the
+    # in-process tests below use `_migration_ctx` directly and bypass
+    # this fixture, so they don't need it. Without this copy the
+    # subprocess alembic invocation runs against an empty versions
+    # directory and the test reports "no such table: tasks" — the
+    # GREEN agent's full migration set (v1_initial, v2_tags,
+    # v3_split_results) is what the project SPEC requires.
     versions_dir = migrations_dir / "versions"
     versions_dir.mkdir()
+    _src_versions = _SRC_ROOT / "migrations" / "versions"
+    if _src_versions.exists():
+        import shutil
+        for revision in _src_versions.glob("v*.py"):
+            shutil.copy2(revision, versions_dir / revision.name)
 
     # Create empty test.db so AC-7.3's "real SQLite file" check has
     # something to compare against.

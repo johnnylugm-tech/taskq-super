@@ -47,7 +47,6 @@ import pytest
 
 # Imports of the modules under test. Not wrapped in try/except: a missing
 # module must surface as a pytest Collection Error, which is the valid RED.
-from taskq_api.api import deps as deps_module
 from taskq_api.api.deps import require_scope
 from taskq_api.app import app
 from taskq_api.service import auth as auth_module
@@ -139,7 +138,6 @@ def test_fr04_read_key_post_tasks_returns_403(read_api_key: str) -> None:
     # NFR-02
     # NP-02
     # T-05
-    scope = "read"
     method = "POST"
     endpoint = "/v1/tasks"
     resp = _request(
@@ -179,7 +177,6 @@ def test_fr04_write_key_delete_task_returns_403(write_api_key: str) -> None:
     """
     # NFR-02
     # T-05
-    scope = "write"
     method = "DELETE"
     endpoint = "/v1/tasks/x"
     resp = _request(method, endpoint, api_key=write_api_key)
@@ -209,7 +206,6 @@ def test_fr04_write_key_run_task_succeeds(write_api_key: str) -> None:
     [FR-04] — NFR-02 (write scope is sufficient to run, read scope is not).
     """
     # NFR-02
-    scope = "write"
     method = "POST"
     endpoint = "/v1/tasks/{id}/run"
     task_id = _create_task(write_api_key, command="echo fr04")
@@ -259,7 +255,6 @@ def test_fr04_admin_key_succeeds_on_all_endpoints(
     [FR-04] — NFR-02 (admin scope satisfies every endpoint's gate).
     """
     # NFR-02
-    scope = "admin"
 
     # ---- case 4 — admin-GET 200 --------------------------------------
     method = "GET"

@@ -68,7 +68,6 @@ import pytest
 # NOT consult DB reachability or alembic head, so the readiness + metrics
 # assertions below fail RED.
 from taskq_api.api import health as health_module  # type: ignore[attr-defined]
-from taskq_api.api.health import healthz, readyz  # type: ignore[attr-defined]
 from taskq_api.app import app
 
 

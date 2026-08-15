@@ -53,7 +53,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import re
 import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -74,7 +73,6 @@ import pytest
 # `{type, title, status, detail}` only — no `instance`, no
 # `correlation_id`, no header, no log — so the assertions below fail
 # RED, exactly the signal the TDD-RED contract expects.
-from taskq_api import errors as errors_module  # type: ignore[attr-defined]
 from taskq_api.errors import (  # type: ignore[attr-defined]
     TaskQError,
     install_exception_handlers,

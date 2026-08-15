@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+# Project-level pytest configuration.
+# This file is at the project root so pytest picks it up from anywhere
+# in the tree (e.g. mutmut's runner that uses `python3 -m pytest ...`).
+asyncio_mode = "auto"
+markers = [
+    "asyncio: Mark async test functions for pytest-asyncio (STRICT mode fallback).",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]

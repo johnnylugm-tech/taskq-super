@@ -1211,7 +1211,7 @@ async def test_fr08_coverage_shutdown_drain_polling_branch(
     while runner.in_flight == 0 and time.monotonic() < deadline_wait:
         await asyncio.sleep(0.01)
     assert runner.in_flight > 0, (
-        f"task never started; in_flight stayed 0 after 2s wait"
+        "task never started; in_flight stayed 0 after 2s wait"
     )
     # Drain budget > one poll interval so the loop body runs at least
     # once before the deadline breaks.

@@ -9,7 +9,6 @@ themselves are missing — not because of bad signatures or missing rows.
 from __future__ import annotations
 
 import hmac
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -128,7 +127,7 @@ def _mock_db_session(
     except Exception:
         return  # source not yet implemented — fixture is a no-op
     # Patch `transactional` so handlers that ask for a session get the in-memory store
-    patched = lambda: _NullContextManager(task_store)
+    patched = lambda: _NullContextManager(task_store)  # noqa: E731
     monkeypatch.setattr(
         session_mod,
         "transactional",
