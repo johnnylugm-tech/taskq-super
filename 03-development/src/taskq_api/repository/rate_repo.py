@@ -91,7 +91,7 @@ def _build_engine() -> Engine:
     if url:
         return create_engine(url, connect_args={"check_same_thread": False})
     return create_engine(
-        "sqlite:///:memory:",
+        "XXsqlite:///:memory:XX",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )

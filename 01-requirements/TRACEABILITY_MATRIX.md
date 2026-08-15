@@ -14,7 +14,7 @@
 | SRS Coverage | 100.0% | 100% |
 | Code Coverage | 100.0% | 100% |
 | Test Coverage | 100.0% | 100% |
-| Verification Rate | 100.0% | 100% |
+| Verification Rate | 90.0% | 100% |
 | Total Links | 88 | — |
 
 ### ASPICE SWE.3 Compliance
@@ -36,7 +36,7 @@
 | FR-05 | verified | 03-development/src/taskq_api/api/deps.py, 03-development/src/taskq_api/errors.py, 03-development/src/taskq_api/repository/rate_repo.py (+3) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr05.py | api/deps.py |
 | FR-06 | verified | 03-development/src/taskq_api/repository/session.py, 03-development/tests/test_fr06.py | 03-development/tests/test_fr06.py | repository/session.py |
 | FR-07 | verified | 03-development/src/migrations/__init__.py, 03-development/src/migrations/versions/__init__.py, 03-development/src/migrations/versions/v1_initial.py (+4) | 03-development/tests/test_fr07.py | migrations/versions/v1_initial.py |
-| FR-08 | verified | 03-development/src/taskq_api/app.py, 03-development/src/taskq_api/service/runner.py, 03-development/tests/test_fr08.py | 03-development/tests/test_fr08.py | service/runner.py |
+| FR-08 | in_progress | 03-development/src/taskq_api/app.py, 03-development/src/taskq_api/service/runner.py, 03-development/tests/test_fr08.py | 03-development/tests/test_fr08.py | service/runner.py |
 | FR-09 | verified | 03-development/src/taskq_api/__main__.py, 03-development/src/taskq_api/api/health.py, 03-development/src/taskq_api/repository/rate_repo.py (+2) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr09.py | api/health.py |
 | FR-10 | verified | 03-development/src/taskq_api/api/health.py, 03-development/src/taskq_api/api/tasks.py, 03-development/src/taskq_api/app.py (+3) | 03-development/tests/test_fr10.py | errors.py |
 <!-- AUTO-GEN:END -->
