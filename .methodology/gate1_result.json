@@ -1,7 +1,7 @@
 {
   "gate": 1,
-  "phase": 4,
-  "fr_id": "FR-07",
+  "phase": 5,
+  "fr_id": "FR-01",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!"
+      "tool_evidence": "All checks passed!\n"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.038}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786819162813\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.043}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 28,
+      "tests_passed": 40,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "28 passed in 2.15s; coverage totals: percent_covered=100.0 (covered_lines=68, num_statements=68) for v1_initial.py, v2_tags.py, v3_split_results.py"
+      "tool_evidence": "40 passed in 8.75s. Coverage totals: covered_lines=86, num_statements=86, percent_covered=100.0. Both FR-01 source files (taskq_api/api/tasks.py, taskq_api/service/tasks.py) report 100% statement coverage."
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
+      "tool_evidence": "Contracts: 1 kept, 0 broken. config_and_errors_independence KEPT. Analyzed 22 files, 23 dependencies."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -40,9 +40,9 @@
     "mutation_testing::setup.cfg": {
       "source": "setup.cfg (score-altering exclusions)",
       "kind": "file",
-      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
-      "bytes": 882,
-      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
+      "sha256": "9d71cb77caa34153965434773a1ea6605ba41dd8684557e3b1ffc4b6e8afc636",
+      "bytes": 1177,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts. pytest-benchmark is requested the\n# same way and for the same reason: NFR-01's two budget tests\n# (03-development/tests/test_nfr01_perf.py) take the `benchmark` fixture,\n# so without -p benchmark every mutmut run would error on a missing\n# fixture and score every mutant as killed.\naddopts = -p asyncio -p benchmark\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the"
     },
     "test_coverage::pyproject.toml": {
       "source": "pyproject.toml (score-altering exclusions)",
@@ -54,9 +54,9 @@
     "test_coverage::setup.cfg": {
       "source": "setup.cfg (score-altering exclusions)",
       "kind": "file",
-      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
-      "bytes": 882,
-      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
+      "sha256": "9d71cb77caa34153965434773a1ea6605ba41dd8684557e3b1ffc4b6e8afc636",
+      "bytes": 1177,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts. pytest-benchmark is requested the\n# same way and for the same reason: NFR-01's two budget tests\n# (03-development/tests/test_nfr01_perf.py) take the `benchmark` fixture,\n# so without -p benchmark every mutmut run would error on a missing\n# fixture and score every mutant as killed.\naddopts = -p asyncio -p benchmark\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the"
     },
     "linting": {
       "source": "tool_evidence (inline)",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "012b214069e25667d60c9d43dfd8492c31e8d73a4af9162b73ee8c06c710bf95",
-      "bytes": 135,
-      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.038}}"
+      "sha256": "4dd6b6f41bdf84ca81e45ff88a978aa3a3b5bf407adde44468abe6722e689c70",
+      "bytes": 186,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786819162813\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.043}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "02d3b422d67c2628cc6ce9307d6a915ea32a4d9dfe52737108ddef1d86e0f8c3",
-      "bytes": 147,
-      "head": "28 passed in 2.15s; coverage totals: percent_covered=100.0 (covered_lines=68, num_statements=68) for v1_initial.py, v2_tags.py, v3_split_results.py"
+      "sha256": "8ead3b7aedf00429c2c2190c124a120374bd5441b9d138570cf3d196ff2b4607",
+      "bytes": 205,
+      "head": "40 passed in 8.75s. Coverage totals: covered_lines=86, num_statements=86, percent_covered=100.0. Both FR-01 source files (taskq_api/api/tasks.py, taskq_api/service/tasks.py) report 100% statement coverage."
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
+      "sha256": "49fa1fbd307f663386faabfe62b340974157d301258528bf55eb0dcf585b9715",
       "bytes": 101,
-      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
+      "head": "Contracts: 1 kept, 0 broken. config_and_errors_independence KEPT. Analyzed 22 files, 23 dependencies."
     }
   },
   "composite_score": 100.0,

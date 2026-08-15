@@ -26,7 +26,7 @@
   },
   "verify_system": {
     "obligations_unmet": [],
-    "reach_status": "measured",
+    "reach_status": "unmeasured",
     "status": "expanded",
     "swallowed": 0,
     "tautological": false
