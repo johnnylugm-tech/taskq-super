@@ -249,17 +249,11 @@
   },
   "crg_review_context": {
     "status": "ok",
-    "summary": "Review context for 43 changed file(s):\n  - Risk: high\n  - 154 impacted nodes in 34 files",
-    "risk": "high",
-    "changed_file_count": 43,
-    "impacted_file_count": 34,
-    "key_entities": [
-      "/Users/johnny/projects/taskq-super/03-development/tests/test_nfr01_perf.py",
-      "_p95_ms",
-      "_seed",
-      "test_nfr01_get_task_p95_under_30ms_at_10k_rows",
-      "test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows"
-    ],
+    "summary": "Review context for 17 changed file(s):\n  - Risk: low\n  - 0 impacted nodes in 0 files",
+    "risk": "low",
+    "changed_file_count": 17,
+    "impacted_file_count": 0,
+    "key_entities": [],
     "test_gaps": 0,
     "next_tool_suggestions": [
       "detect_changes",
@@ -268,26 +262,20 @@
     ],
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 113829,
+      "saved_tokens": 80514,
       "saved_percent": 100
     }
   },
   "crg_impact_radius": {
     "status": "ok",
-    "summary": "Blast radius for 43 changed file(s):\n  - 5 nodes directly changed\n  - 154 nodes impacted (within 2 hops)\n  - 34 additional files affected",
-    "risk": "high",
-    "impacted_file_count": 34,
-    "key_entities": [
-      "/Users/johnny/projects/taskq-super/03-development/src/migrations/versions/v3_split_results.py",
-      "_backfill_task_results",
-      "/Users/johnny/projects/taskq-super/03-development/src/sitecustomize.py",
-      "_enforce_scope",
-      "/Users/johnny/projects/taskq-super/03-development/src/taskq_api/api/health.py"
-    ],
+    "summary": "Blast radius for 17 changed file(s):\n  - 0 nodes directly changed\n  - 0 nodes impacted (within 2 hops)\n  - 0 additional files affected",
+    "risk": "low",
+    "impacted_file_count": 0,
+    "key_entities": [],
     "truncated": false,
     "context_savings": {
       "estimated": true,
-      "saved_tokens": 113820,
+      "saved_tokens": 80527,
       "saved_percent": 100
     }
   },
