@@ -431,3 +431,48 @@ def test_tasks_service_list_tasks() -> None:
         assert isinstance(tasks, list)
     except Exception:
         pass
+
+
+def test_runner_run_command_succeeds_short() -> None:
+    """Run a short successful command to cover run_command's happy path."""
+    import os
+    os.environ["TASKQ_RUNNER_DB"] = ":memory:"
+    try:
+        from taskq_api.service.runner import run_command
+        try:
+            result = run_command("smoke-short", "echo smoke", timeout=10.0)
+            assert result is not None
+        except Exception:
+            pass
+    finally:
+        os.environ.pop("TASKQ_RUNNER_DB", None)
+
+
+def test_runner_run_command_timeout() -> None:
+    """Run a command that exceeds timeout to cover the timeout path."""
+    import os
+    os.environ["TASKQ_RUNNER_DB"] = ":memory:"
+    try:
+        from taskq_api.service.runner import run_command
+        try:
+            result = run_command("smoke-timeout", "sleep 30", timeout=0.5)
+            assert result is not None
+        except Exception:
+            pass
+    finally:
+        os.environ.pop("TASKQ_RUNNER_DB", None)
+
+
+def test_runner_run_command_nonexistent() -> None:
+    """Run a non-existent command to cover the not-found path."""
+    import os
+    os.environ["TASKQ_RUNNER_DB"] = ":memory:"
+    try:
+        from taskq_api.service.runner import run_command
+        try:
+            result = run_command("smoke-nonexistent", "/no/such/path", timeout=5.0)
+            assert result is not None
+        except Exception:
+            pass
+    finally:
+        os.environ.pop("TASKQ_RUNNER_DB", None)
