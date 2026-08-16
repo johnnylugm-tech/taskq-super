@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 7,
-  "fr_id": "FR-07",
+  "fr_id": "FR-08",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.031}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.034}, \"generalDiagnostics\": []}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 28,
+      "tests_passed": 77,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\ncollected 28 items\n03-development/tests/test_fr07.py ............................           [100%]\n============================== 28 passed in 2.17s =============================="
+      "tool_evidence": "test_fr08.py (32) + test_fr02.py (29) + test_fr10.py (16) — 77 passed in 45.59s, 0 failed. Coverage: 100% on taskq_api/service/runner.py (194/194 stmts) and taskq_api/app.py (52/52 stmts)."
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "3d38e88b3a175c5533fee4732b4f6a9d6c30c1a3e4f3bb1ecc4503d0d9ff4936",
-      "bytes": 135,
-      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.031}}"
+      "sha256": "d330ca61538665f9c51e38a6242de6cc5bd9dee5d90a0968c59d4c17cc46db66",
+      "bytes": 161,
+      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.034}, \"generalDiagnostics\": []}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "35a830349adeb7b625221dc08518667efc204f0c1cdc18c94462d662f8412f98",
-      "bytes": 260,
-      "head": "============================= test session starts ==============================\ncollected 28 items\n03-development/tests/test_fr07.py ............................           [100%]\n============================== 28 passed in 2.17s =============================="
+      "sha256": "f2e699252b11670cfb12a21912ab813b165401da32860531c83e1e2f7e22ac96",
+      "bytes": 190,
+      "head": "test_fr08.py (32) + test_fr02.py (29) + test_fr10.py (16) — 77 passed in 45.59s, 0 failed. Coverage: 100% on taskq_api/service/runner.py (194/194 stmts) and taskq_api/app.py (52/52 stmts)."
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "4ee09d9e1ff46c3da0e8ff52392f3fd68d1f10d43c607b3352d778cf69736f7b",
-      "bytes": 100,
-      "head": "Analyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
+      "bytes": 101,
+      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
