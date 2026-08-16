@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 8,
-  "fr_id": "FR-06",
+  "fr_id": "FR-02",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786843083685\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.054}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786843527554\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 5,
+      "tests_passed": 80,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "5 passed in 0.19s; coverage 100% on 03-development/src/taskq_api/repository/session.py (25/25 statements). Required tests: test_fr06_no_shell_true_eval_or_exec_in_source, test_fr06_no_fstring_or_concat_sql_composition, test_fr06_one_session_per_request_lifecycle, test_fr06_engine_uses_pool_size_and_pool_pre_ping — all PASSED."
+      "tool_evidence": "03-development/tests/test_fr02.py ............................. [ 36%]\n03-development/tests/test_fr01.py ............ [ 51%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n. [100%]\n80 passed in 75.56s. Coverage JSON: tasks.py 100% (45/45), runner.py 100% (194/194), totals 100% (239/239)."
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies. Contracts: 1 kept, 0 broken."
+      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "7e8a51de5ab701690238637faf942fb5ce99e49a0a45af49c132ba79d4ff84de",
+      "sha256": "dcc2a19ae9ee6f05cd2c44ef3d2fab4bf580503f709908481f8f6841d3d115ca",
       "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786843083685\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.054}}"
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786843527554\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "ea12c93bbeaf2766e437a0dbedbe910bd1e41e3eb0ac857e1022fa009e688f9c",
-      "bytes": 329,
-      "head": "5 passed in 0.19s; coverage 100% on 03-development/src/taskq_api/repository/session.py (25/25 statements). Required tests: test_fr06_no_shell_true_eval_or_exec_in_source, test_fr06_no_fstring_or_concat_sql_composition, test_fr06_one_session_per_request_lifecycle, test_fr06_engine_uses_pool_size_and_pool_pre_ping — all PASSED."
+      "sha256": "cbe32d4e208d78c729c12bfa07d572c29afd90375be9ee56023a6f77e7e405cb",
+      "bytes": 321,
+      "head": "03-development/tests/test_fr02.py ............................. [ 36%]\n03-development/tests/test_fr01.py ............ [ 51%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n. [100%]\n80 passed in 75.56s. Coverage JSON: tasks.py 100% (45/45), runner.py 100% (194/194), totals 100% (239/239)."
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "02b36fdb83903cb60712018480fdefcd5eb68c5b35004232e8bd57ae44b9deac",
-      "bytes": 64,
-      "head": "Analyzed 22 files, 23 dependencies. Contracts: 1 kept, 0 broken."
+      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
+      "bytes": 101,
+      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,

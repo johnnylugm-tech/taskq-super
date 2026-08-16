@@ -2,11 +2,11 @@
 # returncode: 1
 # agent_score: 100.0 | threshold: 80.0
 
-........................................................................ [ 21%]
-.....................................................................F.F [ 42%]
-FF.FFFF..F.FFFFFFFFF..........................F.............FF.......... [ 63%]
-..FF.F.FFFF............................................................. [ 84%]
-.............F...............F........................                   [100%]
+........................................................................ [ 20%]
+.....................................................................F.F [ 41%]
+FF.FFFF..F.FFFFFFFFF..........................F.............FF.......... [ 61%]
+..FF.F.FFFF............................................................. [ 82%]
+....................F...............F........................            [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
@@ -33,17 +33,17 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/__main__.py                        32      0   100%
 03-development/src/taskq_api/api/__init__.py                     0      0   100%
 03-development/src/taskq_api/api/deps.py                        23      0   100%
-03-development/src/taskq_api/api/health.py                     100      2    98%   270-271
-03-development/src/taskq_api/api/tasks.py                       45     12    73%   69, 100-101, 129, 152-153, 183-189, 207-209
+03-development/src/taskq_api/api/health.py                     100      0   100%
+03-development/src/taskq_api/api/tasks.py                       45      0   100%
 03-development/src/taskq_api/app.py                             52      0   100%
 03-development/src/taskq_api/config.py                          21      0   100%
-03-development/src/taskq_api/errors.py                          69      1    99%   269
+03-development/src/taskq_api/errors.py                          69      0   100%
 03-development/src/taskq_api/models/__init__.py                  0      0   100%
 03-development/src/taskq_api/models/orm.py                      13      0   100%
 03-development/src/taskq_api/models/schemas.py                  33      0   100%
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
 03-development/src/taskq_api/repository/key_repo.py             18      0   100%
-03-development/src/taskq_api/repository/rate_repo.py            93      9    90%   132-133, 139-140, 285-286, 301-312
+03-development/src/taskq_api/repository/rate_repo.py            93      7    92%   139-140, 285-286, 301-312
 03-development/src/taskq_api/repository/session.py              25      0   100%
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
@@ -51,14 +51,18 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/ratelimit.py               23      3    87%   45-46, 73
 03-development/src/taskq_api/service/runner.py                 194      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
+03-development/tests/conftest.py                               112     16    86%   44-45, 67, 106, 110-113, 140, 170-171, 198-199, 203, 276-277
+03-development/tests/test_fr01.py                              129      8    94%   143-147, 239-243
+03-development/tests/test_fr02.py                              387     11    97%   115, 120, 218, 256, 323, 437-441, 457, 828
+03-development/tests/test_fr08.py                              576     16    97%   289-293, 433-434, 602, 880, 961, 1041, 1065, 1126, 1170, 1231, 1321, 1382
 ------------------------------------------------------------------------------------------
-TOTAL                                                          913     27    97%
+TOTAL                                                         2117     61    97%
 
 ---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
 Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.0041 (1.0)        1,250.0095 (1.0)          137.5196 (1.0)          60.8502 (1.0)          125.0301 (1.0)           0.0582 (1.0)         8;107    7,271.6930 (1.0)         500           1
-test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     249,750.0391 (>1000.0)  367,042.0265 (293.63)   285,611.0549 (>1000.0)  22,994.1591 (377.88)   279,604.0208 (>1000.0)  34,520.5190 (>1000.0)      73;2        3.5013 (0.00)        200           1
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                   124.9718 (1.0)        4,499.9761 (1.0)          158.6067 (1.0)         204.3141 (1.0)          125.0301 (1.0)          42.0259 (1.0)           5;8    6,304.9047 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     245,834.0023 (>1000.0)  370,624.9991 (82.36)    282,322.9510 (>1000.0)  22,202.6662 (108.67)   279,229.5127 (>1000.0)  28,770.4752 (684.59)       65;2        3.5420 (0.00)        200           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Legend:
@@ -95,4 +99,4 @@ FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_retry_after
 FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_per_token_isolation
 FAILED 03-development/tests/test_fr09.py::test_fr09_metrics_requires_admin_and_reports_counts
 FAILED 03-development/tests/test_fr10.py::test_fr10_every_spec_error_code_exercised_once
-30 failed, 312 passed, 2 warnings in 47.31s
+30 failed, 319 passed, 2 warnings in 77.48s (0:01:17)
