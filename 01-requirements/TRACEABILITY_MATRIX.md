@@ -15,7 +15,7 @@
 | Code Coverage | 100.0% | 100% |
 | Test Coverage | 100.0% | 100% |
 | Verification Rate | 100.0% | 100% |
-| Total Links | 88 | — |
+| Total Links | 92 | — |
 
 ### ASPICE SWE.3 Compliance
 
@@ -31,8 +31,8 @@
 |-------------|--------|------------|------------|------------|
 | FR-01 | verified | 03-development/src/taskq_api/__init__.py, 03-development/src/taskq_api/api/__init__.py, 03-development/src/taskq_api/api/deps.py (+15) | 03-development/tests/test_fr01.py | api/tasks.py |
 | FR-02 | verified | 03-development/src/taskq_api/api/tasks.py, 03-development/src/taskq_api/service/runner.py, 03-development/tests/test_fr02.py | 03-development/tests/test_fr02.py | api/tasks.py |
-| FR-03 | verified | 03-development/src/taskq_api/__main__.py, 03-development/src/taskq_api/api/deps.py, 03-development/src/taskq_api/api/health.py (+5) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr04.py | api/deps.py |
-| FR-04 | verified | 03-development/src/taskq_api/api/deps.py, 03-development/src/taskq_api/api/tasks.py, 03-development/src/taskq_api/errors.py (+3) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr04.py | api/deps.py |
+| FR-03 | verified | 03-development/src/taskq_api/__main__.py, 03-development/src/taskq_api/api/deps.py, 03-development/src/taskq_api/api/health.py (+6) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr04.py, 03-development/tests/test_fr05.py | api/deps.py |
+| FR-04 | verified | 03-development/src/taskq_api/api/deps.py, 03-development/src/taskq_api/api/tasks.py, 03-development/src/taskq_api/errors.py (+4) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr04.py, 03-development/tests/test_fr05.py | api/deps.py |
 | FR-05 | verified | 03-development/src/taskq_api/api/deps.py, 03-development/src/taskq_api/errors.py, 03-development/src/taskq_api/repository/rate_repo.py (+3) | 03-development/tests/test_fr03.py, 03-development/tests/test_fr05.py | api/deps.py |
 | FR-06 | verified | 03-development/src/taskq_api/repository/session.py, 03-development/tests/test_fr06.py | 03-development/tests/test_fr06.py | repository/session.py |
 | FR-07 | verified | 03-development/src/migrations/__init__.py, 03-development/src/migrations/versions/__init__.py, 03-development/src/migrations/versions/v1_initial.py (+4) | 03-development/tests/test_fr07.py | migrations/versions/v1_initial.py |
