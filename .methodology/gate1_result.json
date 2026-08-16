@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 7,
-  "fr_id": "FR-05",
+  "fr_id": "FR-06",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -14,20 +14,20 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786839959480\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786840249062\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.037}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 38,
+      "tests_passed": 5,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 38 items\n\n03-development/tests/test_fr05.py ...........                            [ 28%]\n03-development/tests/test_fr03.py ....................                   [ 81%]\n03-development/tests/test_fr04.py .......                                [100%]\n\n===== 38 passed, 1 warning in 0.94s =====\nTotals: covered_lines=46/46, percent_covered=100.0"
+      "tool_evidence": "collected 5 items\n03-development/tests/test_fr06.py ..... [100%]\nName: 03-development/src/taskq_api/repository/session.py Stmts: 25 Miss: 0 Cover: 100%\n============================== 5 passed in 0.39s ==============================="
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies.\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+      "tool_evidence": "Contracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "064d862604302878541b90dd75cadf1d8a3d1fe768178b90b557bfc53ef68566",
+      "sha256": "404c0ed73252a2ced4770ce3dc41c3f03a3b0c02e1160b63cdb1ed19d8783a19",
       "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786839959480\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786840249062\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.037}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "6823683e7fdf880ba18207c26456168871fced60fb939454344d7c19d189e2df",
-      "bytes": 944,
-      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 38 items\n\n03-development/tests/test_fr05.py ...........                            [ 28%]\n03-development/tests/test_fr03.py ....................                   [ 81%]\n03-development/tests/test_fr04.py .......                                [100%]\n\n===== 38 passed, 1 warning in 0.94s =====\nTotals: covered_lines=46/46, percent_covered=100.0"
+      "sha256": "20ff39f8474f1d461a8e4359c519c1ee92baea573ff8c3c88398b7a18d12e910",
+      "bytes": 232,
+      "head": "collected 5 items\n03-development/tests/test_fr06.py ..... [100%]\nName: 03-development/src/taskq_api/repository/session.py Stmts: 25 Miss: 0 Cover: 100%\n============================== 5 passed in 0.39s ==============================="
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "b50f77496848c9c4c45f01eae66acd0b13d9510ca8494776128f77064f1c119e",
-      "bytes": 102,
-      "head": "Analyzed 22 files, 23 dependencies.\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+      "sha256": "52e98047345dfa64be03b485952a88154534dd24d9885ef77327357c7b5f9fc0",
+      "bytes": 28,
+      "head": "Contracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
