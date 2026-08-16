@@ -1229,3 +1229,193 @@ async def test_fr08_coverage_shutdown_drain_polling_branch(
     for task in runner._tasks:
         if not task.done():
             task.cancel()
+
+
+def test_fr08_coverage_decode_tail_nonempty() -> None:
+    """Cover runner.py line 193: `_decode_tail` returns the trailing
+    N chars of a non-empty bytes buffer (the `buf.decode(...)` branch)."""
+    runner_module = sys.modules["taskq_api.service.runner"]
+    payload = b"hello fr08 world"
+    decoded = runner_module._decode_tail(payload)
+    assert decoded == payload.decode("utf-8"), decoded
+    # And the trailing-tail truncation: a buffer longer than
+    # `_OUTPUT_TAIL_CHARS` returns only the last N chars.
+    long_payload = b"x" * (runner_module._OUTPUT_TAIL_CHARS + 50) + b"TAIL"
+    tail = runner_module._decode_tail(long_payload)
+    assert tail.endswith("TAIL"), tail
+    assert len(tail) == runner_module._OUTPUT_TAIL_CHARS, len(tail)
+
+
+def test_fr08_coverage_execute_command_valueerror() -> None:
+    """Cover runner.py line 244: `_execute_command` catches `ValueError`
+    raised by `shlex.split` on a command with unbalanced quotes (the
+    FR-02 / FR-08 malformed-command branch)."""
+    runner_module = sys.modules["taskq_api.service.runner"]
+
+    async def _drive() -> None:
+        # Trailing backslash makes shlex.split raise ValueError.
+        outcome = await runner_module._execute_command("echo 'unterminated\\", timeout=2.0)
+        assert outcome["status"] == "failed", outcome
+        assert outcome["exit_code"] == -1, outcome
+        assert outcome["stdout_tail"] == "", outcome
+        assert outcome["stderr_tail"] == "", outcome
+
+    asyncio.run(_drive())
+
+
+def test_fr08_coverage_run_subprocess_valueerror() -> None:
+    """Cover runner.py lines 569-581: `_run_subprocess` catches
+    `ValueError` from `shlex.split` on a malformed command and settles
+    the row to `failed` / `exit_code=-1` (FR-08 AC-8.5 surface —
+    bug-hunt runner#5: the row MUST reach a terminal status so it does
+    not stay in `status="running"` indefinitely)."""
+
+    async def _drive() -> None:
+        runner = Runner()
+        task_id = f"fr08-shlex-{uuid.uuid4().hex[:8]}"
+        # Trailing backslash makes shlex.split raise ValueError.
+        await runner.submit(task_id, "echo 'unterminated\\")
+        await runner.drain(timeout=5.0)
+        rows = runner.list_runs(task_id)
+        assert rows, "no run row for the malformed-command task"
+        row = rows[0]
+        assert row["status"] == "failed", row
+        assert row["exit_code"] == -1, row
+
+    asyncio.run(_drive())
+
+
+@pytest.mark.asyncio
+async def test_fr08_coverage_run_with_limit_interrupted_early_return(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Cover runner.py line 508: `_run_with_limit` early-returns when
+    the row was marked `interrupted` while the task was queued waiting
+    on the semaphore (case-1 invariant from the `shutdown_drain`
+    shutdown path)."""
+    monkeypatch.setenv("TASKQ_MAX_CONCURRENT", "1")
+    runner = Runner()
+    blocking_id = f"fr08-blocker-{uuid.uuid4().hex[:8]}"
+    queued_id = f"fr08-queued-{uuid.uuid4().hex[:8]}"
+    # Submit a long-running task that holds the only semaphore slot.
+    await runner.submit(blocking_id, "sleep 30")
+    # Wait until the blocker is actually running so the next submit
+    # is queued behind the semaphore.
+    deadline_wait = time.monotonic() + 2.0
+    while runner.in_flight == 0 and time.monotonic() < deadline_wait:
+        await asyncio.sleep(0.01)
+    assert runner.in_flight > 0, "blocker did not start in time"
+    # Submit a second task; it will sit in the semaphore queue.
+    await runner.submit(queued_id, "sleep 1")
+    # Mark the queued task's row `interrupted` BEFORE it acquires the
+    # semaphore — simulates a shutdown_drain that fires while the task
+    # is still queued (case-1 race in the docstring).
+    queued_row = list(runner._runs[queued_id].values())[0]
+    queued_row["status"] = "interrupted"
+    # Now drain — the queued task must observe the interrupted status
+    # and return without invoking _execute_assigned.
+    await runner.drain(timeout=5.0)
+    # Cleanup: cancel the blocker so the test process can exit.
+    for task in runner._tasks:
+        if not task.done():
+            task.cancel()
+    final = runner.list_runs(queued_id)
+    assert final and final[0]["status"] == "interrupted", final
+
+
+def test_fr08_coverage_get_conn_stale_close_swallowed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Cover runner.py lines 109-110: when the cached `_shared_conn` is
+    being replaced (because `_DB_PATH` changed) and the stale handle's
+    `close()` raises `sqlite3.Error`, the exception is swallowed so the
+    reconnect below is not masked."""
+    import sqlite3 as _sqlite3
+
+    runner_module = sys.modules["taskq_api.service.runner"]
+
+    # Seed a fake "stale" handle whose close() raises sqlite3.Error.
+    class _StaleConn:
+        def close(self) -> None:
+            raise _sqlite3.Error("synthetic stale close failure")
+
+    # Stash the stale handle in the module cache and bind the path key
+    # to something different so the cache path re-opens with a fresh
+    # connection on the next `_get_conn()` call.
+    runner_module._shared_conn = _StaleConn()  # type: ignore[assignment]
+    runner_module._shared_conn_db_path = "/tmp/old_runner.db"  # type: ignore[assignment]
+    original_db_path = runner_module._DB_PATH
+    runner_module._DB_PATH = "/tmp/new_runner.db"  # type: ignore[assignment]
+    try:
+        fresh = runner_module._get_conn()
+        assert fresh is not None
+        # The cache key should now reflect the new path.
+        assert runner_module._shared_conn_db_path == "/tmp/new_runner.db"
+    finally:
+        runner_module._DB_PATH = original_db_path  # type: ignore[assignment]
+
+
+@pytest.mark.asyncio
+async def test_fr08_coverage_post_handler_suppressor_swallow() -> None:
+    """Cover app.py lines 155-163: `_PostHandlerExceptionSuppressor`
+    swallows the post-handler re-raise from Starlette after the
+    structured RFC 7807 response has been sent on the wire (FR-10
+    AC-10.3 / AC-10.7 surface)."""
+
+    async def _boom_inner(scope, receive, send) -> None:
+        # Simulate Starlette's ServerErrorMiddleware post-handler
+        # re-raise: the response was already sent, then Python re-raises
+        # the original exception out of the ASGI callable.
+        await send({"type": "http.response.start", "status": 500, "headers": []})
+        await send({"type": "http.response.body", "body": b"", "more_body": False})
+        raise RuntimeError("synthetic post-handler re-raise")
+
+    # Build a wrapper around the booby-trapped inner app.
+    from taskq_api.app import _PostHandlerExceptionSuppressor
+
+    wrapper = _PostHandlerExceptionSuppressor(_boom_inner)
+
+    started: Dict[str, int] = {}
+    body: list[bytes] = []
+
+    async def _receive() -> Dict[str, Any]:
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def _send(message: Dict[str, Any]) -> None:
+        if message["type"] == "http.response.start":
+            started["status"] = int(message["status"])
+        elif message["type"] == "http.response.body":
+            body.append(message.get("body", b""))
+
+    scope: Dict[str, Any] = {"type": "http", "method": "GET", "path": "/"}
+    # Must NOT raise — the suppressor swallows the post-handler re-raise.
+    await wrapper(scope, _receive, _send)
+    assert started.get("status") == 500, started
+    assert b"".join(body) == b"", body
+
+
+def test_fr08_coverage_post_handler_suppressor_getattr_proxy() -> None:
+    """Cover app.py lines 174-176: `_PostHandlerExceptionSuppressor`
+    proxies attribute access (other than `_inner`) to the wrapped
+    FastAPI app so `app.routes`, `app.openapi()`, etc. still resolve
+    to the original surface."""
+
+    class _FakeInner:
+        routes = ["route-a", "route-b"]
+        title = "taskq-api"
+
+    from taskq_api.app import _PostHandlerExceptionSuppressor
+
+    wrapper = _PostHandlerExceptionSuppressor(_FakeInner())
+    # These lookups route through __getattr__ because `routes` /
+    # `title` are not attributes of the wrapper itself, only of the
+    # inner app.
+    assert wrapper.routes == ["route-a", "route-b"], wrapper.routes
+    assert wrapper.title == "taskq-api", wrapper.title
+    # The `_inner` guard on line 175 fires when `_inner` is missing
+    # from the instance dict (e.g. someone called `del wrapper._inner`).
+    # We simulate that by deleting the slot and confirming the proxy
+    # raises AttributeError instead of recursing into the inner app.
+    del wrapper.__dict__["_inner"]
+    with pytest.raises(AttributeError):
+        _ = wrapper._inner  # noqa: SLF001 — exercise the guard
