@@ -4,9 +4,9 @@
 
 ........................................................................ [ 20%]
 ........................................................................ [ 41%]
-........................................................................ [ 61%]
-........................................................................ [ 82%]
-.....F..............F...............F........................            [100%]
+..............................................F.............FF.......... [ 61%]
+..FF.F.FFFF............................................................. [ 82%]
+....................F...............F........................            [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
@@ -43,29 +43,38 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/models/schemas.py                  33      0   100%
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
 03-development/src/taskq_api/repository/key_repo.py             18      0   100%
-03-development/src/taskq_api/repository/rate_repo.py            93      2    98%   285-286
+03-development/src/taskq_api/repository/rate_repo.py            93      7    92%   139-140, 285-286, 301-312
 03-development/src/taskq_api/repository/session.py              25      0   100%
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
 03-development/src/taskq_api/service/auth.py                    26      0   100%
-03-development/src/taskq_api/service/ratelimit.py               23      0   100%
+03-development/src/taskq_api/service/ratelimit.py               23      3    87%   45-46, 73
 03-development/src/taskq_api/service/runner.py                 194      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
 ------------------------------------------------------------------------------------------
-TOTAL                                                          913      2    99%
+TOTAL                                                          913     10    99%
 
 ---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
 Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.9937 (1.0)        1,584.0051 (1.0)          144.2017 (1.0)          70.4049 (1.0)          125.0301 (1.0)          41.0364 (1.0)           6;6    6,934.7320 (1.0)         500           1
-test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     229,833.0073 (>1000.0)  594,333.0470 (375.21)   289,951.0090 (>1000.0)  44,617.6791 (633.73)   288,229.4648 (>1000.0)  39,395.4979 (960.01)       52;4        3.4489 (0.00)        200           1
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                    82.9459 (1.0)        1,582.9573 (1.0)          115.5233 (1.0)          74.7569 (1.0)          124.9718 (1.0)          41.0364 (1.0)           9;9    8,656.2588 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     251,125.0204 (>1000.0)  341,167.0332 (215.53)   279,585.4289 (>1000.0)  14,665.7101 (196.18)   275,396.0143 (>1000.0)  19,645.4930 (478.73)       50;2        3.5767 (0.00)        200           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Legend:
   Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
   OPS: Operations Per Second, computed as 1 / Mean
 =========================== short test summary info ============================
-FAILED 03-development/tests/test_fr08.py::test_fr08_coverage_rate_repo_non_sqlite_branch
+FAILED 03-development/tests/test_fr03.py::test_fr03_valid_key_and_scope_returns_record
+FAILED 03-development/tests/test_fr04.py::test_fr04_write_key_run_task_succeeds
+FAILED 03-development/tests/test_fr04.py::test_fr04_admin_key_succeeds_on_all_endpoints
+FAILED 03-development/tests/test_fr05.py::test_fr05_burst_requests_then_429_with_retry_after
+FAILED 03-development/tests/test_fr05.py::test_fr05_retry_after_is_positive_integer_seconds
+FAILED 03-development/tests/test_fr05.py::test_fr05_parallel_double_burst_no_over_admission
+FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_admits_within_burst
+FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_rejects_over_burst
+FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_retry_after_matches_refill_window
+FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_per_token_isolation
 FAILED 03-development/tests/test_fr09.py::test_fr09_metrics_requires_admin_and_reports_counts
 FAILED 03-development/tests/test_fr10.py::test_fr10_every_spec_error_code_exercised_once
-3 failed, 346 passed, 2 warnings in 79.88s (0:01:19)
+12 failed, 337 passed, 2 warnings in 79.79s (0:01:19)

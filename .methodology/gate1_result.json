@@ -14,7 +14,7 @@
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786844123933\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.049\n    }\n}\n0 errors, 0 warnings, 0 informations"
+      "tool_evidence": "pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786844735481\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.037\n    }\n}\nEXIT_CODE=0\n0 errors, 0 warnings, 0 informations"
     },
     "test_coverage": {
       "score": 100.0,
@@ -22,12 +22,12 @@
       "tests_passed": 50,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "coverage run -m pytest test_fr04.py test_fr03.py test_fr05.py\n50 passed, 0 failed, 0 skipped in 0.90s\nFR-04 file coverage:\n  03-development/src/taskq_api/api/deps.py: 100% (23/23 lines)\n  03-development/src/taskq_api/service/auth.py: 100% (26/26 lines)\nspec_cov_pct: 100% (8/8 required tests present and passing)"
+      "tool_evidence": "pytest 03-development/tests/test_fr04.py 03-development/tests/test_fr03.py 03-development/tests/test_fr05.py\n======================== 50 passed, 1 warning in 0.93s =========================\nFR-04 file coverage (coverage.json totals):\n  03-development/src/taskq_api/api/deps.py: 100% (23/23 lines)\n  03-development/src/taskq_api/service/auth.py: 100% (26/26 lines)\ntotals.covered_lines=49, num_statements=49, percent_covered=100.0, percent_covered_display=100\nspec_cov_pct: 100% (8/8 required tests present and passing)"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "lint-imports exit 0\nAnalyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "tool_evidence": "lint-imports (PYTHONPATH=03-development/src:.venv/lib/python3.11/site-packages) exit 0\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -68,23 +68,23 @@
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "e7d12e5da461bc4df853dd89ceaf166f8bce93a0cfada8c072d1dfcee35e9e3e",
-      "bytes": 328,
-      "head": "pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786844123933\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.049\n    }\n}\n0 errors, 0 warnings, 0 informations"
+      "sha256": "6a78505a630e49bc7a4e3ece5eb39bfd53f9f319bc65dbd54859599d86e1a8c5",
+      "bytes": 340,
+      "head": "pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786844735481\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.037\n    }\n}\nEXIT_CODE=0\n0 errors, 0 warnings, 0 informations"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "93ca17104b8b8134893d40fe3742e62b24cec12cc8670759591b2ab8c97a0d46",
-      "bytes": 312,
-      "head": "coverage run -m pytest test_fr04.py test_fr03.py test_fr05.py\n50 passed, 0 failed, 0 skipped in 0.90s\nFR-04 file coverage:\n  03-development/src/taskq_api/api/deps.py: 100% (23/23 lines)\n  03-development/src/taskq_api/service/auth.py: 100% (26/26 lines)\nspec_cov_pct: 100% (8/8 required tests present and passing)"
+      "sha256": "b91b6192d7008c25fd6833817087f58a48a5862b9b526d8f7042104d5e557edc",
+      "bytes": 518,
+      "head": "pytest 03-development/tests/test_fr04.py 03-development/tests/test_fr03.py 03-development/tests/test_fr05.py\n======================== 50 passed, 1 warning in 0.93s =========================\nFR-04 file coverage (coverage.json totals):\n  03-development/src/taskq_api/api/deps.py: 100% (23/23 lines)\n  03-development/src/taskq_api/service/auth.py: 100% (26/26 lines)\ntotals.covered_lines=49, num_statements=49, percent_covered=100.0, percent_covered_display=100\nspec_cov_pct: 100% (8/8 required tests present and passing)"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "37f98ece0f653a9a9e33b8d4ff5a62921054b39797dc85c67d3576aff5da2fae",
-      "bytes": 120,
-      "head": "lint-imports exit 0\nAnalyzed 22 files, 23 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken."
+      "sha256": "9f6d56c712e6d476f372389513a9551ce8a1d3be124048a27eb06cd46147623c",
+      "bytes": 247,
+      "head": "lint-imports (PYTHONPATH=03-development/src:.venv/lib/python3.11/site-packages) exit 0\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
