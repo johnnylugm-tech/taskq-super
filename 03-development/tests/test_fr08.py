@@ -1104,23 +1104,26 @@ def test_fr08_coverage_schemas_injection_guard() -> None:
 
 
 def test_fr08_coverage_rate_repo_non_sqlite_branch() -> None:
-    """[FR-05 surface] Cover rate_repo.py lines 77, 113, 127: with
-    ``TASKQ_RATE_DB_URL`` unset, ``_build_engine`` raises on the sentinel
-    ``XXsqlite:///:memory:XX`` URL — that sentinel is the rate_repo's
-    deliberate production-side "missing env" guard. The test now
-    documents the failure as the intended behaviour rather than asserting
-    on the now-unreachable in-memory fallback path."""
+    """[FR-05 surface] Cover rate_repo.py lines 90-97 (the
+    ``_build_engine`` fallback path) and lines 113-119 (the
+    ``_get_engine`` lazy-init double-check under ``_init_lock``): with
+    ``TASKQ_RATE_DB_URL`` unset, ``_build_engine`` falls back to the
+    in-memory SQLite, and the first ``_get_engine`` call wires the
+    engine into the module cache. The test now documents the
+    in-memory fallback as the intended behaviour rather than asserting
+    on the now-removed sentinel-URL guard."""
     import importlib
 
-    import pytest as _pytest
-    from sqlalchemy.exc import NoSuchModuleError
     from taskq_api.repository import rate_repo as rate_repo_mod
 
     saved = rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
     try:
         importlib.reload(rate_repo_mod)
-        with _pytest.raises(NoSuchModuleError):
-            rate_repo_mod._get_engine()  # noqa: SLF001
+        # Fallback path: _build_engine returns a working in-memory engine.
+        engine = rate_repo_mod._get_engine()  # noqa: SLF001
+        assert engine.dialect.name == "sqlite", engine.dialect.name
+        # The lazy-init cache must now be populated.
+        assert rate_repo_mod._engine is not None  # noqa: SLF001
     finally:
         if saved is None:
             rate_repo_mod.os.environ.pop("TASKQ_RATE_DB_URL", None)
