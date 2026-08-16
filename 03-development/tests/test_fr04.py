@@ -461,3 +461,223 @@ def test_unit_require_scope_returns_callable_with_correct_signature() -> None:
     # (`x_api_key` from Header) and returns a dict on the happy path.
     sig = inspect.signature(built)
     assert "x_api_key" in sig.parameters
+
+
+# ---------------------------------------------------------------------------
+# Coverage tests — missing X-API-Key header (deps.py:52)
+# ---------------------------------------------------------------------------
+
+
+def test_fr04_missing_x_api_key_header_returns_401() -> None:
+    """Coverage: the `if not x_api_key: raise problem(401, ...)` branch.
+
+    Per FR-03 AC-3.1 — a request with no X-API-Key header returns 401
+    + problem+json (the same shape used for unknown/revoked keys).
+
+    [FR-04] — NP-01 (auth 401), distinct from the 403 produced for
+    insufficient scope.
+    """
+    # NP-01
+    resp = _request("GET", "/v1/tasks/an-id-that-does-not-exist")
+    status_code = str(resp.status_code)
+    content_type = _content_type(resp)
+    assert status_code == "401", resp.text
+    assert content_type == "application/problem+json", resp.headers
+
+
+# ---------------------------------------------------------------------------
+# Coverage tests — invalid / revoked API key (deps.py:57)
+# ---------------------------------------------------------------------------
+
+
+def test_fr04_invalid_api_key_returns_401() -> None:
+    """Coverage: the `verify_key(...) is None` branch.
+
+    A key that is not in the registry hashes to a value that is not
+    in `key_repo`, so `verify_key` returns None and `_enforce_scope`
+    raises problem(401, "invalid or revoked API key", …).
+
+    [FR-04] — NP-01 (auth 401), FR-03 AC-3.1.
+    """
+    # NP-01
+    resp = _request(
+        "GET",
+        "/v1/tasks/an-id-that-does-not-exist",
+        api_key="sk-test-NOT-A-REAL-KEY-zzz",
+    )
+    status_code = str(resp.status_code)
+    content_type = _content_type(resp)
+    assert status_code == "401", resp.text
+    assert content_type == "application/problem+json", resp.headers
+
+
+# ---------------------------------------------------------------------------
+# Coverage tests — rate limit exceeded (deps.py:71-72)
+# ---------------------------------------------------------------------------
+
+
+def test_fr04_rate_limit_exceeded_returns_429_with_retry_after(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Coverage: the `admission.get("allow") is not True` branch.
+
+    Monkey-patches `ratelimit_service.check_rate_limit` to return
+    `allow=False` so the path through `retry_after = int(...)` and the
+    `problem(429, ..., headers={"Retry-After": ...})` raise is exercised
+    end-to-end. The 429 response must include a `Retry-After` header
+    (per spec / FR-05 AC-5.2).
+
+    [FR-04] — NP-03 (rate limit 429); the same dep is the gate FR-05
+    relies on.
+    """
+    # NP-03
+    from taskq_api.api import deps as deps_mod
+    from taskq_api.service import ratelimit as ratelimit_service
+
+    monkeypatch.setattr(
+        ratelimit_service,
+        "check_rate_limit",
+        lambda x: {"allow": False, "retry_after": 5},  # noqa: ARG005
+    )
+    # Also patch the symbol already imported into deps_mod so the
+    # binding the production code uses is the patched one.
+    monkeypatch.setattr(
+        deps_mod.ratelimit_service,
+        "check_rate_limit",
+        lambda x: {"allow": False, "retry_after": 5},  # noqa: ARG005
+    )
+
+    resp = _request("GET", "/v1/tasks/an-id", api_key="sk-test-read-key")
+    status_code = str(resp.status_code)
+    content_type = _content_type(resp)
+    retry_after = resp.headers.get("retry-after") or resp.headers.get(
+        "Retry-After"
+    )
+    assert status_code == "429", resp.text
+    assert content_type == "application/problem+json", resp.headers
+    assert retry_after is not None, resp.headers
+    # The `int(...)` cast + `max(1, retry_after)` clamp guarantees a
+    # positive integer-string header value.
+    assert int(retry_after) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Coverage tests — verify_key service-layer branches (auth.py:77, 81, 84)
+# ---------------------------------------------------------------------------
+
+
+def test_unit_verify_key_empty_presented_key_returns_none() -> None:
+    """Coverage: `if not presented_key: return None` (auth.py:77).
+
+    The empty-string guard short-circuits before any hashing or lookup
+    happens; `verify_key("", "write")` must return None (translated to
+    401 by `require_scope`).
+    """
+    record = verify_key("", "write")
+    assert record is None
+
+
+def test_unit_verify_key_unknown_key_returns_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Coverage: `if record is None: return None` (auth.py:81).
+
+    When `find_by_hash` returns None the key is unknown; `verify_key`
+    propagates the None result (translated to 401 by `require_scope`).
+    """
+    monkeypatch.setattr(
+        auth_module,
+        "find_by_hash",
+        lambda h: None,  # noqa: ARG005
+    )
+    record = verify_key("sk-test-NOT-A-REAL-KEY", "write")
+    assert record is None
+
+
+def test_unit_verify_key_revoked_key_returns_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Coverage: `if record.get("revoked_at") is not None: return None` (auth.py:84).
+
+    A record with a non-null `revoked_at` is treated as revoked
+    (FR-03 AC-3.5). `verify_key` returns None, which `require_scope`
+    translates to 401.
+    """
+    monkeypatch.setattr(
+        auth_module,
+        "find_by_hash",
+        lambda h: {  # noqa: ARG005
+            "scopes": ["read", "write", "admin"],
+            "key_id": "k",
+            "revoked_at": "2026-01-01T00:00:00Z",
+        },
+    )
+    record = verify_key("sk-test-revoked-key", "write")
+    assert record is None
+
+
+# ---------------------------------------------------------------------------
+# Coverage tests — create_key (auth.py:106)
+# ---------------------------------------------------------------------------
+
+
+def test_unit_create_key_returns_urlsafe_token() -> None:
+    """Coverage: `return secrets.token_urlsafe(32)` (auth.py:106).
+
+    Direct unit test of the `create_key` factory. The returned token
+    must be a non-empty url-safe string (FR-03 AC-3.2 — the CLI prints
+    this plaintext exactly once).
+    """
+    from taskq_api.service.auth import create_key
+
+    token = create_key("write")
+    assert isinstance(token, str)
+    assert len(token) > 0
+    # url-safe token_urlsafe chars: ASCII letters, digits, '-', '_'.
+    assert all(c.isalnum() or c in "-_" for c in token)
+
+
+# ---------------------------------------------------------------------------
+# Coverage tests — verify_key happy path (auth.py:90-93)
+# ---------------------------------------------------------------------------
+
+
+def test_unit_verify_key_known_key_with_required_scope_returns_record(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Coverage for the happy-path return at auth.py:90-93.
+
+    A known key whose `scopes` include the required scope returns
+    `{"scopes": [...], "key_id": ...}`. Together with the three
+    None-returning branches above, this exercises every executable
+    line in `verify_key`.
+    """
+    monkeypatch.setattr(
+        auth_module,
+        "find_by_hash",
+        lambda h: {"scopes": ["read", "write"], "key_id": "k"},  # noqa: ARG005
+    )
+    record = verify_key("sk-test-write-key", "write")
+    assert isinstance(record, dict)
+    assert record.get("_insufficient_scope") is None
+    assert "write" in record.get("scopes", [])
+    assert record.get("key_id") == "k"
+
+
+def test_unit_verify_key_known_key_default_scopes_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Coverage for the `record.get("scopes", [])` default (auth.py:90).
+
+    A record with no `scopes` key falls back to the empty list; the
+    `required_scope not in []` check then returns the insufficient
+    marker. This exercises the `record.get("scopes", [])` default path.
+    """
+    monkeypatch.setattr(
+        auth_module,
+        "find_by_hash",
+        lambda h: {"key_id": "k"},  # noqa: ARG005
+    )
+    record = verify_key("sk-test-key", "write")
+    assert isinstance(record, dict)
+    assert record.get("_insufficient_scope") is True
