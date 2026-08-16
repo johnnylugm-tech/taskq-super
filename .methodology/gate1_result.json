@@ -1,7 +1,7 @@
 {
   "gate": 1,
-  "phase": 6,
-  "fr_id": "FR-10",
+  "phase": 7,
+  "fr_id": "FR-01",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!\nruff 0.1.9\nFound 1 error.\nAll checks passed!\n"
+      "tool_evidence": "All checks passed!"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"errorCount\": 0, \"warningCount\": 0}}\nSuccess: no issues found in 28 source files\n"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786838468229\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.038}}"
     },
     "test_coverage": {
       "score": 100.0,
-      "threshold": 80,
-      "tests_passed": 48,
+      "threshold": 100,
+      "tests_passed": 41,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "collected 48 items\n48 passed in 37.31s\ncoverage: percent_covered 100.0\nTOTAL 913 100%\n"
+      "tool_evidence": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debu\n============================== 41 passed in 8.78s ================================"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Contracts: 1 kept, 0 broken.\nlint-imports: 0 broken contracts\n"
+      "tool_evidence": "config_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\nexit=0"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "0c404714756ac615b8c561bf6aa3abd59b3e1ac2df0ba1fa1c260e129de6787c",
-      "bytes": 63,
-      "head": "All checks passed!\nruff 0.1.9\nFound 1 error.\nAll checks passed!"
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
+      "head": "All checks passed!"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "ac8559399a537fe05e806db597dca24b51009631a11821eddb6991f167a14486",
-      "bytes": 115,
-      "head": "{\"version\": \"1.1.409\", \"summary\": {\"errorCount\": 0, \"warningCount\": 0}}\nSuccess: no issues found in 28 source files"
+      "sha256": "1b625e7d9e055d5bd2f204261c44fc0bfe14316e083f71f3c5e39ee5555e7aa7",
+      "bytes": 186,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786838468229\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.038}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "7e16f198a04d1e9682fdd02af4ce4db95b0a9149083c8b4e7d81a3811c6d16e5",
-      "bytes": 85,
-      "head": "collected 48 items\n48 passed in 37.31s\ncoverage: percent_covered 100.0\nTOTAL 913 100%"
+      "sha256": "bb880f139d434832b4cba5eb85c109a414f71eb3e2b6eb0dfc89b6333c6486d4",
+      "bytes": 570,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nconfigfile: pyproject.toml\nplugins: benchmark-5.2.3, cov-7.1.0, timeout-2.4.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.AUTO, debu\n============================== 41 passed in 8.78s ================================"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "bb681fa7fbd958176663032c735141d1fba7dad19cc209b0e93d6ce29787e4dd",
-      "bytes": 61,
-      "head": "Contracts: 1 kept, 0 broken.\nlint-imports: 0 broken contracts"
+      "sha256": "a4f39f2140e78eb51fdec5777fd850a68dd83341f4829323586fefa65c09b639",
+      "bytes": 72,
+      "head": "config_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\nexit=0"
     }
   },
   "composite_score": 100.0,
