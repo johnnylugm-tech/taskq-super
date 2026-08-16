@@ -30,63 +30,6 @@
       "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
     }
   },
-  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
-  "enforcer_surface": {
-    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
-    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
-    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
-  },
-  "evidence_digest": {
-    "mutation_testing::setup.cfg": {
-      "source": "setup.cfg (score-altering exclusions)",
-      "kind": "file",
-      "sha256": "9d71cb77caa34153965434773a1ea6605ba41dd8684557e3b1ffc4b6e8afc636",
-      "bytes": 1177,
-      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts. pytest-benchmark is requested the\n# same way and for the same reason: NFR-01's two budget tests\n# (03-development/tests/test_nfr01_perf.py) take the `benchmark` fixture,\n# so without -p benchmark every mutmut run would error on a missing\n# fixture and score every mutant as killed.\naddopts = -p asyncio -p benchmark\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the"
-    },
-    "test_coverage::pyproject.toml": {
-      "source": "pyproject.toml (score-altering exclusions)",
-      "kind": "file",
-      "sha256": "2896aa603461decb11c60c6b256571422191cfe7c4163f76b21942f072ffc99b",
-      "bytes": 829,
-      "head": "[tool.pytest.ini_options]\n# Project-level pytest configuration.\n# This file is at the project root so pytest picks it up from anywhere\n# in the tree (e.g. mutmut's runner that uses `python3 -m pytest ...`).\nasyncio_mode = \"auto\"\nmarkers = [\n    \"asyncio: Mark async test functions for pytest-asyncio (STRICT mode fallback).\",\n]\nfilterwarnings = [\n    \"ignore::DeprecationWarning\",\n    \"ignore::UserWarning\",\n]\n\n[tool.mypy]\n# advance-phase runs `mypy . --ignore-missing-imports --exclude ^harness/`.\n# This block tells mypy to skip the tests/ tree too — pytest test files\n# are not part of the production surface that gate 2's type-safety\n# dimension (pyright errorCount=0 over 28 src files) measured. Tests\n# are still checked by ruff and pytest.\nexclude = [\"^harness/\", \"^03-development/tests/\"]"
-    },
-    "test_coverage::setup.cfg": {
-      "source": "setup.cfg (score-altering exclusions)",
-      "kind": "file",
-      "sha256": "9d71cb77caa34153965434773a1ea6605ba41dd8684557e3b1ffc4b6e8afc636",
-      "bytes": 1177,
-      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts. pytest-benchmark is requested the\n# same way and for the same reason: NFR-01's two budget tests\n# (03-development/tests/test_nfr01_perf.py) take the `benchmark` fixture,\n# so without -p benchmark every mutmut run would error on a missing\n# fixture and score every mutant as killed.\naddopts = -p asyncio -p benchmark\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the"
-    },
-    "linting": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
-      "bytes": 18,
-      "head": "All checks passed!"
-    },
-    "type_safety": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "dcc2a19ae9ee6f05cd2c44ef3d2fab4bf580503f709908481f8f6841d3d115ca",
-      "bytes": 186,
-      "head": "{\"version\": \"1.1.409\", \"time\": \"1786843527554\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.036}}"
-    },
-    "test_coverage": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "cbe32d4e208d78c729c12bfa07d572c29afd90375be9ee56023a6f77e7e405cb",
-      "bytes": 321,
-      "head": "03-development/tests/test_fr02.py ............................. [ 36%]\n03-development/tests/test_fr01.py ............ [ 51%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n. [100%]\n80 passed in 75.56s. Coverage JSON: tasks.py 100% (45/45), runner.py 100% (194/194), totals 100% (239/239)."
-    },
-    "architecture_constraints": {
-      "source": "tool_evidence (inline)",
-      "kind": "inline",
-      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
-      "bytes": 101,
-      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
-    }
-  },
   "composite_score": 100.0,
   "verdict": "PASS",
   "passed": true,
