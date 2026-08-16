@@ -3,9 +3,9 @@
 # agent_score: 100.0 | threshold: 80.0
 
 ........................................................................ [ 20%]
-.....................................................................F.F [ 41%]
-FF.FFFF..F.FFFFFFFFF..........................F.............FF.......... [ 61%]
-..FF.F.FFFF............................................................. [ 82%]
+........................................................................ [ 41%]
+........................................................................ [ 61%]
+........................................................................ [ 82%]
 ....................F...............F........................            [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
@@ -43,60 +43,28 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/models/schemas.py                  33      0   100%
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
 03-development/src/taskq_api/repository/key_repo.py             18      0   100%
-03-development/src/taskq_api/repository/rate_repo.py            93      7    92%   139-140, 285-286, 301-312
+03-development/src/taskq_api/repository/rate_repo.py            93      2    98%   285-286
 03-development/src/taskq_api/repository/session.py              25      0   100%
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
 03-development/src/taskq_api/service/auth.py                    26      0   100%
-03-development/src/taskq_api/service/ratelimit.py               23      3    87%   45-46, 73
+03-development/src/taskq_api/service/ratelimit.py               23      0   100%
 03-development/src/taskq_api/service/runner.py                 194      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
-03-development/tests/conftest.py                               112     16    86%   44-45, 67, 106, 110-113, 140, 170-171, 198-199, 203, 276-277
-03-development/tests/test_fr01.py                              129      8    94%   143-147, 239-243
-03-development/tests/test_fr02.py                              387     11    97%   115, 120, 218, 256, 323, 437-441, 457, 828
-03-development/tests/test_fr08.py                              576     16    97%   289-293, 433-434, 602, 880, 961, 1041, 1065, 1126, 1170, 1231, 1321, 1382
 ------------------------------------------------------------------------------------------
-TOTAL                                                         2117     61    97%
+TOTAL                                                          913      2    99%
 
 ---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
 Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-test_nfr01_get_task_p95_under_30ms_at_10k_rows                   124.9718 (1.0)        4,499.9761 (1.0)          158.6067 (1.0)         204.3141 (1.0)          125.0301 (1.0)          42.0259 (1.0)           5;8    6,304.9047 (1.0)         500           1
-test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     245,834.0023 (>1000.0)  370,624.9991 (82.36)    282,322.9510 (>1000.0)  22,202.6662 (108.67)   279,229.5127 (>1000.0)  28,770.4752 (684.59)       65;2        3.5420 (0.00)        200           1
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                    82.9459 (1.0)        1,624.9833 (1.0)          137.6268 (1.0)          73.5077 (1.0)          125.0301 (1.0)           0.0582 (1.0)         6;117    7,266.0280 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     245,000.0029 (>1000.0)  466,624.9733 (287.16)   277,034.7483 (>1000.0)  23,429.1352 (318.73)   273,792.0149 (>1000.0)  29,416.5220 (>1000.0)      45;1        3.6097 (0.00)        200           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Legend:
   Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
   OPS: Operations Per Second, computed as 1 / Mean
 =========================== short test summary info ============================
-FAILED 03-development/tests/test_fr01.py::test_fr01_create_task_returns_201_with_id_and_status_pending
-FAILED 03-development/tests/test_fr01.py::test_fr01_create_task_invalid_body_returns_422
-FAILED 03-development/tests/test_fr01.py::test_fr01_get_task_with_read_key_returns_200
-FAILED 03-development/tests/test_fr01.py::test_fr01_get_unknown_task_returns_404
-FAILED 03-development/tests/test_fr01.py::test_fr01_create_task_duplicate_name_returns_409
-FAILED 03-development/tests/test_fr01.py::test_fr01_list_tasks_limit_bounds_and_default
-FAILED 03-development/tests/test_fr01.py::test_fr01_list_tasks_uses_cursor_pagination_not_offset
-FAILED 03-development/tests/test_fr01.py::test_fr01_delete_task_with_admin_key_returns_204
-FAILED 03-development/tests/test_fr02.py::test_fr02_run_task_returns_202_with_run_id
-FAILED 03-development/tests/test_fr02.py::test_fr02_run_task_lifecycle_pending_running_done
-FAILED 03-development/tests/test_fr02.py::test_fr02_run_task_nonzero_exit_transitions_failed
-FAILED 03-development/tests/test_fr02.py::test_fr02_run_task_timeout_transitions_timeout
-FAILED 03-development/tests/test_fr02.py::test_fr02_list_runs_returns_history_ordered
-FAILED 03-development/tests/test_fr02.py::test_fr02_run_task_timeout_kill_awaits_process
-FAILED 03-development/tests/test_fr02.py::test_unit_get_task_endpoint_returns_200
-FAILED 03-development/tests/test_fr02.py::test_unit_list_tasks_endpoint_returns_200
-FAILED 03-development/tests/test_fr02.py::test_unit_list_tasks_limit_above_upper_bound_returns_422
-FAILED 03-development/tests/test_fr02.py::test_unit_delete_task_endpoint_returns_204
-FAILED 03-development/tests/test_fr03.py::test_fr03_valid_key_and_scope_returns_record
-FAILED 03-development/tests/test_fr04.py::test_fr04_write_key_run_task_succeeds
-FAILED 03-development/tests/test_fr04.py::test_fr04_admin_key_succeeds_on_all_endpoints
-FAILED 03-development/tests/test_fr05.py::test_fr05_burst_requests_then_429_with_retry_after
-FAILED 03-development/tests/test_fr05.py::test_fr05_retry_after_is_positive_integer_seconds
-FAILED 03-development/tests/test_fr05.py::test_fr05_parallel_double_burst_no_over_admission
-FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_admits_within_burst
-FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_rejects_over_burst
-FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_retry_after_matches_refill_window
-FAILED 03-development/tests/test_fr05.py::test_unit_check_rate_limit_per_token_isolation
 FAILED 03-development/tests/test_fr09.py::test_fr09_metrics_requires_admin_and_reports_counts
 FAILED 03-development/tests/test_fr10.py::test_fr10_every_spec_error_code_exercised_once
-30 failed, 319 passed, 2 warnings in 77.48s (0:01:17)
+2 failed, 347 passed, 2 warnings in 79.82s (0:01:19)
