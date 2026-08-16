@@ -2,7 +2,7 @@
 
 **Checkpoint**: `P8-exit-20260816`  
 **Phase**: P8 — Config & Records  
-**Generated**: 2026-08-16T02:16:21Z
+**Generated**: 2026-08-16T02:20:38Z
 
 > ⚠️  **開始下一個工作階段前，請先執行 `/compact` 壓縮上下文**，再從「接下來的工作」繼續。
 
