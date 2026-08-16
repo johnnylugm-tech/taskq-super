@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-08-15T10:22:44.211676+00:00",
+  "tool": "mutmut",
+  "score": 73.3,
+  "killed": 11,
+  "survived": 4,
+  "paths_to_mutate": "03-development/src/taskq_api/repository,03-development/src/taskq_api/service",
+  "paths_to_exclude": [
+    "__init__.py"
+  ],
+  "mutated_files": 10,
+  "cache_sha256": "b33422b37d37b563756a07b59b760198a8d53b99ab7d29c1526ae0c70b91bbd3",
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b"
+}

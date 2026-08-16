@@ -1,0 +1,33 @@
+make verify-system: running test suite
+........................................................................ [ 21%]
+........................................................................ [ 43%]
+........................................................................ [ 65%]
+........................................................................ [ 87%]
+...........................................                              [100%]
+=============================== warnings summary ===============================
+03-development/tests/integration/test_smoke.py::test_api_health_healthz
+  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
+    result = testfunction(**testargs)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard
+  <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
+Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.0041 (1.0)        1,124.9795 (1.0)          138.4185 (1.0)          55.8866 (1.0)          125.0301 (1.0)           0.0582 (1.0)         8;129    7,224.4670 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     248,625.0014 (>1000.0)  386,791.0127 (343.82)   292,142.6701 (>1000.0)  30,206.5928 (540.50)   286,875.0016 (>1000.0)  41,520.9797 (>1000.0)      64;5        3.4230 (0.00)        200           1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Legend:
+  Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
+  OPS: Operations Per Second, computed as 1 / Mean
+331 passed, 2 warnings in 49.61s
+make verify-system: pytest exit=
+make verify-system: running CLI smoke test
+make verify-system: cli smoke exit=
+make verify-system: PASS

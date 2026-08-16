@@ -1,0 +1,10 @@
+{
+  "dimension": "test_coverage",
+  "round": 1,
+  "tool_score": 100.0,
+  "score": 100.0,
+  "threshold": 80,
+  "tool_outputs": ".sessi-work/round_1/tools/coverage_raw.json",
+  "findings": [],
+  "gaps": []
+}

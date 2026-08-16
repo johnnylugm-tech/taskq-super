@@ -1,0 +1,87 @@
+{
+  "gate": 1,
+  "phase": 3,
+  "fr_id": "FR-10",
+  "overall_score": 100.0,
+  "quality_complete": true,
+  "rounds_used": 1,
+  "breakdown": {
+    "linting": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "All checks passed!\n"
+    },
+    "type_safety": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "{\"version\":\"1.1.409\",\"time\":\"1786771290983\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.029}}"
+    },
+    "test_coverage": {
+      "score": 100.0,
+      "threshold": 100,
+      "tests_passed": 46,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "tool_evidence": "03-development/tests/test_fr10.py .............. [ 30%]\n03-development/tests/test_fr08.py ................................ [100%]\n============================= 46 passed in 37.03s ==============================\nCoverage JSON totals: percent_covered=100.0 (errors.py: 69/69 stmts, app.py: 47/47 stmts)"
+    },
+    "architecture_constraints": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "Analyzed 22 files, 23 dependencies.\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+    }
+  },
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "linting": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
+      "head": "All checks passed!"
+    },
+    "type_safety": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "48a75b9dba66f003448f59089d2f40d19bba46f9791da2f572784c9f0b2953cb",
+      "bytes": 170,
+      "head": "{\"version\":\"1.1.409\",\"time\":\"1786771290983\",\"generalDiagnostics\":[],\"summary\":{\"filesAnalyzed\":28,\"errorCount\":0,\"warningCount\":0,\"informationCount\":0,\"timeInSec\":1.029}}"
+    },
+    "test_coverage": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "8357b0e339d5d86ef0e19a019b10f12dd497d442110b84474829852fa360c5ce",
+      "bytes": 300,
+      "head": "03-development/tests/test_fr10.py .............. [ 30%]\n03-development/tests/test_fr08.py ................................ [100%]\n============================= 46 passed in 37.03s ==============================\nCoverage JSON totals: percent_covered=100.0 (errors.py: 69/69 stmts, app.py: 47/47 stmts)"
+    },
+    "architecture_constraints": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "b50f77496848c9c4c45f01eae66acd0b13d9510ca8494776128f77064f1c119e",
+      "bytes": 102,
+      "head": "Analyzed 22 files, 23 dependencies.\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+    }
+  },
+  "composite_score": 100.0,
+  "verdict": "PASS",
+  "passed": true,
+  "spec_undelivered": [],
+  "spec_declared": 0,
+  "measurement_scope": {
+    "weight_covered": 0.75,
+    "weight_total": 1.0,
+    "dimensions_scored": [
+      "architecture_constraints",
+      "linting",
+      "type_safety"
+    ],
+    "dimensions_unscored": [
+      "test_coverage"
+    ],
+    "dimensions_disabled": []
+  }
+}

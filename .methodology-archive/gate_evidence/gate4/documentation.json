@@ -1,0 +1,10 @@
+{
+  "dimension": "documentation",
+  "round": 1,
+  "tool_score": 100.0,
+  "score": 100.0,
+  "threshold": 75,
+  "tool_outputs": ".sessi-work/round_1/tools/documentation_scoring.txt",
+  "findings": [],
+  "gaps": []
+}

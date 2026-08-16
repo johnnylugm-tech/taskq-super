@@ -1,7 +1,7 @@
 {
   "schema": "harness/traceability/attestation/v1",
-  "git_sha": "db3502688c5af3c994e055171d9559ed93164967",
-  "content_sha256": "b40c1d559074a0ccf19e184875d723653e9d44fc1a3ca25406fb51a36415c5a3",
+  "git_sha": "31b2576d84dad2f5ee652b2275d4e646e3527c17",
+  "content_sha256": "ae04b70d22e952ccc559f3f24d3ccd85df89319bf370ae193cc6294cd3761074",
   "tool": "scripts/build_trace_attestation.py",
   "overlay_used": null,
   "overlay_errors": [],
@@ -14,7 +14,7 @@
       "code_coverage": "100.0%",
       "test_coverage": "100.0%",
       "verification_rate": "100.0%",
-      "total_links": 88,
+      "total_links": 92,
       "missing_mappings": {
         "fr_without_srs": [],
         "fr_without_code": [],
@@ -84,11 +84,13 @@
           "03-development/src/taskq_api/repository/key_repo.py",
           "03-development/src/taskq_api/service/auth.py",
           "03-development/tests/test_fr03.py",
-          "03-development/tests/test_fr04.py"
+          "03-development/tests/test_fr04.py",
+          "03-development/tests/test_fr05.py"
         ],
         "test_files": [
           "03-development/tests/test_fr03.py",
-          "03-development/tests/test_fr04.py"
+          "03-development/tests/test_fr04.py",
+          "03-development/tests/test_fr05.py"
         ],
         "sad_module": "api/deps.py",
         "priority": "HIGH"
@@ -103,11 +105,13 @@
           "03-development/src/taskq_api/errors.py",
           "03-development/src/taskq_api/service/auth.py",
           "03-development/tests/test_fr03.py",
-          "03-development/tests/test_fr04.py"
+          "03-development/tests/test_fr04.py",
+          "03-development/tests/test_fr05.py"
         ],
         "test_files": [
           "03-development/tests/test_fr03.py",
-          "03-development/tests/test_fr04.py"
+          "03-development/tests/test_fr04.py",
+          "03-development/tests/test_fr05.py"
         ],
         "sad_module": "api/deps.py",
         "priority": "HIGH"

@@ -1,0 +1,92 @@
+{
+  "gate": 1,
+  "phase": 3,
+  "fr_id": "FR-05",
+  "overall_score": 100.0,
+  "quality_complete": true,
+  "rounds_used": 1,
+  "failing_dimensions": [],
+  "breakdown": {
+    "linting": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate1/linting.txt",
+      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n\n(ruff exit 0, 0 violations -> score 100)"
+    },
+    "type_safety": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate1/type_safety.txt",
+      "tool_evidence": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 22,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 0.85\n    }\n}\n\n(summary.errorCount = 0 -> max(0, 100 - 0*5) = 100)"
+    },
+    "test_coverage": {
+      "score": 100.0,
+      "threshold": 100,
+      "tests_passed": 34,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "tool_output": ".methodology/gate_evidence/gate1/test_coverage.txt",
+      "tool_evidence": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr05.py test_fr03.py test_fr04.py\ncollected 34 items\n03-development/tests/test_fr05.py ...........  [ 32%]\n03-development/tests/test_fr03.py ................  [ 79%]\n03-development/tests/test_fr04.py .......  [100%]\n======================== 34 passed, 1 warning in 0.72s =========================\nTOTALS percent_covered = 100.0\n\n(coverage_pct=100, spec_cov_pct=100 (5/5 unique required tests present) -> min = 100)"
+    },
+    "architecture_constraints": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate1/architecture_constraints.txt",
+      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\nAnalyzed 22 files, 17 dependencies.\nconfig_and_errors_independence KEPT\nContracts: 1 kept, 0 broken.\n\n(exit 0 -> 100. NOTE: the generic 'PYTHONPATH=src' form errors with \"Could not find package 'taskq_api' in your Python path\" because this project's source root is 03-development/src, not ./src. Path placeholder resolved; .importlinter present at project root.)"
+    }
+  },
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "linting": {
+      "source": ".methodology/gate_evidence/gate1/linting.txt",
+      "kind": "file",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "head": "All checks passed!"
+    },
+    "type_safety": {
+      "source": ".methodology/gate_evidence/gate1/type_safety.txt",
+      "kind": "file",
+      "sha256": "f2f8fd7f19db4795f2fa34476f5e36ccfe9ec458a3911c2461f6391c504ec57a",
+      "bytes": 251,
+      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786724690728\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 22,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 0.85\n    }\n}\n"
+    },
+    "test_coverage": {
+      "source": ".methodology/gate_evidence/gate1/test_coverage.txt",
+      "kind": "file",
+      "sha256": "c0763302b8a1b503eb1179fe365027fc55dec95070fe45f4fba14856247053d1",
+      "bytes": 1364,
+      "head": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nrootdir: /Users/johnny/projects/taskq-super\nplugins: benchmark-5.2.3, cov-7.1.0, asyncio-1.4.0, anyio-4.14.2\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollected 34 items\n\n03-development/tests/test_fr05.py ...........                            [ 32%]\n03-development/tests/test_fr03.py ................                       [ 79%]\n03-development/tests/test_fr04.py .......                                [100%]\n\n=============================== warnings summary ===============================\n03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard\n  <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n======================== 34 passed, 1 warning in 0.72s =========================\nTOTALS percent_covered = 100.0"
+    },
+    "architecture_constraints": {
+      "source": ".methodology/gate_evidence/gate1/architecture_constraints.txt",
+      "kind": "file",
+      "sha256": "f6c73d8e13e5268cb1e3bb3db1083ea751f99218a0b2e43dfde20332bcc42424",
+      "bytes": 844,
+      "head": "\n╔══╗─────────▶╔╗ ╔╗      ╔╗◀───┐\n╚╣╠╝◀─────┐  ╔╝╚╗║║────▶╔╝╚╗   │\n ║║   ╔══╦══╦╩╗╔╝║║  ╔╦═╩╗╔╝╔═╦══╗\n ║║╔══╣╔╗║╔╗║╔╣║ ║║ ╔╬╣╔╗║║ ║│║╔═╝\n╔╣╠╣║║║╚╝║╚╝║║║╚╗║╚═╝║║║║║╚╗║═╣║\n╚══╩╩╩╣╔═╩══╩╝╚═╝╚═══╩╩╝╚╩═╩╩═╩╝\n  └──▶║║                    ▲ \n      ╚╝────────────────────┘\n\n\n---------\nContracts\n---------\n\nAnalyzed 22 files, 17 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n"
+    }
+  },
+  "composite_score": 100.0,
+  "verdict": "PASS",
+  "passed": true,
+  "spec_undelivered": [],
+  "spec_declared": 0,
+  "measurement_scope": {
+    "weight_covered": 0.75,
+    "weight_total": 1.0,
+    "dimensions_scored": [
+      "architecture_constraints",
+      "linting",
+      "type_safety"
+    ],
+    "dimensions_unscored": [
+      "test_coverage"
+    ],
+    "dimensions_disabled": []
+  }
+}

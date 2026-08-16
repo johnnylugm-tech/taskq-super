@@ -1,0 +1,391 @@
+{
+  "summary": {
+    "total": 63,
+    "missing": 0,
+    "incomplete": 0,
+    "orphaned": 63,
+    "critical": 0,
+    "major": 0,
+    "minor": 63
+  },
+  "gaps": [
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'upgrade' has no corresponding specification in SPEC.md",
+      "action": "Add spec for upgrade or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'downgrade' has no corresponding specification in SPEC.md",
+      "action": "Add spec for downgrade or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'upgrade' has no corresponding specification in SPEC.md",
+      "action": "Add spec for upgrade or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'downgrade' has no corresponding specification in SPEC.md",
+      "action": "Add spec for downgrade or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'upgrade' has no corresponding specification in SPEC.md",
+      "action": "Add spec for upgrade or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'downgrade' has no corresponding specification in SPEC.md",
+      "action": "Add spec for downgrade or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'main' has no corresponding specification in SPEC.md",
+      "action": "Add spec for main or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'require_scope' has no corresponding specification in SPEC.md",
+      "action": "Add spec for require_scope or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'check_db_reachable' has no corresponding specification in SPEC.md",
+      "action": "Add spec for check_db_reachable or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'check_migration_at_head' has no corresponding specification in SPEC.md",
+      "action": "Add spec for check_migration_at_head or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'healthz' has no corresponding specification in SPEC.md",
+      "action": "Add spec for healthz or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'readyz' has no corresponding specification in SPEC.md",
+      "action": "Add spec for readyz or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'metrics_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for metrics_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'create_task_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for create_task_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'list_tasks_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for list_tasks_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'get_task_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for get_task_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'delete_task_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for delete_task_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'run_task_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for run_task_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'list_runs_endpoint' has no corresponding specification in SPEC.md",
+      "action": "Add spec for list_runs_endpoint or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'create_app' has no corresponding specification in SPEC.md",
+      "action": "Add spec for create_app or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'shutdown_drain' has no corresponding specification in SPEC.md",
+      "action": "Add spec for shutdown_drain or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'Settings' has no corresponding specification in SPEC.md",
+      "action": "Add spec for Settings or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'get_settings' has no corresponding specification in SPEC.md",
+      "action": "Add spec for get_settings or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'TaskQError' has no corresponding specification in SPEC.md",
+      "action": "Add spec for TaskQError or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'problem' has no corresponding specification in SPEC.md",
+      "action": "Add spec for problem or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'problem_json_response' has no corresponding specification in SPEC.md",
+      "action": "Add spec for problem_json_response or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'render_problem' has no corresponding specification in SPEC.md",
+      "action": "Add spec for render_problem or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'install_exception_handlers' has no corresponding specification in SPEC.md",
+      "action": "Add spec for install_exception_handlers or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'Task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for Task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'to_dict' has no corresponding specification in SPEC.md",
+      "action": "Add spec for to_dict or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'TaskCreate' has no corresponding specification in SPEC.md",
+      "action": "Add spec for TaskCreate or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'TaskOut' has no corresponding specification in SPEC.md",
+      "action": "Add spec for TaskOut or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'lookup_by_hash' has no corresponding specification in SPEC.md",
+      "action": "Add spec for lookup_by_hash or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'get_rejection_count' has no corresponding specification in SPEC.md",
+      "action": "Add spec for get_rejection_count or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'reset_for_test' has no corresponding specification in SPEC.md",
+      "action": "Add spec for reset_for_test or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'try_consume' has no corresponding specification in SPEC.md",
+      "action": "Add spec for try_consume or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'get_engine' has no corresponding specification in SPEC.md",
+      "action": "Add spec for get_engine or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'transactional' has no corresponding specification in SPEC.md",
+      "action": "Add spec for transactional or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'insert_task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for insert_task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'get_task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for get_task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'delete_task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for delete_task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'list_tasks' has no corresponding specification in SPEC.md",
+      "action": "Add spec for list_tasks or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'hash_key' has no corresponding specification in SPEC.md",
+      "action": "Add spec for hash_key or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'find_by_hash' has no corresponding specification in SPEC.md",
+      "action": "Add spec for find_by_hash or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'verify_key' has no corresponding specification in SPEC.md",
+      "action": "Add spec for verify_key or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'create_key' has no corresponding specification in SPEC.md",
+      "action": "Add spec for create_key or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'check_rate_limit' has no corresponding specification in SPEC.md",
+      "action": "Add spec for check_rate_limit or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'clear' has no corresponding specification in SPEC.md",
+      "action": "Add spec for clear or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'list_runs' has no corresponding specification in SPEC.md",
+      "action": "Add spec for list_runs or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'run_command' has no corresponding specification in SPEC.md",
+      "action": "Add spec for run_command or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'Runner' has no corresponding specification in SPEC.md",
+      "action": "Add spec for Runner or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'max_concurrent' has no corresponding specification in SPEC.md",
+      "action": "Add spec for max_concurrent or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'drain_timeout' has no corresponding specification in SPEC.md",
+      "action": "Add spec for drain_timeout or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'in_flight' has no corresponding specification in SPEC.md",
+      "action": "Add spec for in_flight or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'submit' has no corresponding specification in SPEC.md",
+      "action": "Add spec for submit or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'list_runs' has no corresponding specification in SPEC.md",
+      "action": "Add spec for list_runs or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'drain' has no corresponding specification in SPEC.md",
+      "action": "Add spec for drain or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'InvalidLimit' has no corresponding specification in SPEC.md",
+      "action": "Add spec for InvalidLimit or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'create_task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for create_task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'get_task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for get_task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'list_tasks' has no corresponding specification in SPEC.md",
+      "action": "Add spec for list_tasks or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'delete_task' has no corresponding specification in SPEC.md",
+      "action": "Add spec for delete_task or remove if unnecessary"
+    },
+    {
+      "type": "ORPHANED",
+      "severity": "minor",
+      "reason": "'cast_to_any' has no corresponding specification in SPEC.md",
+      "action": "Add spec for cast_to_any or remove if unnecessary"
+    }
+  ]
+}

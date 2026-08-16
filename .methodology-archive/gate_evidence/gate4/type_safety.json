@@ -1,0 +1,10 @@
+{
+  "dimension": "type_safety",
+  "round": 1,
+  "tool_score": 100,
+  "score": 100,
+  "threshold": 85,
+  "tool_outputs": ".sessi-work/round_1/tools/type_safety_raw.txt",
+  "findings": [],
+  "gaps": []
+}

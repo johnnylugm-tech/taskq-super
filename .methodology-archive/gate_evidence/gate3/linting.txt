@@ -1,0 +1,7 @@
+03-development/tests/test_bug_hunt_runner_submit_shlex.py:21:8: F401 [*] `os` imported but unused
+03-development/tests/test_bug_hunt_runner_submit_shlex.py:25:8: F401 [*] `pytest` imported but unused
+Found 2 errors.
+[*] 2 fixable with the `--fix` option.
+2	F401	[*] unused-import
+Found 2 errors.
+[*] 2 fixable with the `--fix` option.

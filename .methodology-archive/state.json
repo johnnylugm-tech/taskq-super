@@ -1,0 +1,75 @@
+{
+  "state": "RUNNING",
+  "current_phase": 8,
+  "last_gate": 1,
+  "last_fr": "FR-10",
+  "last_update": "2026-08-16T02:08:49.924065+00:00",
+  "language": "python",
+  "phase_completed": {
+    "1": {
+      "sha": "040a30681d928d2a79d9343658e09b7c2429b0f3",
+      "timestamp": "2026-08-14T05:34:11.639469+00:00"
+    },
+    "2": {
+      "sha": "13b37337880e807c36b4966a55bd1ffc9efd4bca",
+      "timestamp": "2026-08-14T10:52:28.447180+00:00",
+      "enforcer_sha": "6ab5be002d7ba82b4380044de3257423de1e421f",
+      "enforcer_surface": {
+        "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+        "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+        "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+      },
+      "delivered_tree_sha256": "acf67386042bda290d0105476ec31a2b206cab00d5deef9328da2cc8f4214cf7"
+    },
+    "3": {
+      "sha": "2b74f46fb18712a35e10e838c6e8284c8463244a",
+      "timestamp": "2026-08-15T11:56:00.096999+00:00",
+      "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+      "enforcer_surface": {
+        "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+        "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+        "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+      },
+      "delivered_tree_sha256": "dbee9d559b73582f2bdc71c07c3b114e910b660b881fbce781247d2a325531ab"
+    },
+    "4": {
+      "sha": "ed0a32c9db5f4164fa57a1f9daf6cab8ccb731be",
+      "timestamp": "2026-08-15T18:35:53.855502+00:00",
+      "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+      "enforcer_surface": {
+        "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+        "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+        "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+      },
+      "delivered_tree_sha256": "f6999c7cbd0cd41a62ba86761f8d927843c802843e6af4f95a3eb11fcc30ee7d"
+    },
+    "6": {
+      "sha": "279da09da1e8de31d5f6eb8bd82713752f6ac970",
+      "timestamp": "2026-08-15T23:54:14.984512+00:00",
+      "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+      "enforcer_surface": {
+        "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+        "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+        "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+      },
+      "delivered_tree_sha256": "279d90b4fb7fa5cb4d692a09c4cb2368a4195c484754a901a2e18ab809fc833f"
+    },
+    "7": {
+      "sha": "e493e93accb9ed029de99219ae4fb9f5730473e8",
+      "timestamp": "2026-08-16T01:02:36.264792+00:00",
+      "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+      "enforcer_surface": {
+        "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+        "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+        "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+      },
+      "delivered_tree_sha256": "5826bca6aff5541fefa74cedf87bda50dfa1b2aaf9b43483a982f656066b1ff8"
+    }
+  },
+  "test_inventory_checksum": "40507aed5f48d9604573cc34b04181d7aa4f8a533de74a3ddbab7fc9ab61d1d3",
+  "phase_truth_passed": true,
+  "last_milestone_command": "advance-phase --completed-phase 7",
+  "last_milestone_head": {
+    "p3-post-gate2": "c9190c577bb8ea9a45a0601ae88e159cc5f717d7"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "gate": 1,
+  "phase": 3,
+  "fr_id": "FR-07",
+  "overall_score": 100.0,
+  "quality_complete": true,
+  "rounds_used": 1,
+  "breakdown": {
+    "linting": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "All checks passed!"
+    },
+    "type_safety": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786729583372\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 0.986}}"
+    },
+    "test_coverage": {
+      "score": 100.0,
+      "threshold": 100,
+      "tests_passed": 18,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "tool_evidence": "============================== 18 passed in 1.87s ============================== | coverage: 100% on v1_initial.py, v2_tags.py, v3_split_results.py (3/3 files at 100%) | spec_cov: 7/7 tests required all present and passing"
+    },
+    "architecture_constraints": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "Contracts: 1 kept, 0 broken. (Analyzed 22 files, 17 dependencies. config_and_errors_independence KEPT)"
+    }
+  },
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "linting": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
+      "head": "All checks passed!"
+    },
+    "type_safety": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "35689beabd5e47655f2b3f555a2aa63bc9bc9642131bcd8470be8d203d7ec948",
+      "bytes": 186,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786729583372\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 0.986}}"
+    },
+    "test_coverage": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "f2cb159c1092c8f8bbfdbf9679eef4c481e428f4cbf7304156fcf6fcc5018d58",
+      "bytes": 222,
+      "head": "============================== 18 passed in 1.87s ============================== | coverage: 100% on v1_initial.py, v2_tags.py, v3_split_results.py (3/3 files at 100%) | spec_cov: 7/7 tests required all present and passing"
+    },
+    "architecture_constraints": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "b7821a5b708a4507ef14766a5240cd83e3635eae0d74b76700fa532d61d2ba26",
+      "bytes": 102,
+      "head": "Contracts: 1 kept, 0 broken. (Analyzed 22 files, 17 dependencies. config_and_errors_independence KEPT)"
+    }
+  },
+  "composite_score": 100.0,
+  "verdict": "PASS",
+  "passed": true,
+  "spec_undelivered": [],
+  "spec_declared": 0,
+  "measurement_scope": {
+    "weight_covered": 0.75,
+    "weight_total": 1.0,
+    "dimensions_scored": [
+      "architecture_constraints",
+      "linting",
+      "type_safety"
+    ],
+    "dimensions_unscored": [
+      "test_coverage"
+    ],
+    "dimensions_disabled": []
+  }
+}

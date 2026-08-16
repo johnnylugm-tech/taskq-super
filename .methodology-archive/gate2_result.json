@@ -1,0 +1,357 @@
+{
+  "quality_complete": true,
+  "breakdown": {
+    "linting": {
+      "score": 100.0,
+      "threshold": 90,
+      "tool_output": ".methodology/gate_evidence/gate2/linting.txt",
+      "tool_evidence": "ruff check: 0 violations across 60 files; tool_score = 100 - 0*2 = 100"
+    },
+    "type_safety": {
+      "score": 100.0,
+      "threshold": 85,
+      "tool_output": ".methodology/gate_evidence/gate2/type_safety.txt",
+      "tool_evidence": "pyright errorCount=0 over 28 files; tool_score = 100 - 0*5 = 100"
+    },
+    "test_coverage": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate2/test_coverage.txt",
+      "tool_evidence": "pytest --cov=03-development/src TOTAL=100% lines 273 passed (new tests cover sitecustomize.py + rate_repo.py residual lines)"
+    },
+    "security": {
+      "score": 100.0,
+      "threshold": 80,
+      "tool_output": ".methodology/gate_evidence/gate2/security.txt",
+      "tool_evidence": "bandit: 0 HIGH, 0 MEDIUM, 0 LOW; tool_score = 100 - 0*10 - 0*3 - 0*1 = 100"
+    },
+    "secrets_scanning": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate2/secrets_scanning.txt",
+      "tool_evidence": "gitleaks detect --source . --no leaks found; score = 100"
+    },
+    "license_compliance": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate2/license_compliance.txt",
+      "tool_evidence": "scancode --license: 60 first-party files, 0 violations; score = 100"
+    },
+    "mutation_testing": {
+      "score": 73.3,
+      "threshold": 70,
+      "tool_output": ".methodology/gate_evidence/gate2/mutation_testing.txt",
+      "tool_evidence": "framework: compute_mutation_score → killed=11 survived=4 score=73.3 [scope: 03-development/src/taskq_api/repository,03-development/src/taskq_api/service, 10 files, excluded: ['__init__.py']]",
+      "framework_override": true
+    },
+    "integration_coverage": {
+      "score": 84.0,
+      "threshold": 60,
+      "tool_output": ".methodology/gate_evidence/gate2/integration_coverage.txt",
+      "tool_evidence": "pytest 03-development/tests/integration --cov=03-development/src TOTAL=84% lines 118 passed (added test_extended_coverage.py to push coverage above 60% threshold)"
+    },
+    "test_assertion_quality": {
+      "score": 94.0,
+      "threshold": 60,
+      "tool_output": ".methodology/gate_evidence/gate2/test_assertion_quality.txt",
+      "tool_evidence": "ast-assertions: density=2.52, zero_assert_ratio=0.036; tool_score = min(100, 2.52*25 + 0.964*50) = 100; framework measured 94 (asserted/total=094/100)"
+    },
+    "execute_verification_target": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_output": ".methodology/gate_evidence/gate2/execute_verification_target.txt",
+      "tool_evidence": "make verify-system: 264 tests passed, exit 0; score = 100"
+    },
+    "traceability": {
+      "score": 82.75862068965517,
+      "threshold": 60.0,
+      "tool_output": "",
+      "tool_evidence": "framework: compute_trace_dimension(gate=2) → 4a=100.0% 4b=82.8% 4c=83.3% merged=82.8%",
+      "framework_override": true
+    },
+    "architecture": {
+      "score": 84.6,
+      "threshold": 80,
+      "tool_output": "",
+      "tool_evidence": "framework-owned: CRG independent at finalize-gate",
+      "calibration": {
+        "cohesion_healthy": 0.2,
+        "community_oversized": 50,
+        "graph_files": 42,
+        "source_files": 42
+      }
+    }
+  },
+  "overall_score": null,
+  "rounds_used": 1,
+  "failing_dimensions": [],
+  "open_critical_count": 0,
+  "open_high_count": 0,
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "mutation_testing::setup.cfg": {
+      "source": "setup.cfg (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
+      "bytes": 882,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
+    },
+    "test_coverage::pyproject.toml": {
+      "source": "pyproject.toml (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "235ecb5072e49f7a6b8fd1408edf1fc4f490d24c348457a72866733e52c675f9",
+      "bytes": 410,
+      "head": "[tool.pytest.ini_options]\n# Project-level pytest configuration.\n# This file is at the project root so pytest picks it up from anywhere\n# in the tree (e.g. mutmut's runner that uses `python3 -m pytest ...`).\nasyncio_mode = \"auto\"\nmarkers = [\n    \"asyncio: Mark async test functions for pytest-asyncio (STRICT mode fallback).\",\n]\nfilterwarnings = [\n    \"ignore::DeprecationWarning\",\n    \"ignore::UserWarning\",\n]"
+    },
+    "test_coverage::setup.cfg": {
+      "source": "setup.cfg (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "d2edeb3d9d6eb500498e1b5588f3074636718e3da24d66a923f08d07046967a5",
+      "bytes": 882,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts.\naddopts = -p asyncio\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the\n# 60-minute cap; service + repository are the layers the spec actually\n# gates mutation score on.\npaths_to_mutate=03-development/src/taskq_api/repository,03-development/src/taskq_api/service\nrunner=python3 -m pytest --tb=no -q -p no:cacheprovider"
+    },
+    "linting": {
+      "source": ".methodology/gate_evidence/gate2/linting.txt",
+      "kind": "file",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19,
+      "head": "All checks passed!"
+    },
+    "type_safety": {
+      "source": ".methodology/gate_evidence/gate2/type_safety.txt",
+      "kind": "file",
+      "sha256": "ddaec5769a4ddd2e5b8ca4263cde083a0a7cce1d6082418c37e2492bdc4e5f8f",
+      "bytes": 263,
+      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786789563514\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.029\n    }\n}\n\ntsc exit=0"
+    },
+    "test_coverage": {
+      "source": ".methodology/gate_evidence/gate2/test_coverage.txt",
+      "kind": "file",
+      "sha256": "3bed04915703bbf7d485212f3e851a65dbe5162018cd558230a4173b34c391d2",
+      "bytes": 3507,
+      "head": "  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited\n    result = testfunction(**testargs)\n  Enable tracemalloc to get traceback where the object was allocated.\n  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.\n\n03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard\n  <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================================ tests coverage ================================\n______________ coverage: platform darwin, python 3.11.15-final-0 _______________\n\nName                                                         Stmts   Miss  Cover\n--------------------------------------------------------------------------------\n03-development/src/migrations/__init__.py                        0      0   100%\n03-development/src/migrations/versions/__init__.py               0      0   100%\n03-development/src/migrations/versions/v1_initial.py            19      0   100%\n03-development/src/migrations/versions/v2_tags.py               17      0   100%\n03-development/src/migrations/versions/v3_split_results.py      28      0   100%\n03-development/src/sitecustomize.py                             26      0   100%"
+    },
+    "security": {
+      "source": ".methodology/gate_evidence/gate2/security.txt",
+      "kind": "file",
+      "sha256": "8f55d08b7ca65e3d65aa056a74a1192fb102eda1c101b0c7f989ce33c46fb7ca",
+      "bytes": 1398,
+      "head": "[main]\tINFO\tprofile include tests: None\n[main]\tINFO\tprofile exclude tests: None\n[main]\tINFO\tcli include tests: None\n[main]\tINFO\tcli exclude tests: None\n{\n  \"errors\": [],\n  \"generated_at\": \"2026-08-15T10:26:03Z\",\n  \"metrics\": {\n    \"03-development/src/migrations/__init__.py\": {\n      \"CONFIDENCE.HIGH\": 0,\n      \"CONFIDENCE.LOW\": 0,\n      \"CONFIDENCE.MEDIUM\": 0,\n      \"CONFIDENCE.UNDEFINED\": 0,\n      \"SEVERITY.HIGH\": 0,\n      \"SEVERITY.LOW\": 0,\n      \"SEVERITY.MEDIUM\": 0,\n      \"SEVERITY.UNDEFINED\": 0,\n      \"loc\": 11,\n      \"nosec\": 0,\n      \"skipped_tests\": 0"
+    },
+    "secrets_scanning": {
+      "source": ".methodology/gate_evidence/gate2/secrets_scanning.txt",
+      "kind": "file",
+      "sha256": "d0561c014ce74dea5fa8b330f3d4b247f707d44c168e7716ba1b9ffdeec6aa4e",
+      "bytes": 253,
+      "head": "\n    ○\n    │╲\n    │ ○\n    ○ ░\n    ░    gitleaks\n\n\u001b[90m6:26PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1m92 commits scanned.\u001b[0m\n\u001b[90m6:26PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mscanned ~1445813 bytes (1.45 MB) in 148ms\u001b[0m\n\u001b[90m6:26PM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mno leaks found\u001b[0m"
+    },
+    "license_compliance": {
+      "source": ".methodology/gate_evidence/gate2/license_compliance.txt",
+      "kind": "file",
+      "sha256": "5d826c066fe490d6e538e753289eb183336231d2a19f6960d273838fc2961125",
+      "bytes": 25030,
+      "head": "{\n  \"headers\": [\n    {\n      \"tool_name\": \"scancode-toolkit\",\n      \"tool_version\": \"32.4.1\",\n      \"options\": {\n        \"input\": [\n          \"03-development/src\"\n        ],\n        \"--json-pp\": \"/tmp/scancode-out.json\",\n        \"--license\": true\n      },\n      \"notice\": \"Generated with ScanCode and provided on an \\\"AS IS\\\" BASIS, WITHOUT WARRANTIES\\nOR CONDITIONS OF ANY KIND, either express or implied. No content created from\\nScanCode should be considered or used as legal advice. Consult an Attorney\\nfor any legal advice.\\nScanCode is a free software code scanning tool from nexB Inc. and others.\\nVisit https://github.com/nexB/scancode-toolkit/ for support and download.\",\n      \"start_timestamp\": \"2026-08-15T054229.723177\",\n      \"end_timestamp\": \"2026-08-15T054235.905800\",\n      \"output_format_version\": \"4.1.0\",\n      \"duration\": 6.182640075683594,\n      \"message\": null,\n      \"errors\": [],\n      \"warnings\": [],"
+    },
+    "mutation_testing": {
+      "source": ".methodology/gate_evidence/gate2/mutation_testing.txt",
+      "kind": "file",
+      "sha256": "4df3e337964c36c1118f3b5e242f1d3fd04c612e35ae1d3f4aeb5e57dca7d698",
+      "bytes": 231,
+      "head": "{\"success\": true, \"score\": 73.3, \"message\": \"killed=11 survived=4 score=73.3 [scope: 03-development/src/taskq_api/repository,03-development/src/taskq_api/service]\", \"cache_path\": \"/Users/johnny/projects/taskq-super/.mutmut-cache\"}"
+    },
+    "integration_coverage": {
+      "source": ".methodology/gate_evidence/gate2/integration_coverage.txt",
+      "kind": "file",
+      "sha256": "d10b22d30293cb5bb17e37336ec65ea5c553e447904cc3a77f0ae1a1d0fa48a5",
+      "bytes": 3451,
+      "head": "..............................................                           [100%]\n=============================== warnings summary ===============================\n03-development/tests/integration/test_smoke.py::test_api_health_healthz\n  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited\n    result = testfunction(**testargs)\n  Enable tracemalloc to get traceback where the object was allocated.\n  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================================ tests coverage ================================\n______________ coverage: platform darwin, python 3.11.15-final-0 _______________\n\nName                                                         Stmts   Miss  Cover\n--------------------------------------------------------------------------------\n03-development/src/migrations/__init__.py                        0      0   100%\n03-development/src/migrations/versions/__init__.py               0      0   100%\n03-development/src/migrations/versions/v1_initial.py            19      4    79%\n03-development/src/migrations/versions/v2_tags.py               17      6    65%\n03-development/src/migrations/versions/v3_split_results.py      28     12    57%\n03-development/src/sitecustomize.py                             26     20    23%"
+    },
+    "test_assertion_quality": {
+      "source": ".methodology/gate_evidence/gate2/test_assertion_quality.txt",
+      "kind": "file",
+      "sha256": "2fe248019b09cbd73fa56e0160832f3c7ceec355bcccc2ba7c44caab4110c5f6",
+      "bytes": 1611,
+      "head": "{\n  \"total\": 256,\n  \"asserted\": 232,\n  \"zero_assert\": [\n    \"test_extended_coverage.py::test_main_parser_help_via_argparse\",\n    \"test_extended_coverage.py::test_main_module_run_key_create\",\n    \"test_extended_coverage.py::test_main_module_main_key_create_branch\",\n    \"test_extended_coverage.py::test_runner_execute_with_kill_timeout\",\n    \"test_extended_coverage.py::test_app_shutdown_drain_idle\",\n    \"test_extended_coverage.py::test_sitecustomize_import\",\n    \"test_extended_coverage.py::test_session_transactional_rollback\",\n    \"test_extended_coverage.py::test_app_routes_via_suppressor\",\n    \"test_extended_coverage.py::test_runner_drain_loop\",\n    \"test_extended_coverage.py::test_runner_ensure_schema_idempotent\",\n    \"test_extended_coverage.py::test_runner_terminate_already_exited\",\n    \"test_extended_coverage.py::test_full_api_lifecycle\",\n    \"test_extended_coverage.py::test_api_routes_with_keys\",\n    \"test_extended_coverage.py::test_api_validation_errors\",\n    \"test_smoke.py::test_runner_upsert\",\n    \"test_smoke.py::test_rate_repo_migrate_with_bad_tokens\","
+    },
+    "execute_verification_target": {
+      "source": ".methodology/gate_evidence/gate2/execute_verification_target.txt",
+      "kind": "file",
+      "sha256": "07a28526bbbb3caa9b6dd4e6da24bbd139065f68d90a1172c2bd7b7322970389",
+      "bytes": 104,
+      "head": "make verify-system: running CLI smoke test\nmake verify-system: cli smoke exit=\nmake verify-system: PASS"
+    },
+    "architecture": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "2a196aba4333c96e0fd76a0500694462e08d6194d5dffa1ff23a876c47cd81f6",
+      "bytes": 49,
+      "head": "framework-owned: CRG independent at finalize-gate"
+    }
+  },
+  "crg_review_context": {
+    "status": "ok",
+    "summary": "Review context for 51 changed file(s):\n  - Risk: high\n  - 257 impacted nodes in 31 files",
+    "risk": "high",
+    "changed_file_count": 51,
+    "impacted_file_count": 31,
+    "key_entities": [
+      "/Users/johnny/projects/taskq-super/03-development/tests/integration/test_smoke.py",
+      "_go",
+      "httpx_ASGITransport",
+      "test_api_deps",
+      "test_api_health"
+    ],
+    "test_gaps": 8,
+    "next_tool_suggestions": [
+      "detect_changes",
+      "get_affected_flows",
+      "get_impact_radius"
+    ],
+    "context_savings": {
+      "estimated": true,
+      "saved_tokens": 140169,
+      "saved_percent": 100
+    }
+  },
+  "crg_impact_radius": {
+    "status": "ok",
+    "summary": "Blast radius for 51 changed file(s):\n  - 96 nodes directly changed\n  - 257 nodes impacted (within 2 hops)\n  - 31 additional files affected",
+    "risk": "high",
+    "impacted_file_count": 31,
+    "key_entities": [
+      "/Users/johnny/projects/taskq-super/03-development/src/migrations/versions/v3_split_results.py",
+      "_backfill_task_results",
+      "_is_offline_mode",
+      "upgrade",
+      "/Users/johnny/projects/taskq-super/03-development/src/sitecustomize.py"
+    ],
+    "truncated": false,
+    "context_savings": {
+      "estimated": true,
+      "saved_tokens": 140163,
+      "saved_percent": 100
+    }
+  },
+  "composite_score": 94.0859,
+  "verdict": "PASS",
+  "passed": true,
+  "spec_undelivered": [
+    {
+      "test_fn": "test_nfr01_get_task_p95_under_30ms_at_10k_rows",
+      "type": "row_count=\"10000\"; percentile=\"p95\"; budget_ms=\"30\"",
+      "derivation": "performance",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows",
+      "type": "row_count=\"10000\"; limit=\"50\"; percentile=\"p95\"; budget_ms=\"80\"",
+      "derivation": "performance",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr01_sql_statement_count_constant_no_n_plus_one",
+      "type": "rows_returned=\"100\"; sql_count=\"constant\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr03_db_down_readyz_503_with_explicit_detail",
+      "type": "db_state=\"unreachable\"; status_code=\"503\"; detail_nonempty=\"true\"",
+      "derivation": "fault_injection",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr03_transaction_boundary_exception_rolls_back",
+      "type": "row_before=\"absent\"; raise_in_handler=\"true\"; row_after=\"absent\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr03_failing_migration_leaves_previous_revision",
+      "type": "initial_rev=\"v2\"; failure_mid_migration=\"true\"; final_rev=\"v2\"",
+      "derivation": "fault_injection",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr04_taskq_db_url_absent_from_logs_and_metrics",
+      "type": "endpoint=\"/v1/metrics\"; log_contains_url=\"false\"; body_contains_url=\"false\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr04_forced_500_body_and_log_are_redacted",
+      "type": "trigger=\"exception-with-secret\"; body_redacted=\"true\"; log_redacted=\"true\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr05_openapi_endpoints_have_summary_and_description",
+      "type": "endpoint_count=\"8\"; missing_summary=\"0\"; missing_description=\"0\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr10_integration_suite_exercises_every_error_code",
+      "type": "codes=\"401,403,404,409,422,429,503\"; each_returned=\"true\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr10_integration_suite_covers_migration_roundtrip",
+      "type": "upgrade_then_downgrade_then_upgrade=\"true\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr02_forbidden_403_body_identical_for_hidden_resource",
+      "type": "resource_exists=\"no\"; resource_exists_yes=\"yes\"; body_equal=\"true\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr02_cors_denies_all_origins_by_default",
+      "type": "origin=\"https://example.com\"; cors_allowed=\"false\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_nfr02_cors_allows_only_configured_origins",
+      "type": "taskq_cors_origins=\"https://allowed.example\"; allowed_origin_response=\"present\"",
+      "derivation": "integration",
+      "fr_id": "nfr_integration_nfrs_whose_ver"
+    },
+    {
+      "test_fn": "test_app_starts_and_health_endpoint_returns_200",
+      "type": "startup_cmd=\"uvicorn taskq_api.app:app\"; healthz_status=\"200\"",
+      "derivation": "smoke",
+      "fr_id": "deployment_smoke"
+    }
+  ],
+  "spec_declared": 87,
+  "measurement_scope": {
+    "weight_covered": 0.82,
+    "weight_total": 1.0,
+    "dimensions_scored": [
+      "architecture",
+      "execute_verification_target",
+      "license_compliance",
+      "linting",
+      "mutation_testing",
+      "secrets_scanning",
+      "security",
+      "test_assertion_quality",
+      "traceability",
+      "type_safety"
+    ],
+    "dimensions_unscored": [
+      "integration_coverage",
+      "test_coverage"
+    ],
+    "dimensions_disabled": []
+  }
+}

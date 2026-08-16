@@ -1,0 +1,25 @@
+{
+  "fr": "ADR.md",
+  "review_status": "APPROVE",
+  "reason": "ADR.md deliverable is APPROVED. All 16 records (ADR-001..ADR-016) follow the harness template's required sections (Status/Context/Decision/Rationale/Consequences) plus an added 'Alternatives Considered' subsection that strengthens the record without deviating from format. Every FR (FR-01..FR-10) and NFR (NFR-01..NFR-12) from SRS.md is anchored to at least one ADR: FR-01/02 to ADR-002+003+006; FR-03 to ADR-007; FR-04 to ADR-008; FR-05 to ADR-009; FR-06 to ADR-003; FR-07 to ADR-004; FR-08 to ADR-006+014; FR-09 to ADR-013; FR-10 to ADR-010; NFR-01 to ADR-003 (N+1) + ADR-016 (perf gate); NFR-02 to ADR-006+007+008+010; NFR-03 to ADR-006+014; NFR-04 to ADR-007+010+011; NFR-05 to ADR-002 (OpenAPI) + ADR-016; NFR-06 to ADR-005+016; NFR-07 to ADR-015; NFR-08 to ADR-016; NFR-12 to ADR-004. ADR-009 c",
+  "citations": [
+    "02-architecture/adr/ADR.md:162",
+    "02-architecture/adr/ADR.md:256",
+    "02-architecture/adr/ADR.md:307",
+    "02-architecture/adr/ADR.md:480",
+    "02-architecture/SAD.md:126",
+    "02-architecture/SAD.md:160",
+    "02-architecture/SAD.md:165",
+    "02-architecture/SAD.md:170",
+    "01-requirements/SRS.md:204",
+    "01-requirements/SRS.md:530",
+    "01-requirements/SRS.md:888",
+    "02-architecture/adr/ADR.md:546"
+  ],
+  "docs_embedded": [
+    "SAD.md",
+    "SRS.md",
+    "ADR.md"
+  ],
+  "confidence": 0.9
+}

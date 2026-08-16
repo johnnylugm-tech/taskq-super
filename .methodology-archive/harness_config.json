@@ -1,0 +1,7 @@
+{
+  "crg_cohesion_healthy": 0.2,
+  "crg_excludes": ["harness/*", "tests/*", ".claude/*", "conftest.py", "sitecustomize.py"],
+  "features": {
+    "mutation_testing": true
+  }
+}

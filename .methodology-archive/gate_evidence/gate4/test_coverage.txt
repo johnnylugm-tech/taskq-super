@@ -1,0 +1,64 @@
+........................................................................ [ 21%]
+........................................................................ [ 43%]
+........................................................................ [ 65%]
+........................................................................ [ 87%]
+...........................................                              [100%]
+=============================== warnings summary ===============================
+03-development/tests/integration/test_smoke.py::test_api_health_healthz
+  /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
+    result = testfunction(**testargs)
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+03-development/tests/test_fr03.py::test_fr03_cli_main_module_entrypoint_guard
+  <frozen runpy>:128: RuntimeWarning: 'taskq_api.__main__' found in sys.modules after import of package 'taskq_api', but prior to execution of 'taskq_api.__main__'; this may result in unpredictable behaviour
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.15-final-0 _______________
+
+Name                                                         Stmts   Miss  Cover
+--------------------------------------------------------------------------------
+03-development/src/migrations/__init__.py                        0      0   100%
+03-development/src/migrations/versions/__init__.py               0      0   100%
+03-development/src/migrations/versions/v1_initial.py            19      0   100%
+03-development/src/migrations/versions/v2_tags.py               17      0   100%
+03-development/src/migrations/versions/v3_split_results.py      32      0   100%
+03-development/src/sitecustomize.py                             26      0   100%
+03-development/src/taskq_api/__init__.py                         0      0   100%
+03-development/src/taskq_api/__main__.py                        32      0   100%
+03-development/src/taskq_api/api/__init__.py                     0      0   100%
+03-development/src/taskq_api/api/deps.py                        23      0   100%
+03-development/src/taskq_api/api/health.py                     100      0   100%
+03-development/src/taskq_api/api/tasks.py                       45      0   100%
+03-development/src/taskq_api/app.py                             52      0   100%
+03-development/src/taskq_api/config.py                          21      0   100%
+03-development/src/taskq_api/errors.py                          69      0   100%
+03-development/src/taskq_api/models/__init__.py                  0      0   100%
+03-development/src/taskq_api/models/orm.py                      13      0   100%
+03-development/src/taskq_api/models/schemas.py                  33      0   100%
+03-development/src/taskq_api/repository/__init__.py              0      0   100%
+03-development/src/taskq_api/repository/key_repo.py             18      0   100%
+03-development/src/taskq_api/repository/rate_repo.py            93      1    99%
+03-development/src/taskq_api/repository/session.py              25      0   100%
+03-development/src/taskq_api/repository/task_repo.py            11      0   100%
+03-development/src/taskq_api/service/__init__.py                 0      0   100%
+03-development/src/taskq_api/service/auth.py                    26      0   100%
+03-development/src/taskq_api/service/ratelimit.py               23      0   100%
+03-development/src/taskq_api/service/runner.py                 194      0   100%
+03-development/src/taskq_api/service/tasks.py                   41      0   100%
+--------------------------------------------------------------------------------
+TOTAL                                                          913      1    99%
+Coverage JSON written to file .sessi-work/round_1/tools/coverage.json
+
+---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
+Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.0041 (1.0)        1,957.9893 (1.0)          132.2482 (1.0)          85.9327 (1.0)          125.0301 (1.0)           0.0582 (1.0)          2;96    7,561.5422 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     245,207.9789 (>1000.0)  332,915.9808 (170.03)   268,563.0738 (>1000.0)  16,755.6446 (194.99)   267,770.4906 (>1000.0)  28,250.0114 (>1000.0)      67;1        3.7235 (0.00)        200           1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Legend:
+  Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
+  OPS: Operations Per Second, computed as 1 / Mean
+331 passed, 2 warnings in 55.12s

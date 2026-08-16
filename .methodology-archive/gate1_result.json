@@ -1,0 +1,108 @@
+{
+  "gate": 1,
+  "phase": 8,
+  "fr_id": "FR-10",
+  "overall_score": 100.0,
+  "quality_complete": true,
+  "rounds_used": 1,
+  "breakdown": {
+    "linting": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit 0 -> score 100; 0 violations)"
+    },
+    "type_safety": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.033\n    }\n}\n(errorCount 0 -> 100 - 0*5 = 100)"
+    },
+    "test_coverage": {
+      "score": 100.0,
+      "threshold": 100,
+      "tests_passed": 55,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "tool_evidence": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr10.py 03-development/tests/test_fr08.py\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\ncollected 55 items\n\n03-development/tests/test_fr10.py ................       [ 29%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n.                                                        [100%]\n\n======================== 55 passed in 67.38s (0:01:07) =========================\ncoverage json totals: percent_covered 100.0 (121/121 statements; errors.py 69/69, app.py 52/52)\nspec_cov 7/7 = 100% -> score = min(100, 100) = 100"
+    },
+    "architecture_constraints": {
+      "score": 100.0,
+      "threshold": 100,
+      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n(exit 0 -> score 100)\nNOTE: the generic `PYTHONPATH=src lint-imports` fails in this repo with \"Could not find package 'taskq_api' in your Python path\" (exit 1) because sources live under 03-development/src, not src/. setup.cfg [importlinter] root_packages = taskq_api. Re-run with the correct PYTHONPATH; contract result above is the real one."
+    }
+  },
+  "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
+  "enforcer_surface": {
+    "core/quality_gate": "7d17f5fef3340a57b05e9fc74cb6c178ff05f52e",
+    "harness/harness_bridge.py": "ab03871dc300333cb16535c3125bec2140a5d901",
+    "harness/gate_configs": "92d5728b783841baed6e1beeb57d5e7fbe56c71e"
+  },
+  "evidence_digest": {
+    "mutation_testing::setup.cfg": {
+      "source": "setup.cfg (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "9d71cb77caa34153965434773a1ea6605ba41dd8684557e3b1ffc4b6e8afc636",
+      "bytes": 1177,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts. pytest-benchmark is requested the\n# same way and for the same reason: NFR-01's two budget tests\n# (03-development/tests/test_nfr01_perf.py) take the `benchmark` fixture,\n# so without -p benchmark every mutmut run would error on a missing\n# fixture and score every mutant as killed.\naddopts = -p asyncio -p benchmark\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the"
+    },
+    "test_coverage::pyproject.toml": {
+      "source": "pyproject.toml (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "2896aa603461decb11c60c6b256571422191cfe7c4163f76b21942f072ffc99b",
+      "bytes": 829,
+      "head": "[tool.pytest.ini_options]\n# Project-level pytest configuration.\n# This file is at the project root so pytest picks it up from anywhere\n# in the tree (e.g. mutmut's runner that uses `python3 -m pytest ...`).\nasyncio_mode = \"auto\"\nmarkers = [\n    \"asyncio: Mark async test functions for pytest-asyncio (STRICT mode fallback).\",\n]\nfilterwarnings = [\n    \"ignore::DeprecationWarning\",\n    \"ignore::UserWarning\",\n]\n\n[tool.mypy]\n# advance-phase runs `mypy . --ignore-missing-imports --exclude ^harness/`.\n# This block tells mypy to skip the tests/ tree too — pytest test files\n# are not part of the production surface that gate 2's type-safety\n# dimension (pyright errorCount=0 over 28 src files) measured. Tests\n# are still checked by ruff and pytest.\nexclude = [\"^harness/\", \"^03-development/tests/\"]"
+    },
+    "test_coverage::setup.cfg": {
+      "source": "setup.cfg (score-altering exclusions)",
+      "kind": "file",
+      "sha256": "9d71cb77caa34153965434773a1ea6605ba41dd8684557e3b1ffc4b6e8afc636",
+      "bytes": 1177,
+      "head": "[tool:pytest]\n# Project-level pytest configuration.\n# This file is needed because mutmut runs pytest from a temp workdir and\n# only copies setup.cfg (not pyproject.toml) into it. The pytest-asyncio\n# plugin is required by FR-08's async tests, and the framework's\n# PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 default means we must explicitly\n# request it via -p asyncio in addopts. pytest-benchmark is requested the\n# same way and for the same reason: NFR-01's two budget tests\n# (03-development/tests/test_nfr01_perf.py) take the `benchmark` fixture,\n# so without -p benchmark every mutmut run would error on a missing\n# fixture and score every mutant as killed.\naddopts = -p asyncio -p benchmark\nasyncio_mode = auto\nfilterwarnings =\n    ignore::DeprecationWarning\n    ignore::UserWarning\n\n[mutmut]\n# NFR-08: scope mutation testing to the high-risk modules declared in\n# the SAB. The full 03-development/src contains too many lines for the"
+    },
+    "linting": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "da03da27454ec6a2130b41bd190d665e9c7e6269a4dc405cdaf460a2a310ec37",
+      "bytes": 135,
+      "head": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit 0 -> score 100; 0 violations)"
+    },
+    "type_safety": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "75602fd7ad3a41279fe950cbe2a6e44073e7b11b2d5a8576625cc7aa240161cd",
+      "bytes": 309,
+      "head": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.033\n    }\n}\n(errorCount 0 -> 100 - 0*5 = 100)"
+    },
+    "test_coverage": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "465859aa8a7446bbde63e6c1fc190f860358f50df4c15de65205ee32a2ed4be0",
+      "bytes": 666,
+      "head": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr10.py 03-development/tests/test_fr08.py\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\ncollected 55 items\n\n03-development/tests/test_fr10.py ................       [ 29%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n.                                                        [100%]\n\n======================== 55 passed in 67.38s (0:01:07) =========================\ncoverage json totals: percent_covered 100.0 (121/121 statements; errors.py 69/69, app.py 52/52)\nspec_cov 7/7 = 100% -> score = min(100, 100) = 100"
+    },
+    "architecture_constraints": {
+      "source": "tool_evidence (inline)",
+      "kind": "inline",
+      "sha256": "ae2b061017f8ff90dad6d37be02b07fdbfa304359fad454c80252077beb04b1c",
+      "bytes": 558,
+      "head": "$ PYTHONPATH=03-development/src lint-imports\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n(exit 0 -> score 100)\nNOTE: the generic `PYTHONPATH=src lint-imports` fails in this repo with \"Could not find package 'taskq_api' in your Python path\" (exit 1) because sources live under 03-development/src, not src/. setup.cfg [importlinter] root_packages = taskq_api. Re-run with the correct PYTHONPATH; contract result above is the real one."
+    }
+  },
+  "composite_score": 100.0,
+  "verdict": "PASS",
+  "passed": true,
+  "spec_undelivered": [],
+  "spec_declared": 0,
+  "measurement_scope": {
+    "weight_covered": 0.75,
+    "weight_total": 1.0,
+    "dimensions_scored": [
+      "architecture_constraints",
+      "linting",
+      "type_safety"
+    ],
+    "dimensions_unscored": [
+      "test_coverage"
+    ],
+    "dimensions_disabled": []
+  }
+}
