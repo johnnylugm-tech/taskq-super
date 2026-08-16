@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 7,
-  "fr_id": "FR-08",
+  "fr_id": "FR-09",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "All checks passed!"
+      "tool_evidence": "All checks passed!\nEXIT: 0"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.034}, \"generalDiagnostics\": []}"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786841096330\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.033}}\nEXIT: 0"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 77,
+      "tests_passed": 15,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "test_fr08.py (32) + test_fr02.py (29) + test_fr10.py (16) — 77 passed in 45.59s, 0 failed. Coverage: 100% on taskq_api/service/runner.py (194/194 stmts) and taskq_api/app.py (52/52 stmts)."
+      "tool_evidence": "collected 15 items\n03-development/tests/test_fr09.py ...............                        [100%]\n\n============================== 15 passed in 0.38s ==============================\n\n---COVERAGE_JSON---\n{\"meta\": {\"format\": 3, \"version\": \"7.15.4\"}, \"totals\": {\"covered_lines\": 100, \"num_statements\": 100, \"percent_covered\": 100.0, \"percent_covered_display\": \"100\", \"missing_lines\": 0}}"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
+      "tool_evidence": "Contracts: 1 kept, 0 broken.\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\nEXIT: 0"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
-      "bytes": 18,
-      "head": "All checks passed!"
+      "sha256": "b7fa307f0265be552f4608ac89a4a0dde5c9693636762c70e45e8e78b1935836",
+      "bytes": 26,
+      "head": "All checks passed!\nEXIT: 0"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "d330ca61538665f9c51e38a6242de6cc5bd9dee5d90a0968c59d4c17cc46db66",
-      "bytes": 161,
-      "head": "{\"version\": \"1.1.409\", \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.034}, \"generalDiagnostics\": []}"
+      "sha256": "93d6def3f1ae6d6cd850c0236c731a84d3affcbd5b58f72296f7a857f161e57d",
+      "bytes": 194,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786841096330\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.033}}\nEXIT: 0"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f2e699252b11670cfb12a21912ab813b165401da32860531c83e1e2f7e22ac96",
-      "bytes": 190,
-      "head": "test_fr08.py (32) + test_fr02.py (29) + test_fr10.py (16) — 77 passed in 45.59s, 0 failed. Coverage: 100% on taskq_api/service/runner.py (194/194 stmts) and taskq_api/app.py (52/52 stmts)."
+      "sha256": "68cc381e60a6746e3d75ac2923c74a9f6f9b515c74b80059191e7d80a7c38814",
+      "bytes": 383,
+      "head": "collected 15 items\n03-development/tests/test_fr09.py ...............                        [100%]\n\n============================== 15 passed in 0.38s ==============================\n\n---COVERAGE_JSON---\n{\"meta\": {\"format\": 3, \"version\": \"7.15.4\"}, \"totals\": {\"covered_lines\": 100, \"num_statements\": 100, \"percent_covered\": 100.0, \"percent_covered_display\": \"100\", \"missing_lines\": 0}}"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "f553061d6c783c0d4048b8ae913d80bce3037beb2afcb6c5dfff4f88d5a6251a",
-      "bytes": 101,
-      "head": "Analyzed 22 files, 23 dependencies. config_and_errors_independence KEPT. Contracts: 1 kept, 0 broken."
+      "sha256": "7b1e23aba6615875ac50f68780de412d02d874f3c8a54fa573b9e80dd361081e",
+      "bytes": 176,
+      "head": "Contracts: 1 kept, 0 broken.\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\nEXIT: 0"
     }
   },
   "composite_score": 100.0,
