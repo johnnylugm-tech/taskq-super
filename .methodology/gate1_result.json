@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 8,
-  "fr_id": "FR-08",
+  "fr_id": "FR-10",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n"
+      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit 0 -> score 100; 0 violations)"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786845168164\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.03\n    }\n}"
+      "tool_evidence": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.033\n    }\n}\n(errorCount 0 -> 100 - 0*5 = 100)"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 39,
+      "tests_passed": 55,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "PYTHONPATH=. python3 -m pytest 03-development/tests/test_fr08.py --cov=03-development/src --cov-report=term-missing\n\ncollected 39 items\n03-development/tests/test_fr08.py ...................................... [ 97%]\n.                                                                        [100%]\n\nFR-08 scoped files coverage:\n  03-development/src/taskq_api/service/runner.py   194/194 stmts  100%\n  03-development/src/taskq_api/app.py                52/52  stmts  100%\n\nSpec coverage: 5/5 required tests present\n  - test_fr08_graceful_drain_marks_over_budget_task_interrupted\n  - test_fr08_timeout_kill_leaves_no_orphan_process\n  - test_fr08_concurrency_cap_queues_excess_tasks\n  - test_fr08_timeout_path_kills_and_awaits_process\n  - test_fr08_cancelled_error_propagates_not_swallowed\n\ncoverage_pct = 100; spec_cov_pct = 100; score = min(100, 100) = 100\n======================== 39 passed in 67.22s (0:01:07) =========================\n"
+      "tool_evidence": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr10.py 03-development/tests/test_fr08.py\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\ncollected 55 items\n\n03-development/tests/test_fr10.py ................       [ 29%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n.                                                        [100%]\n\n======================== 55 passed in 67.38s (0:01:07) =========================\ncoverage json totals: percent_covered 100.0 (121/121 statements; errors.py 69/69, app.py 52/52)\nspec_cov 7/7 = 100% -> score = min(100, 100) = 100"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n\n(exit 0)\n"
+      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n(exit 0 -> score 100)\nNOTE: the generic `PYTHONPATH=src lint-imports` fails in this repo with \"Could not find package 'taskq_api' in your Python path\" (exit 1) because sources live under 03-development/src, not src/. setup.cfg [importlinter] root_packages = taskq_api. Re-run with the correct PYTHONPATH; contract result above is the real one."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "fad7bf8fec552781f58e1c0ffeca42f9112045994a8b691d1b407d6151442b6f",
-      "bytes": 99,
-      "head": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!"
+      "sha256": "da03da27454ec6a2130b41bd190d665e9c7e6269a4dc405cdaf460a2a310ec37",
+      "bytes": 135,
+      "head": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit 0 -> score 100; 0 violations)"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "3b05f94ec6012758b0fa1994f78a6b3f53474ba33fd60556f78cf9ca5a692b05",
-      "bytes": 249,
-      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786845168164\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.03\n    }\n}"
+      "sha256": "75602fd7ad3a41279fe950cbe2a6e44073e7b11b2d5a8576625cc7aa240161cd",
+      "bytes": 309,
+      "head": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.033\n    }\n}\n(errorCount 0 -> 100 - 0*5 = 100)"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "09de53999c9058294bd5454cad7fba8b1390d5bf259839419684c9f697151fd8",
-      "bytes": 934,
-      "head": "PYTHONPATH=. python3 -m pytest 03-development/tests/test_fr08.py --cov=03-development/src --cov-report=term-missing\n\ncollected 39 items\n03-development/tests/test_fr08.py ...................................... [ 97%]\n.                                                                        [100%]\n\nFR-08 scoped files coverage:\n  03-development/src/taskq_api/service/runner.py   194/194 stmts  100%\n  03-development/src/taskq_api/app.py                52/52  stmts  100%\n\nSpec coverage: 5/5 required tests present\n  - test_fr08_graceful_drain_marks_over_budget_task_interrupted\n  - test_fr08_timeout_kill_leaves_no_orphan_process\n  - test_fr08_concurrency_cap_queues_excess_tasks\n  - test_fr08_timeout_path_kills_and_awaits_process\n  - test_fr08_cancelled_error_propagates_not_swallowed\n\ncoverage_pct = 100; spec_cov_pct = 100; score = min(100, 100) = 100\n======================== 39 passed in 67.22s (0:01:07) ========================="
+      "sha256": "465859aa8a7446bbde63e6c1fc190f860358f50df4c15de65205ee32a2ed4be0",
+      "bytes": 666,
+      "head": "$ python3 -m coverage run -m pytest 03-development/tests/test_fr10.py 03-development/tests/test_fr08.py\nplatform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0\nrootdir: /Users/johnny/projects/taskq-super\ncollected 55 items\n\n03-development/tests/test_fr10.py ................       [ 29%]\n03-development/tests/test_fr08.py ...................................... [ 98%]\n.                                                        [100%]\n\n======================== 55 passed in 67.38s (0:01:07) =========================\ncoverage json totals: percent_covered 100.0 (121/121 statements; errors.py 69/69, app.py 52/52)\nspec_cov 7/7 = 100% -> score = min(100, 100) = 100"
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "ed3f71ba8c5e621b6b5305da0656e2fd706a7f0f48627a5215565e1c25c403c8",
-      "bytes": 215,
-      "head": "$ PYTHONPATH=03-development/src lint-imports\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n\n(exit 0)"
+      "sha256": "ae2b061017f8ff90dad6d37be02b07fdbfa304359fad454c80252077beb04b1c",
+      "bytes": 558,
+      "head": "$ PYTHONPATH=03-development/src lint-imports\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n(exit 0 -> score 100)\nNOTE: the generic `PYTHONPATH=src lint-imports` fails in this repo with \"Could not find package 'taskq_api' in your Python path\" (exit 1) because sources live under 03-development/src, not src/. setup.cfg [importlinter] root_packages = taskq_api. Re-run with the correct PYTHONPATH; contract result above is the real one."
     }
   },
   "composite_score": 100.0,
