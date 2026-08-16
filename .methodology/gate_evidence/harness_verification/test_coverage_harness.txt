@@ -1,12 +1,12 @@
 # Harness-executed: pytest-cov
-# returncode: 0
+# returncode: 1
 # agent_score: 100.0 | threshold: 80.0
 
 ........................................................................ [ 21%]
-........................................................................ [ 43%]
-........................................................................ [ 65%]
-........................................................................ [ 87%]
-..........................................                               [100%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................................................ [ 84%]
+.............F...............F........................                   [100%]
 =============================== warnings summary ===============================
 03-development/tests/integration/test_smoke.py::test_api_health_healthz
   /Users/johnny/projects/taskq-super/.venv/lib/python3.11/site-packages/_pytest/python.py:157: RuntimeWarning: coroutine 'healthz' was never awaited
@@ -43,7 +43,7 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/models/schemas.py                  33      0   100%
 03-development/src/taskq_api/repository/__init__.py              0      0   100%
 03-development/src/taskq_api/repository/key_repo.py             18      0   100%
-03-development/src/taskq_api/repository/rate_repo.py            93      0   100%
+03-development/src/taskq_api/repository/rate_repo.py            93      2    98%   285-286
 03-development/src/taskq_api/repository/session.py              25      0   100%
 03-development/src/taskq_api/repository/task_repo.py            11      0   100%
 03-development/src/taskq_api/service/__init__.py                 0      0   100%
@@ -51,17 +51,23 @@ Name                                                         Stmts   Miss  Cover
 03-development/src/taskq_api/service/ratelimit.py               23      0   100%
 03-development/src/taskq_api/service/runner.py                 194      0   100%
 03-development/src/taskq_api/service/tasks.py                   41      0   100%
+03-development/tests/conftest.py                               112     27    76%   44-45, 65, 67, 88-89, 96, 104-116, 140, 170-171, 198-199, 203, 276-277
+03-development/tests/test_fr02.py                              387     30    92%   115, 120, 218, 256, 323, 437-441, 453-458, 476-479, 491-495, 507-508, 519-521, 828
+03-development/tests/test_fr08.py                              479     14    97%   289-293, 433-434, 602, 880, 961, 1041, 1065, 1126, 1170, 1231
 ------------------------------------------------------------------------------------------
-TOTAL                                                          913      0   100%
+TOTAL                                                         1891     73    96%
 
 ---------------------------------------------------------------------------------------------------------------------- benchmark: 2 tests ---------------------------------------------------------------------------------------------------------------------
 Name (time in ns)                                                     Min                     Max                    Mean                 StdDev                  Median                    IQR            Outliers  OPS (Kops/s)            Rounds  Iterations
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.0041 (1.0)        1,458.0437 (1.0)          138.8562 (1.0)          67.8129 (1.0)          125.0301 (1.0)           0.0582 (1.0)        10;138    7,201.6930 (1.0)         500           1
-test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     249,458.0112 (>1000.0)  366,208.0271 (251.16)   281,601.6815 (>1000.0)  21,354.7389 (314.91)   275,791.4772 (>1000.0)  32,520.9985 (>1000.0)      62;1        3.5511 (0.00)        200           1
+test_nfr01_get_task_p95_under_30ms_at_10k_rows                    83.0041 (1.0)        2,000.0152 (1.0)          136.7833 (1.0)          89.1538 (1.0)          125.0301 (1.0)           0.0582 (1.0)         8;100    7,310.8315 (1.0)         500           1
+test_nfr01_list_tasks_limit50_p95_under_80ms_at_10k_rows     261,042.0343 (>1000.0)  382,457.9762 (191.23)   295,312.8988 (>1000.0)  24,692.4373 (276.96)   291,270.4949 (>1000.0)  32,771.0295 (>1000.0)      68;4        3.3862 (0.00)        200           1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Legend:
   Outliers: 1 Standard Deviation from Mean; 1.5 IQR (InterQuartile Range) from 1st Quartile and 3rd Quartile.
   OPS: Operations Per Second, computed as 1 / Mean
-330 passed, 2 warnings in 49.85s
+=========================== short test summary info ============================
+FAILED 03-development/tests/test_fr09.py::test_fr09_metrics_requires_admin_and_reports_counts
+FAILED 03-development/tests/test_fr10.py::test_fr10_every_spec_error_code_exercised_once
+2 failed, 340 passed, 2 warnings in 50.15s
