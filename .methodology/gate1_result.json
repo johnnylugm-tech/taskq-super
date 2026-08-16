@@ -1,7 +1,7 @@
 {
   "gate": 1,
   "phase": 8,
-  "fr_id": "FR-04",
+  "fr_id": "FR-08",
   "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
@@ -9,25 +9,25 @@
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nexit 0\nAll checks passed!"
+      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786844735481\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.037\n    }\n}\nEXIT_CODE=0\n0 errors, 0 warnings, 0 informations"
+      "tool_evidence": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786845168164\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.03\n    }\n}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 50,
+      "tests_passed": 39,
       "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "pytest 03-development/tests/test_fr04.py 03-development/tests/test_fr03.py 03-development/tests/test_fr05.py\n======================== 50 passed, 1 warning in 0.93s =========================\nFR-04 file coverage (coverage.json totals):\n  03-development/src/taskq_api/api/deps.py: 100% (23/23 lines)\n  03-development/src/taskq_api/service/auth.py: 100% (26/26 lines)\ntotals.covered_lines=49, num_statements=49, percent_covered=100.0, percent_covered_display=100\nspec_cov_pct: 100% (8/8 required tests present and passing)"
+      "tool_evidence": "PYTHONPATH=. python3 -m pytest 03-development/tests/test_fr08.py --cov=03-development/src --cov-report=term-missing\n\ncollected 39 items\n03-development/tests/test_fr08.py ...................................... [ 97%]\n.                                                                        [100%]\n\nFR-08 scoped files coverage:\n  03-development/src/taskq_api/service/runner.py   194/194 stmts  100%\n  03-development/src/taskq_api/app.py                52/52  stmts  100%\n\nSpec coverage: 5/5 required tests present\n  - test_fr08_graceful_drain_marks_over_budget_task_interrupted\n  - test_fr08_timeout_kill_leaves_no_orphan_process\n  - test_fr08_concurrency_cap_queues_excess_tasks\n  - test_fr08_timeout_path_kills_and_awaits_process\n  - test_fr08_cancelled_error_propagates_not_swallowed\n\ncoverage_pct = 100; spec_cov_pct = 100; score = min(100, 100) = 100\n======================== 39 passed in 67.22s (0:01:07) =========================\n"
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "lint-imports (PYTHONPATH=03-development/src:.venv/lib/python3.11/site-packages) exit 0\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n\n(exit 0)\n"
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "d7fe257886e7f39a8218b76074c7733768ebab0fa25db088d0bd55d21847212c",
-      "bytes": 93,
-      "head": "ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nexit 0\nAll checks passed!"
+      "sha256": "fad7bf8fec552781f58e1c0ffeca42f9112045994a8b691d1b407d6151442b6f",
+      "bytes": 99,
+      "head": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "6a78505a630e49bc7a4e3ece5eb39bfd53f9f319bc65dbd54859599d86e1a8c5",
-      "bytes": 340,
-      "head": "pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786844735481\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.037\n    }\n}\nEXIT_CODE=0\n0 errors, 0 warnings, 0 informations"
+      "sha256": "3b05f94ec6012758b0fa1994f78a6b3f53474ba33fd60556f78cf9ca5a692b05",
+      "bytes": 249,
+      "head": "{\n    \"version\": \"1.1.409\",\n    \"time\": \"1786845168164\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.03\n    }\n}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "b91b6192d7008c25fd6833817087f58a48a5862b9b526d8f7042104d5e557edc",
-      "bytes": 518,
-      "head": "pytest 03-development/tests/test_fr04.py 03-development/tests/test_fr03.py 03-development/tests/test_fr05.py\n======================== 50 passed, 1 warning in 0.93s =========================\nFR-04 file coverage (coverage.json totals):\n  03-development/src/taskq_api/api/deps.py: 100% (23/23 lines)\n  03-development/src/taskq_api/service/auth.py: 100% (26/26 lines)\ntotals.covered_lines=49, num_statements=49, percent_covered=100.0, percent_covered_display=100\nspec_cov_pct: 100% (8/8 required tests present and passing)"
+      "sha256": "09de53999c9058294bd5454cad7fba8b1390d5bf259839419684c9f697151fd8",
+      "bytes": 934,
+      "head": "PYTHONPATH=. python3 -m pytest 03-development/tests/test_fr08.py --cov=03-development/src --cov-report=term-missing\n\ncollected 39 items\n03-development/tests/test_fr08.py ...................................... [ 97%]\n.                                                                        [100%]\n\nFR-08 scoped files coverage:\n  03-development/src/taskq_api/service/runner.py   194/194 stmts  100%\n  03-development/src/taskq_api/app.py                52/52  stmts  100%\n\nSpec coverage: 5/5 required tests present\n  - test_fr08_graceful_drain_marks_over_budget_task_interrupted\n  - test_fr08_timeout_kill_leaves_no_orphan_process\n  - test_fr08_concurrency_cap_queues_excess_tasks\n  - test_fr08_timeout_path_kills_and_awaits_process\n  - test_fr08_cancelled_error_propagates_not_swallowed\n\ncoverage_pct = 100; spec_cov_pct = 100; score = min(100, 100) = 100\n======================== 39 passed in 67.22s (0:01:07) ========================="
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "9f6d56c712e6d476f372389513a9551ce8a1d3be124048a27eb06cd46147623c",
-      "bytes": 247,
-      "head": "lint-imports (PYTHONPATH=03-development/src:.venv/lib/python3.11/site-packages) exit 0\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken."
+      "sha256": "ed3f71ba8c5e621b6b5305da0656e2fd706a7f0f48627a5215565e1c25c403c8",
+      "bytes": 215,
+      "head": "$ PYTHONPATH=03-development/src lint-imports\n\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n\n(exit 0)"
     }
   },
   "composite_score": 100.0,
