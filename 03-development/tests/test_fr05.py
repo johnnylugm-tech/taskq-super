@@ -586,6 +586,9 @@ __all__ = [
     "test_unit_check_rate_limit_per_token_isolation",
     "test_unit_check_rate_limit_inproc_subprocess_branch",
     "test_unit_check_rate_limit_blank_token_bypass",
+    "test_fr05_deps_missing_api_key_returns_401_before_rate_limit",
+    "test_fr05_deps_invalid_api_key_returns_401_before_rate_limit",
+    "test_fr05_deps_insufficient_scope_returns_403_before_rate_limit",
 ]
 
 
@@ -603,3 +606,80 @@ def test_unit_check_rate_limit_blank_token_bypass() -> None:
         result = check_rate_limit(empty)  # type: ignore[arg-type]
         assert result.get("allow") is True, result
         assert result.get("remaining") == DEFAULT_BURST, result
+
+
+# ---------------------------------------------------------------------------
+# Coverage-filling tests for deps.py: require_scope raises 401/403 BEFORE
+# the rate-limit gate runs. These three cases cover the missing-key branch
+# (line 52), the invalid/revoked-key branch (line 57), and the
+# insufficient-scope branch (line 60) of `taskq_api.api.deps._enforce_scope`.
+# Without these tests, a coverage report that runs only test_fr05.py sees
+# 87% on deps.py because every current FR-05 test uses a valid `write_api_key`.
+# ---------------------------------------------------------------------------
+
+
+def test_fr05_deps_missing_api_key_returns_401_before_rate_limit() -> None:
+    """Coverage-filling: `taskq_api.api.deps._enforce_scope` line 52
+    raises `problem(401, ...)` when no X-API-Key header is presented.
+
+    The rate-limit gate is intentionally checked AFTER the auth gate, so
+    a missing-key request must short-circuit with 401 before the bucket
+    is touched. This exercises the missing-key branch of the dep.
+
+    [FR-03] / [FR-05] — NFR-02 (X-API-Key required on every /v1/*).
+    """
+    # NFR-02
+    # FR-03 AC-3.1
+    resp = _request("GET", "/v1/tasks")  # no X-API-Key header
+    status_code = str(resp.status_code)
+    content_type = _content_type(resp)
+    assert status_code == "401", resp.text
+    assert content_type == "application/problem+json", resp.headers
+
+
+def test_fr05_deps_invalid_api_key_returns_401_before_rate_limit() -> None:
+    """Coverage-filling: `taskq_api.api.deps._enforce_scope` line 57
+    raises `problem(401, ...)` when `verify_key` returns None (unknown
+    or revoked key).
+
+    The rate-limit gate is intentionally checked AFTER the auth gate, so
+    an unknown-key request must short-circuit with 401 before the bucket
+    is touched. This exercises the invalid/revoked-key branch of the dep.
+
+    [FR-03] / [FR-05] — NFR-02 (X-API-Key required on every /v1/*).
+    """
+    # NFR-02
+    # FR-03 AC-3.1 / AC-3.5
+    bogus_key = "sk-test-bogus-not-a-real-key"
+    resp = _request("GET", "/v1/tasks", api_key=bogus_key)
+    status_code = str(resp.status_code)
+    content_type = _content_type(resp)
+    assert status_code == "401", resp.text
+    assert content_type == "application/problem+json", resp.headers
+
+
+def test_fr05_deps_insufficient_scope_returns_403_before_rate_limit() -> None:
+    """Coverage-filling: `taskq_api.api.deps._enforce_scope` line 60
+    raises `problem(403, ...)` when the key is known but lacks the
+    required scope.
+
+    The rate-limit gate is intentionally checked AFTER the scope gate, so
+    a read-key calling a write-gated endpoint must short-circuit with
+    403 before the bucket is touched. This exercises the insufficient-
+    scope branch of the dep.
+
+    [FR-04] / [FR-05] — NFR-02 (insufficient scope -> 403 + problem+json).
+    """
+    # NFR-02
+    # FR-04 AC-4.1
+    # Use a read-only key against a write-gated endpoint (POST /v1/tasks).
+    resp = _request(
+        "POST",
+        "/v1/tasks",
+        api_key="sk-test-read-key",
+        json_body={"name": "fr05-read-deny", "command": "echo hi"},
+    )
+    status_code = str(resp.status_code)
+    content_type = _content_type(resp)
+    assert status_code == "403", resp.text
+    assert content_type == "application/problem+json", resp.headers
