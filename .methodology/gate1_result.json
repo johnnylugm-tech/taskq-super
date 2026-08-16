@@ -1,33 +1,33 @@
 {
   "gate": 1,
   "phase": 8,
-  "fr_id": "FR-05",
-  "overall_score": 90.0,
+  "fr_id": "FR-06",
+  "overall_score": 100.0,
   "quality_complete": true,
   "rounds_used": 1,
   "breakdown": {
     "linting": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit code 0 -> score 100)"
+      "tool_evidence": "All checks passed!"
     },
     "type_safety": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.066\n    }\n}\n(summary.errorCount = 0 -> score 100)"
+      "tool_evidence": "{\"version\": \"1.1.409\", \"time\": \"1786843083685\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.054}}"
     },
     "test_coverage": {
       "score": 100.0,
       "threshold": 100,
-      "tests_passed": 48,
-      "tests_failed": 2,
+      "tests_passed": 5,
+      "tests_failed": 0,
       "tests_skipped": 0,
-      "tool_evidence": "=========================== short test summary info ============================\nFAILED 03-development/tests/test_fr05.py::test_fr05_burst_requests_then_429_with_retry_after\nFAILED 03-development/tests/test_fr05.py::test_fr05_retry_after_is_positive_integer_seconds\n=================== 2 failed, 48 passed, 1 warning in 0.98s ====================\n\nE       AssertionError: {\"items\":[],\"limit\":50,\"cursor\":null,\"next_cursor\":null}\nE       assert '200' == '429'\n\ncoverage json (deps.py, ratelimit.py) TOTAL PCT: 100.0\nspec_cov: 5 required tests exist, 3 pass -> 60%. score = min(100.0, 60) = 60."
+      "tool_evidence": "5 passed in 0.19s; coverage 100% on 03-development/src/taskq_api/repository/session.py (25/25 statements). Required tests: test_fr06_no_shell_true_eval_or_exec_in_source, test_fr06_no_fstring_or_concat_sql_composition, test_fr06_one_session_per_request_lifecycle, test_fr06_engine_uses_pool_size_and_pool_pre_ping — all PASSED."
     },
     "architecture_constraints": {
       "score": 100.0,
       "threshold": 100,
-      "tool_evidence": "$ PYTHONPATH=03-development/src lint-imports\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n(exit code 0 -> score 100)"
+      "tool_evidence": "Analyzed 22 files, 23 dependencies. Contracts: 1 kept, 0 broken."
     }
   },
   "enforcer_sha": "f99a8b0d13cd5549fb46b32b3757538132cfc39b",
@@ -61,30 +61,30 @@
     "linting": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "d7c2d1e41f12a863d8650ac81471d2adf7bbe2d2244fedfee82c0c8450639636",
-      "bytes": 126,
-      "head": "$ python3 -m ruff check 03-development/src/ --extend-ignore RUF001,RUF002,RUF003\nAll checks passed!\n(exit code 0 -> score 100)"
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+      "bytes": 18,
+      "head": "All checks passed!"
     },
     "type_safety": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "e0d350a137006f13a64c744fe48c46b34938bc78419604d50ad65ed04e283450",
-      "bytes": 313,
-      "head": "$ python3 -m pyright 03-development/src/ --outputjson\n{\n    \"version\": \"1.1.409\",\n    \"generalDiagnostics\": [],\n    \"summary\": {\n        \"filesAnalyzed\": 28,\n        \"errorCount\": 0,\n        \"warningCount\": 0,\n        \"informationCount\": 0,\n        \"timeInSec\": 1.066\n    }\n}\n(summary.errorCount = 0 -> score 100)"
+      "sha256": "7e8a51de5ab701690238637faf942fb5ce99e49a0a45af49c132ba79d4ff84de",
+      "bytes": 186,
+      "head": "{\"version\": \"1.1.409\", \"time\": \"1786843083685\", \"generalDiagnostics\": [], \"summary\": {\"filesAnalyzed\": 28, \"errorCount\": 0, \"warningCount\": 0, \"informationCount\": 0, \"timeInSec\": 1.054}}"
     },
     "test_coverage": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "d5bd0f5f9e115d2895d4e272f045c3226d408e5e579107a1ed6cab6ad2e8ed1c",
-      "bytes": 592,
-      "head": "=========================== short test summary info ============================\nFAILED 03-development/tests/test_fr05.py::test_fr05_burst_requests_then_429_with_retry_after\nFAILED 03-development/tests/test_fr05.py::test_fr05_retry_after_is_positive_integer_seconds\n=================== 2 failed, 48 passed, 1 warning in 0.98s ====================\n\nE       AssertionError: {\"items\":[],\"limit\":50,\"cursor\":null,\"next_cursor\":null}\nE       assert '200' == '429'\n\ncoverage json (deps.py, ratelimit.py) TOTAL PCT: 100.0\nspec_cov: 5 required tests exist, 3 pass -> 60%. score = min(100.0, 60) = 60."
+      "sha256": "ea12c93bbeaf2766e437a0dbedbe910bd1e41e3eb0ac857e1022fa009e688f9c",
+      "bytes": 329,
+      "head": "5 passed in 0.19s; coverage 100% on 03-development/src/taskq_api/repository/session.py (25/25 statements). Required tests: test_fr06_no_shell_true_eval_or_exec_in_source, test_fr06_no_fstring_or_concat_sql_composition, test_fr06_one_session_per_request_lifecycle, test_fr06_engine_uses_pool_size_and_pool_pre_ping — all PASSED."
     },
     "architecture_constraints": {
       "source": "tool_evidence (inline)",
       "kind": "inline",
-      "sha256": "4e481a2fe0945058a9bc39dc7a7111ad1bf43360dd41e885e0b4b02946b000b5",
-      "bytes": 241,
-      "head": "$ PYTHONPATH=03-development/src lint-imports\n---------\nContracts\n---------\n\nAnalyzed 22 files, 23 dependencies.\n-----------------------------------\n\nconfig_and_errors_independence KEPT\n\nContracts: 1 kept, 0 broken.\n(exit code 0 -> score 100)"
+      "sha256": "02b36fdb83903cb60712018480fdefcd5eb68c5b35004232e8bd57ae44b9deac",
+      "bytes": 64,
+      "head": "Analyzed 22 files, 23 dependencies. Contracts: 1 kept, 0 broken."
     }
   },
   "composite_score": 100.0,
